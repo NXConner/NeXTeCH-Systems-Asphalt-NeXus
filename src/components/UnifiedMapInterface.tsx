@@ -1,7 +1,5 @@
 import React from 'react';
-import MapGL from 'react-map-gl';
-
-const MAPBOX_TOKEN = import.meta.env.VITE_REACT_APP_MAPBOX_TOKEN || '';
+import { MapContainer, TileLayer } from 'react-leaflet';
 
 const UnifiedMapInterface = () => {
   const [viewState, setViewState] = React.useState({
@@ -12,22 +10,22 @@ const UnifiedMapInterface = () => {
     pitch: 0,
   });
 
-  if (!MAPBOX_TOKEN) {
-    return <div style={{ color: 'red' }}>Mapbox token is missing. Please set VITE_REACT_APP_MAPBOX_TOKEN in your environment.</div>;
-  }
-
+  // Only OpenStreetMap (Leaflet)
   return (
     <div style={{ width: '100%', height: 400 }}>
-      <MapGL
-        {...viewState}
-        mapboxAccessToken={MAPBOX_TOKEN}
-        onMove={evt => setViewState(evt.viewState)}
-        mapStyle="mapbox://styles/mapbox/streets-v11"
+      <MapContainer
+        center={[viewState.latitude, viewState.longitude]}
+        zoom={viewState.zoom}
         style={{ width: '100%', height: 400 }}
-      />
+        scrollWheelZoom={true}
+      >
+        <TileLayer
+          attribution="&copy; OpenStreetMap contributors"
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+      </MapContainer>
     </div>
   );
 };
 
-export default UnifiedMapInterface;
-export { UnifiedMapInterface }; 
+export default UnifiedMapInterface; 

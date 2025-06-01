@@ -1,35 +1,32 @@
+import { useState, useCallback, useEffect } from "react";
+import { apiService } from '../services/apiService';
 
-import { useState, useCallback } from "react";
+export function useNotifications() {
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-interface Notification {
-  id: string;
-  type: "success" | "error" | "info" | "warning";
-  title: string;
-  message: string;
-  autoClose?: boolean;
-  duration?: number;
+  const fetchNotifications = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await apiService.getNotifications();
+      setNotifications(data);
+    } catch (err: any) {
+      setError(err.message || 'Failed to load notifications');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const addNotification = useCallback(async (notification: any) => {
+    await apiService.createNotification(notification);
+    fetchNotifications();
+  }, [fetchNotifications]);
+
+  useEffect(() => {
+    fetchNotifications();
+  }, [fetchNotifications]);
+
+  return { notifications, loading, error, addNotification, refetch: fetchNotifications };
 }
-
-export const useNotifications = () => {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-
-  const addNotification = useCallback((notification: Omit<Notification, "id">) => {
-    const id = Math.random().toString(36).substr(2, 9);
-    setNotifications((prev) => [...prev, { ...notification, id }]);
-  }, []);
-
-  const removeNotification = useCallback((id: string) => {
-    setNotifications((prev) => prev.filter((notification) => notification.id !== id));
-  }, []);
-
-  const clearAllNotifications = useCallback(() => {
-    setNotifications([]);
-  }, []);
-
-  return {
-    notifications,
-    addNotification,
-    removeNotification,
-    clearAllNotifications,
-  };
-};

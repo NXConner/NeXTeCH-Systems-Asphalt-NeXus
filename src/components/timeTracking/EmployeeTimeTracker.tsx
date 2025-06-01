@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Clock } from "lucide-react";
 import { ClockControls } from "./ClockControls";
@@ -29,6 +29,26 @@ interface MockTimeSummary {
   total_miles: number;
 }
 
+// Fallback fetch if service is missing
+const fetchTimeEntries = async () => [];
+const fetchTimeSummary = async () => null;
+
+interface TimeEntry {
+  id: string;
+  employeeName: string;
+  date: string;
+  clock_in: string;
+  clock_out?: string;
+  total_hours: number;
+}
+
+interface TimeSummary {
+  total_hours: number;
+  on_site_hours: number;
+  travel_hours: number;
+  total_miles: number;
+}
+
 // Refactored to use real API data. Please implement useTimeTracking hook for fetching and updating time entries and summaries.
 export const EmployeeTimeTracker = ({ employeeId, employeeName }: EmployeeTimeTrackerProps) => {
   const { currentLocation, isTracking, startLocationTracking, stopLocationTracking } = useLocationTracking();
@@ -43,6 +63,14 @@ export const EmployeeTimeTracker = ({ employeeId, employeeName }: EmployeeTimeTr
     travel_hours: 1.3,
     total_miles: 42.5
   });
+
+  const [entries, setEntries] = useState<TimeEntry[]>([]);
+  const [summary, setSummary] = useState<TimeSummary | null>(null);
+
+  useEffect(() => {
+    fetchTimeEntries().then(setEntries);
+    fetchTimeSummary().then(setSummary);
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -77,6 +105,24 @@ export const EmployeeTimeTracker = ({ employeeId, employeeName }: EmployeeTimeTr
       </Card>
 
       <DailySummary summary={todaySummary} />
+
+      <div>
+        <h2 className="text-xl font-bold mb-4">Employee Time Tracker</h2>
+        <ul>
+          {entries.map((entry) => (
+            <li key={entry.id}>{entry.employeeName} - {entry.date} - {entry.clock_in} to {entry.clock_out || 'N/A'} ({entry.total_hours} hrs)</li>
+          ))}
+        </ul>
+        {summary && (
+          <div className="mt-4">
+            <h3 className="font-semibold">Summary</h3>
+            <div>Total Hours: {summary.total_hours}</div>
+            <div>On Site: {summary.on_site_hours}</div>
+            <div>Travel: {summary.travel_hours}</div>
+            <div>Miles: {summary.total_miles}</div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

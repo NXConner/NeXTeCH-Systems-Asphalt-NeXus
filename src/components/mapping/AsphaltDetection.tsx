@@ -14,6 +14,7 @@ import {
   Move
 } from "lucide-react";
 import CrackDetectionAR from './CrackDetectionAR';
+import { detectAsphaltAreas } from '@/services/mappingService';
 
 interface AsphaltArea {
   id: string;
@@ -47,42 +48,10 @@ export function AsphaltDetection({ onAreaSelect, showEmployeeTracking = false, h
   const runAutoDetection = async () => {
     setIsDetecting(true);
     try {
-      // Simulate AI detection with mock data
-      setTimeout(() => {
-        const mockAreas: AsphaltArea[] = [
-          {
-            id: '1',
-            coordinates: [
-              {x: 100, y: 100},
-              {x: 300, y: 100},
-              {x: 300, y: 200},
-              {x: 100, y: 200}
-            ],
-            area: 4000,
-            length: 200,
-            width: 100,
-            confidence: 0.94,
-            manuallyEdited: false
-          },
-          {
-            id: '2',
-            coordinates: [
-              {x: 150, y: 250},
-              {x: 400, y: 250},
-              {x: 400, y: 350},
-              {x: 150, y: 350}
-            ],
-            area: 2500,
-            length: 250,
-            width: 100,
-            confidence: 0.87,
-            manuallyEdited: false
-          }
-        ];
-        setDetectedAreas(mockAreas);
-        setIsDetecting(false);
-        drawAreas(mockAreas);
-      }, 2000);
+      const areas = await detectAsphaltAreas();
+      setDetectedAreas(areas);
+      setIsDetecting(false);
+      drawAreas(areas);
     } catch (error) {
       console.error('Detection failed:', error);
       setIsDetecting(false);

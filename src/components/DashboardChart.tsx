@@ -1,7 +1,5 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-import { useTheme } from "./ThemeProvider";
 
 const revenueData = [
   { month: "Jan", revenue: 95000, jobs: 12 },
@@ -19,13 +17,10 @@ const fleetUtilization = [
 ];
 
 const DashboardChart = () => {
-  const { theme } = useTheme();
-  const isDark = theme === "dark" || (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
-  
   const chartColors = {
-    grid: isDark ? "#374151" : "#E5E7EB",
-    text: isDark ? "#D1D5DB" : "#374151",
-    bar: isDark ? "#60A5FA" : "#3B82F6"
+    grid: "#E5E7EB",
+    text: "#374151",
+    bar: "#3B82F6"
   };
 
   const renderCustomLabel = ({ name, value }: { name: string; value: number }) => {
@@ -51,8 +46,8 @@ const DashboardChart = () => {
                   name === 'revenue' ? 'Revenue' : 'Jobs'
                 ]}
                 contentStyle={{
-                  backgroundColor: isDark ? "#1F2937" : "#FFFFFF",
-                  border: `1px solid ${isDark ? "#374151" : "#E5E7EB"}`,
+                  backgroundColor: "#FFFFFF",
+                  border: `1px solid ${chartColors.grid}`,
                   borderRadius: "6px",
                   color: chartColors.text
                 }}
@@ -85,8 +80,8 @@ const DashboardChart = () => {
               </Pie>
               <Tooltip 
                 contentStyle={{
-                  backgroundColor: isDark ? "#1F2937" : "#FFFFFF",
-                  border: `1px solid ${isDark ? "#374151" : "#E5E7EB"}`,
+                  backgroundColor: "#FFFFFF",
+                  border: `1px solid ${chartColors.grid}`,
                   borderRadius: "6px",
                   color: chartColors.text
                 }}

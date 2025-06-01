@@ -1,7 +1,8 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Clock, Play, Square } from "lucide-react";
 import { toast } from "sonner";
+import QRCodeScanner from "./QRCodeScanner";
 
 interface MockTimeEntry {
   id: string;
@@ -34,6 +35,14 @@ export const ClockControls = ({
   onLocationStart,
   onLocationStop 
 }: ClockControlsProps) => {
+  const [showQR, setShowQR] = useState(false);
+
+  const handleQRScan = (data: string) => {
+    setShowQR(false);
+    if (data === "clock-in") handleClockIn();
+    if (data === "clock-out") handleClockOut();
+  };
+
   const handleClockIn = () => {
     const now = new Date().toISOString();
     const newEntry: MockTimeEntry = {
@@ -79,6 +88,10 @@ export const ClockControls = ({
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-4">
+        {/* QR Scan Button */}
+        <button className="bg-black text-white px-3 py-2 rounded" onClick={() => setShowQR(true)}>
+          Scan QR to Clock In/Out
+        </button>
         {!currentTimeEntry || currentTimeEntry.status === 'completed' ? (
           <Button onClick={handleClockIn} className="flex-1">
             <Play className="h-4 w-4 mr-2" />
@@ -91,6 +104,8 @@ export const ClockControls = ({
           </Button>
         )}
       </div>
+
+      {showQR && <QRCodeScanner onScan={handleQRScan} onClose={() => setShowQR(false)} />}
 
       {currentTimeEntry && currentTimeEntry.status === 'active' && (
         <div className="space-y-2">

@@ -10,6 +10,7 @@ import { Camera, MapPin, Calculator, Save, Send } from 'lucide-react';
 import { toast } from 'sonner';
 import { SealcoatingSpreadsheetApp } from './SealcoatingSpreadsheetApp';
 import { PopoutCalculator } from '@/components/ui/PopoutCalculator';
+import { uploadPhoto, getCurrentLocation as fetchLocation } from '@/services/estimateService';
 
 export const MobileEstimateForm = () => {
   const [step, setStep] = useState(1);
@@ -27,25 +28,19 @@ export const MobileEstimateForm = () => {
   const [showSpreadsheet, setShowSpreadsheet] = useState(false);
   const [showCalculator, setShowCalculator] = useState(false);
 
-  const handlePhotoCapture = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoCapture = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
+    for (const file of files) {
+      await uploadPhoto(file);
+    }
     setFormData({ ...formData, photos: [...formData.photos, ...files] });
-    toast.success(`${files.length} photo(s) added`);
+    toast.success(`${files.length} photo(s) uploaded`);
   };
 
-  const getCurrentLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        const { latitude, longitude } = position.coords;
-        setFormData({ 
-          ...formData, 
-          location: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}` 
-        });
-        toast.success('Location captured');
-      });
-    } else {
-      toast.error('Geolocation not supported');
-    }
+  const getCurrentLocation = async () => {
+    const loc = await fetchLocation();
+    setFormData({ ...formData, location: loc });
+    toast.success('Location captured');
   };
 
   const handleSubmit = () => {

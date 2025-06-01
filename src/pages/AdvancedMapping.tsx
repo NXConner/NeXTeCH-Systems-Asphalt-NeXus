@@ -26,8 +26,6 @@ import { HeatmapLayer } from 'react-leaflet-heatmap-layer-v3';
 import ARProjection from '../components/ui/ARProjection';
 
 const mapProviders = [
-  { id: 'mapbox', name: 'Mapbox Satellite', style: 'mapbox://styles/mapbox/satellite-streets-v11' },
-  { id: 'google', name: 'Google Satellite', style: 'google-satellite' },
   { id: 'leaflet', name: 'Leaflet OSM', style: 'osm' },
   { id: 'esri', name: 'Esri World Imagery', style: 'esri' },
   { id: 'usgs', name: 'USGS Topo', style: 'usgs' },
@@ -45,7 +43,7 @@ const AdvancedMapping = () => {
     cleanZones: 0
   });
   const [selectedArea, setSelectedArea] = useState<any>(null);
-  const [provider, setProvider] = useState('mapbox');
+  const [provider, setProvider] = useState(mapProviders[0].id);
   const [isPopout, setIsPopout] = useState(false);
   const [isPinned, setIsPinned] = useState(false);
   const [asphaltHighlight, setAsphaltHighlight] = useState(true);

@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { apiService } from '../services/apiService';
 
 interface CostData {
   id: string;
@@ -26,10 +26,13 @@ export const useCostData = () => {
   const { data: costData = [], isLoading, error } = useQuery({
     queryKey: ['cost-data'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('cost_data').select('*');
-      if (error) throw error;
-      return data;
+      return await apiService.getExpenses();
     }
+  });
+
+  const addExpense = useMutation({
+    mutationFn: apiService.createExpense,
+    onSuccess: () => queryClient.invalidateQueries(['cost-data'])
   });
 
   // Add/Update/Delete mutations can be added here as needed
@@ -102,6 +105,7 @@ export const useCostData = () => {
     costData,
     isLoading,
     error,
+    addExpense,
     getCostByType,
     getCostByName,
     linkCostsToJob,

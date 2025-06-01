@@ -1,26 +1,20 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
-export type Theme = 'asphalt-command' | 'light' | 'dark' | 'system';
+const ThemeContext = createContext({ theme: 'dark', setTheme: (t: string) => {} });
+export const useTheme = () => useContext(ThemeContext);
 
-interface ThemeContextType {
-  theme: Theme;
-  setTheme: (theme: Theme) => void;
-}
-
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
-
-export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-  const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window !== 'undefined') {
-      return (localStorage.getItem('selected-theme') as Theme) || 'asphalt-command';
-    }
-    return 'asphalt-command';
-  });
+export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
+  const [theme, setThemeState] = useState(() => localStorage.getItem('theme') || 'dark');
 
   useEffect(() => {
-    localStorage.setItem('selected-theme', theme);
     document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
   }, [theme]);
+
+  const setTheme = (t: string) => {
+    setThemeState(t);
+    localStorage.setItem('theme', t);
+  };
 
   return (
     <ThemeContext.Provider value={{ theme, setTheme }}>
@@ -28,14 +22,6 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     </ThemeContext.Provider>
   );
 };
-
-export function useTheme() {
-  const context = useContext(ThemeContext);
-  if (!context) {
-    throw new Error('useTheme must be used within a ThemeProvider');
-  }
-  return context;
-}
 
 // ... existing code ...
 // Move non-component exports to a new file ThemeProviderUtils.ts and import them here if needed
