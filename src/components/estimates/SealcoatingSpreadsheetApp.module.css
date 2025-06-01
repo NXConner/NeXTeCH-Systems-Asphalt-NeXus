@@ -1,0 +1,66 @@
+.spreadsheetContainer {
+  overflow-x: auto;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  margin: 16px;
+  padding: 16px;
+}
+.sheetControls {
+  margin: 12px 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.sheetButton {
+  margin-right: 8px;
+  padding: 6px 16px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: #f9f9f9;
+  font-weight: normal;
+  cursor: pointer;
+}
+.activeSheetButton {
+  margin-right: 8px;
+  padding: 6px 16px;
+  border-radius: 6px;
+  border: 2px solid #1890ff;
+  background: #e6f7ff;
+  font-weight: bold;
+  cursor: pointer;
+}
+.exportButton {
+  margin-left: 16px;
+  padding: 6px 16px;
+  border-radius: 6px;
+  border: 1px solid #52c41a;
+  background: #f6ffed;
+  color: #389e0d;
+  font-weight: bold;
+  cursor: pointer;
+}
+.importLabel {
+  margin-left: 8px;
+  padding: 6px 16px;
+  border-radius: 6px;
+  border: 1px solid #1890ff;
+  background: #e6f7ff;
+  color: #1890ff;
+  font-weight: bold;
+  cursor: pointer;
+  display: inline-block;
+}
+.importInput {
+  display: none;
+}
+.resetButton {
+  margin-left: 8px;
+  padding: 6px 16px;
+  border-radius: 6px;
+  border: 1px solid #ff4d4f;
+  background: #fff1f0;
+  color: #cf1322;
+  font-weight: bold;
+  cursor: pointer;
+} 

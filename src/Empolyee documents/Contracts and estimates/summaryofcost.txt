@@ -1,0 +1,72 @@
+Here are the files as requested:
+
+**Word Document for Printing (Asphalt Repair Estimate.docx)**
+
+**Asphalt Repair Estimate for [Customer Name]**
+Date: March 16, 2025
+
+Repair of 1,200 ft cracks, sealcoating 4,740 sq ft, and linestriping for parking lot and driveway.
+
+| Category | Description |Calculation | Cost |
+|---|---|---|---|
+| Crack Filling | Filling 1,200 ft of cracks with hot pour crack filler | (1,200 ft ÷ 80 ft per box) × $39.95 per 30-lb box = 15 boxes × $39.95 = $599.25 | $599.25 |
+| Labor | Paying 2 workers for 12 hours each at $12/hour | 2 workers × 12 hours × $12/hour = 24 hours × $12 = $288.00 | $288.00 |
+| Travel | Driving 15 miles each way, fuel at $2.69/gallon, 1 hour travel time | Fuel: (15 miles to site ÷ 6 mpg × $2.69) + (15 miles back ÷ 15 mpg × $2.69) = ($6.73 + $2.69) = $9.42, Time: 1 hour × 2 workers × $12/hour = $24.00, Total: $9.42 + $24.00 = $33.42 | $33.42 |
+| Sealcoating | Covering 4,740 sq ft with 500 gallons at $3.65/gallon | 500 gallons × $3.65/gallon = $1,825.00 | $1,825.00 |
+| Linestriping | Painting 460 ft of lines at $1.50/ft | 460 ft × $1.50/ft = $690.00 | $690.00 |
+| Additional Costs | Equipment wear $100, 10% overhead, misc $20 | Overhead: ($599.25 + $288 + $1,825 + $690) × 0.10 = $340.23, Total: $100 + $340.23 + $20 = $460.23 | $460.23 |
+| **Total Costs** | Sum of all above | | **$3,895.90** |
+| Profit Markup (20%) | 20% of total costs | $3,895.90 × 0.20 = $779.18 | $779.18 |
+| **Grand Total** | Total costs plus profit | | **$4,675.08** |
+
+Prices include all materials, labor, and travel. Sealcoating covers one coat; excess gallons available for future use. Payment terms: 50% deposit, 50% upon completion.
+
+**Excel File with Auto-Update Formulas (asphalt\_estimate\_fixed.xlsx - Tab Separated Data)**
+
+```
+Category	Sub-Category	Input Value	Unit	Calculation	Total Cost
+Crack Filling	Length of cracks	1200	ft		
+Crack Filling	Coverage per box	80	ft/box		
+Crack Filling	Cost per box	39.95	$/box		
+Crack Filling	Number of boxes			=(C2/C3)*C4
+Labor	Number of workers	2	workers		
+Labor	Hours per worker	12	hours		
+Labor	Pay per hour	12	$/hour		
+Labor	Total hours			=(C7*C8)*C9
+Travel	Distance one way	15	miles		
+Travel	MPG (loaded)	6	mpg		
+Travel	MPG (empty)	15	mpg		
+Travel	Fuel cost per gallon	2.69	$/gallon		
+Travel	Fuel to site (gallons)			=(C12/C13)*C14
+Travel	Fuel return (gallons)			=(C12/C14)*C14
+Travel	Total fuel gallons			=(F16+F17)
+Travel	Total fuel cost			=(F18*C15)
+Travel	Travel time	1	hours		
+Travel	Travel pay per hour	12	$/hour		
+Travel	Travel time cost			=(C20*C7*C21)
+Travel	Total travel cost			=(F21+F22)
+Sealcoating	Area to cover	4740	sq ft		
+Sealcoating	Coverage per gallon	90	sq ft/gallon		
+Sealcoating	Cost per gallon	3.65	$/gallon		
+Sealcoating	Gallons needed			=(C23/C24)*C25
+Sealcoating	Gallons purchased	500	gallons		500*C25
+Sealcoating	Total cost			=(C26*C25)
+Linestriping	Length of lines	460	ft		
+Linestriping	Cost per foot	1.5	$/ft		
+Linestriping	Total cost			=(C28*C29)
+Additional Costs	Equipment wear	100	$ (flat fee)		C31
+Additional Costs	Overhead percentage	10	%		
+Additional Costs	Miscellaneous	20	$ (flat fee)		C33
+Additional Costs	Overhead cost			=SUM(F6,F11,F23,F27,F30)*(C32/100)
+Additional Costs	Total additional			=(C31+F34+C33)
+Summary	Total costs			=SUM(F6,F11,F23,F27,F30,F35)
+Summary	Profit markup	20	%			=(G36*(C37/100))
+Summary	Grand total			=(G36+G37)
+```
+
+To use the Excel data:
+1. Copy the entire block above.
+2. Paste it into a plain text file and save it with a `.txt` extension (e.g., `asphalt_estimate_fixed.txt`).
+3. Open Microsoft Excel and go to `Data` > `From Text/CSV`.
+4. Select the text file and in the import wizard, ensure "Tab" is selected as the delimiter.
+5. After importing, verify and manually set up the formulas in the "Total Cost" column as described in the previous analysis.

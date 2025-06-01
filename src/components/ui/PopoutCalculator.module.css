@@ -1,0 +1,81 @@
+.popoutCalculator {
+  position: fixed;
+  right: 40px;
+  bottom: 40px;
+  z-index: 1000;
+  background: #fff;
+  border: 2px solid #eee;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px #0002;
+  width: 320px;
+  padding: 24px;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+.inputDisplay {
+  background: #f9f9f9;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 24px;
+  min-height: 40px;
+  margin-bottom: 8px;
+}
+.resultDisplay {
+  background: #f1f1f1;
+  border-radius: 8px;
+  padding: 8px;
+  font-size: 18px;
+  min-height: 24px;
+  margin-bottom: 12px;
+  color: #0a0;
+}
+.buttonGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+.button {
+  font-size: 20px;
+  padding: 12px;
+  flex: 1 0 21%;
+  margin: 2px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  background: #fafafa;
+  cursor: pointer;
+}
+.equalsButton {
+  font-size: 20px;
+  padding: 12px;
+  flex: 1 0 21%;
+  margin: 2px;
+  border-radius: 6px;
+  border: 1px solid #e0ffe0;
+  background: #e0ffe0;
+  color: #0a0;
+  font-weight: bold;
+  cursor: pointer;
+}
+.clearButton {
+  margin-top: 16px;
+  width: 100%;
+  padding: 10px;
+  background: #ffe0e0;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  color: #a00;
+  font-size: 16px;
+  cursor: pointer;
+} 

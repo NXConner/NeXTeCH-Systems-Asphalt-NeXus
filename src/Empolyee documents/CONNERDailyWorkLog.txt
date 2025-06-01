@@ -1,0 +1,457 @@
+Sure, I've updated the **CONNER Daily Work Log** to include the **Weather Conditions** in its appropriate section. Additionally, I've expanded the **Administration Use Only** section to include instructions, formulas, and useful information needed to perform calculations, indicating how they correlate with the information provided by employees.
+
+---
+
+# **CONNER**
+
+## **Daily Work Log**
+
+*Please fill out this form accurately to ensure proper tracking of daily activities, materials used, equipment operation, and safety compliance. Checkboxes and tables are provided for your convenience.*
+
+**Date**: __________________________
+
+**Location of Job Site**: __________________________
+
+---
+
+### **1. Employee Information**
+
+- **Employee Name**: __________________________
+- **Job Title/Role**: __________________________
+
+### **Team Members**
+
+| **Name**                  | **Role**            | **Hours Worked** |
+|---------------------------|---------------------|------------------|
+| _________________________ | ___________________ |                  |
+| _________________________ | ___________________ |                  |
+| _________________________ | ___________________ |                  |
+
+---
+
+### **2. Weather Conditions**
+
+**(To be filled out by Employee)**
+
+- **Sky Conditions**: [ ] Sunny [ ] Cloudy [ ] Overcast [ ] Windy [ ] Rainy [ ] Snowy
+- **Temperature**:
+  - **High**: __________ °F  **Low**: __________ °F
+
+---
+
+### **3. Task Prioritization**
+
+#### **A. High Priority Tasks Completed**
+
+- [ ] Task 1: ___________________
+- [ ] Task 2: ___________________
+- [ ] Task 3: ___________________
+
+#### **B. Tasks Pending for Next Day**
+
+- [ ] Task 1: ___________________
+- [ ] Task 2: ___________________
+- [ ] Task 3: ___________________
+
+---
+
+### **4. Time Tracking**
+
+**(To be filled out by Employee)**
+
+| **Event/Activity**                | **Start Time** | **End Time** | **Duration (Hours)** | **Miles Driven** | **Notes**            |
+|-----------------------------------|----------------|--------------|----------------------|------------------|----------------------|
+| **Clock In**                      | ______________ |              |                      |                  |                      |
+| Departure from Base               | ______________ | _____________| ______________       |                  |                      |
+| Arrival at Job Site               | ______________ |              |                      |                  |                      |
+| **Travel to Job Site**            |                |              | ______________       | ______________   |                      |
+| Preparation Work                  | ______________ | _____________| ______________       |                  |                      |
+| Sealcoating                       | ______________ | _____________| ______________       |                  |                      |
+| Line Striping                     | ______________ | _____________| ______________       |                  |                      |
+| Other Tasks: ____________________ | ______________ | _____________| ______________       |                  |                      |
+| Departure from Job Site           | ______________ | _____________| ______________       |                  |                      |
+| Arrival at Base                   | ______________ |              |                      |                  |                      |
+| **Travel from Job Site**          |                |              | ______________       | ______________   |                      |
+| **Clock Out**                     | ______________ |              |                      |                  |                      |
+
+---
+
+### **5. Safety and Compliance**
+
+**(To be filled out by Employee)**
+
+#### **A. Daily Safety Checklist**
+
+| **Item**                                             | **Checked** | **Notes**                        |
+|------------------------------------------------------|-------------|----------------------------------|
+| Inspected Tires on Vehicles, Trailers, and Equipment | [ ]         |                                  |
+| Verified Lights and Signals Functioning              | [ ]         |                                  |
+| Ensured Safety Guards and Shields in Place           | [ ]         |                                  |
+| Verified Operational Controls                        | [ ]         |                                  |
+| Confirmed PPE Worn at All Times                      | [ ]         |                                  |
+| Reviewed Emergency Procedures                        | [ ]         |                                  |
+
+#### **B. PPE Verification**
+
+- **Personal Protective Equipment**:
+  - [ ] Hard Hat
+  - [ ] Safety Glasses
+  - [ ] Reflective Vest
+  - [ ] Gloves
+  - [ ] Steel-Toe Boots
+
+---
+
+### **6. Vehicle and Equipment Inspection**
+
+**(To be filled out by Employee)**
+
+#### **Vehicles**
+
+| **Vehicle**             | **Used Today** | **Inspected** | **Notes**                   |
+|-------------------------|----------------|---------------|-----------------------------|
+| 1978 Chevy C30          | [ ]            | [ ]           |                             |
+| 1995 Red Dodge          | [ ]            | [ ]           |                             |
+
+#### **Trailers**
+
+| **Trailer**                          | **Used Today** | **Inspected** | **Notes**                   |
+|--------------------------------------|----------------|---------------|-----------------------------|
+| Small Utility Trailer                | [ ]            | [ ]           |                             |
+| Larger Utility Trailer               | [ ]            | [ ]           |                             |
+| Small White Utility Trailer          | [ ]            | [ ]           |                             |
+| Heavy Duty Trailer                   | [ ]            | [ ]           |                             |
+| Sealing Machine Trailer              | [ ]            | [ ]           |                             |
+
+#### **Inspection Checklist**
+
+*For all vehicles/trailers used today:*
+
+| **Item**                             | **Checked** | **Notes**                   |
+|--------------------------------------|-------------|-----------------------------|
+| Tires (Condition, Pressure, Tread)   | [ ]         |                             |
+| Lights and Signals                   | [ ]         |                             |
+| Fluids (Oil, Transmission, Hydraulic)| [ ]         |                             |
+| Brakes                               | [ ]         |                             |
+| Mirrors and Windshields              | [ ]         |                             |
+| Safety Equipment (Fire Extinguisher) | [ ]         |                             |
+
+---
+
+### **7. Pre-Work Activities**
+
+**(To be filled out by Employee)**
+
+#### **Job Preparation**
+
+| **Task**                                         | **Completed** |
+|--------------------------------------------------|---------------|
+| Received Job Assignment                          | [ ]           |
+| Reviewed Job Details and Client Instructions     | [ ]           |
+| Confirmed Location of Job Site                   | [ ]           |
+| Prepared Necessary Documentation (Maps, Permits) | [ ]           |
+| Loaded and Secured Materials, Supplies, Equipment| [ ]           |
+| Emergency Contacts Available                     | [ ]           |
+
+---
+
+### **8. Work Activities and Materials Used**
+
+**(To be filled out by Employee)**
+
+#### **A. Tasks Completed**
+
+- **Preparation:**
+  - [ ] Pressure Washing
+  - [ ] Pushing Back Edges
+  - [ ] Cleaning Cracks
+  - [ ] Filling Cracks
+  - [ ] Grass/Weed Removal
+
+- **Sealcoating:**
+  - [ ] Equipment Setup
+  - [ ] Sealcoat Application
+  - [ ] Applied Additives
+
+- **Line Striping:**
+  - [ ] Striping Layout
+  - [ ] Painting Lines and Markings
+  - [ ] Applied Reflective Beads
+
+#### **B. Materials and Supplies Used**
+
+**Preparation Materials:**
+
+| **Material/Supply**                | **Used** | **Quantity** | **Units Remaining** | **Notes**         |
+|------------------------------------|----------|--------------|---------------------|-------------------|
+| Crack Filler Boxes                 | [ ]      |              |                     |                   |
+| Tacking Material                   | [ ]      |              |                     |                   |
+| Prep Sealer                        | [ ]      |              |                     |                   |
+| Grass/Weed Killer Spray            | [ ]      |              |                     |                   |
+| Propane (lbs) for Crack Machines   | [ ]      |              |                     |                   |
+| Bags of Sand (Black Beauty/Diamond)| [ ]      |              |                     |                   |
+
+**Sealcoating Materials:**
+
+| **Item**                  | **Used** | **Quantity** | **Notes**         |
+|---------------------------|----------|--------------|-------------------|
+| Sealcoat (gallons)        | [ ]      |              |                   |
+| Water Added (gallons)     | [ ]      |              |                   |
+| Bags of Sand Added        | [ ]      |              |                   |
+| Fast Dry Additive         | [ ]      |              |                   |
+| Pave Gel                  | [ ]      |              |                   |
+| Other Additives           | [ ]      |              |                   |
+| Pump Sprayer (Water)      | [ ]      |              |                   |
+| Pump Sprayer (Diesel)     | [ ]      |              |                   |
+| Pump Sprayer (Purple Power)| [ ]     |              |                   |
+
+**Line Striping Materials:**
+
+| **Paint Color** | **Used** | **Quantity (gallons)** | **Notes**         |
+|-----------------|----------|------------------------|-------------------|
+| White Paint     | [ ]      |                        |                   |
+| Yellow Paint    | [ ]      |                        |                   |
+| Blue Paint      | [ ]      |                        |                   |
+
+**Paint Tools and Supplies:**
+
+| **Item**            | **Used** | **Quantity** | **Condition** | **Notes**         |
+|---------------------|----------|--------------|---------------|-------------------|
+| Paint Rollers       | [ ]      |              |               |                   |
+| Paint Brushes       | [ ]      |              |               |                   |
+| Handles             | [ ]      |              |               |                   |
+
+#### **C. Tools and Equipment Used**
+
+| **Tool/Equipment**            | **Used** | **Condition** | **Maintenance Needed** | **Notes**         |
+|-------------------------------|----------|---------------|------------------------|-------------------|
+| Bobcat Skid Steer             | [ ]      |               |                        |                   |
+| Pressure Washer               | [ ]      |               |                        |                   |
+| Little Wonder Crack Cleaner   | [ ]      |               |                        |                   |
+| Crack Machines                | [ ]      |               |                        |                   |
+| Asphalt Saw                   | [ ]      |               |                        |                   |
+| Gas-Powered Blowers           | [ ]      |               |                        |                   |
+| Sealcoat Sprayer              | [ ]      |               |                        |                   |
+| Weedeaters                    | [ ]      |               |                        |                   |
+| Leaf Blowers                  | [ ]      |               |                        |                   |
+| Shovels                       | [ ]      |               |                        |                   |
+| Rakes                         | [ ]      |               |                        |                   |
+| Brooms                        | [ ]      |               |                        |                   |
+| Asphalt Lute                  | [ ]      |               |                        |                   |
+| Hoe                           | [ ]      |               |                        |                   |
+| Other Tools: ________________ |          |               |                        |                   |
+
+---
+
+### **9. Vehicle and Equipment Usage**
+
+**(To be filled out by Employee)**
+
+#### **Consolidated Equipment Usage**
+
+*Note: Start and End Readings can be mileage or hours, depending on equipment.*
+
+| **Equipment**                | **Start Reading** | **End Reading** | **Total Usage** | **Fuel/Propane Used** | **Notes**                   |
+|------------------------------|-------------------|-----------------|-----------------|-----------------------|-----------------------------|
+| Vehicles (Used Today)        |                   |                 |                 |                       |                             |
+| Trailers (Used Today)        |                   |                 |                 |                       |                             |
+| Bobcat Skid Steer            |                   |                 |                 |                       |                             |
+| Pressure Washer              |                   |                 |                 |                       |                             |
+| Little Wonder Crack Cleaner  |                   |                 |                 |                       |                             |
+| Crack Machines               |                   |                 |                 |                       |                             |
+| Asphalt Saw                  |                   |                 |                 |                       |                             |
+| Sealcoat Sprayer             |                   |                 |                 |                       |                             |
+| Other Equipment: ___________ |                   |                 |                 |                       |                             |
+
+---
+
+### **10. Client Interaction**
+
+**(To be filled out by Employee)**
+
+| **Time**    | **Contact Person**   | **Method** (Phone, Email, In-Person) | **Notes**                   |
+|-------------|----------------------|--------------------------------------|-----------------------------|
+|             |                      |                                      |                             |
+
+---
+
+### **11. Post-Work Activities**
+
+**(To be filled out by Employee)**
+
+#### **A. Secured Job Site Before Leaving**
+
+- [ ] Ensured All Equipment and Materials Are Removed or Safely Stored
+- [ ] Addressed Any Potential Hazards
+- [ ] Informed Client/Supervisor of Job Completion
+
+#### **B. Return to Base of Operations**
+
+| **Task**                                  | **Completed** | **Notes**                   |
+|-------------------------------------------|---------------|-----------------------------|
+| Restocked Materials and Supplies          | [ ]           |                             |
+| Refueled Equipment and Vehicles           | [ ]           |                             |
+| Loaded and Secured Equipment for Next Day | [ ]           |                             |
+| Reviewed Next Day's Job Assignment        | [ ]           |                             |
+| **Removed Any Trash from Vehicles and Equipment** | [ ]   |                             |
+
+---
+
+### **12. Comments and Observations**
+
+**(To be filled out by Employee)**
+
+- **Operational Issues**:
+
+  ____________________________________________________________________________
+
+- **Suggestions for Improvement**:
+
+  ____________________________________________________________________________
+
+- **Positive Outcomes/Achievements**:
+
+  ____________________________________________________________________________
+
+---
+
+**Employee Signature**: __________________________   **Date**: _______________
+
+---
+
+### **13. Administration Use Only**
+
+*(To be filled out by Administration)*
+
+#### **A. Total Expenses Calculation**
+
+**Instructions and Formulas**:
+
+*Use the data provided by the employee to calculate total expenses. Formulas and references to the employee sections are provided below.*
+
+1. **Fuel Expenses (Vehicles)**:
+
+   - **Formula**: `Total Fuel Used (vehicles) = Sum of "Fuel/Propane Used" for vehicles from Section 9`
+   - **Calculation**: Multiply total gallons used by the current fuel price per gallon.
+
+2. **Fuel Expenses (Equipment)**:
+
+   - **Formula**: `Total Fuel Used (equipment) = Sum of "Fuel/Propane Used" for equipment from Section 9`
+   - **Calculation**: Multiply total gallons used by the fuel price per gallon.
+
+3. **Materials Purchased**:
+
+   - **Formula**: `Materials Cost = Sum of (Quantity Used * Unit Cost) for all materials from Section 8-B`
+   - **Reference**: Use quantities from Materials and Supplies Used and unit costs from inventory records.
+
+4. **Equipment Maintenance**:
+
+   - **Data Source**: Any maintenance needs noted in Section 8-C or Section 11.
+
+5. **Tolls/Parking Fees**:
+
+   - **Formula**: `Total Tolls/Parking Fees = Sum of any expenses reported in Notes or Expenses`
+   - **Data Source**: Employee's notes in Section 3 (Time Tracking) or Section 12.
+
+6. **Other Expenses**:
+
+   - **Data Source**: Any additional expenses noted by the employee.
+
+**Expense Summary**:
+
+| **Expense Type**          | **Amount ($)**  | **Notes**                             |
+|---------------------------|-----------------|---------------------------------------|
+| Fuel Expenses (Vehicles)  | _______________ | From Section 9 and fuel price         |
+| Fuel Expenses (Equipment) | _______________ | From Section 9 and fuel price         |
+| Materials Purchased       | _______________ | From Section 8-B and unit costs       |
+| Equipment Maintenance     | _______________ | From Sections 8-C and 11              |
+| Tolls/Parking Fees        | _______________ | From employee's notes                 |
+| Other Expenses: __________| _______________ | As reported                           |
+| **Total Expenses**        | _______________ | Sum of all expenses above             |
+
+#### **B. Time and Payroll**
+
+**Instructions and Formulas**:
+
+1. **Total Hours Worked**:
+
+   - **Formula**: `Total Hours Worked = Clock Out Time - Clock In Time`
+   - **Data Source**: Times from Section 4 (Time Tracking)
+
+2. **Total Time on Job Site**:
+
+   - **Formula**: `Total Time on Job Site = Departure from Job Site - Arrival at Job Site`
+   - **Data Source**: Times from Section 4
+
+3. **Total Time Before/After Job Site**:
+
+   - **Formula**: `Total Time Before/After Job Site = Total Hours Worked - Total Time on Job Site`
+
+4. **Regular and Overtime Hours**:
+
+   - **Company Policy**: Regular hours up to 8 hours per day; hours beyond are overtime.
+   - **Calculations**:
+     - **Regular Hours**: Up to 8 hours
+     - **Overtime Hours**: Total Hours Worked - Regular Hours (if Total Hours Worked > 8)
+
+5. **Payroll Calculation**:
+
+   - **Regular Pay**: `Regular Hours * Hourly Rate`
+   - **Overtime Pay**: `Overtime Hours * Overtime Rate (1.5 * Hourly Rate)`
+   - **Total Pay**: `Regular Pay + Overtime Pay`
+
+**Payroll Summary**:
+
+| **Item**                | **Amount**      | **Notes**                    |
+|-------------------------|-----------------|------------------------------|
+| Total Hours Worked      | _______________ | Calculated above             |
+| Regular Hours           | _______________ | Up to 8 hours per day        |
+| Overtime Hours          | _______________ | Total Hours - Regular Hours  |
+| Hourly Rate ($)         | _______________ | Employee's standard rate     |
+| Overtime Rate ($)       | _______________ | 1.5 * Hourly Rate            |
+| Regular Pay ($)         | _______________ | Regular Hours * Hourly Rate  |
+| Overtime Pay ($)        | _______________ | Overtime Hours * Overtime Rate|
+| **Total Pay ($)**       | _______________ | Regular Pay + Overtime Pay   |
+
+#### **C. Supervisor Approval**
+
+- **Supervisor Name**: __________________________
+- **Signature**: __________________________   **Date**: _______________
+
+---
+
+# **Explanation and Correlation**
+
+The **Administration Use Only** section provides detailed instructions, formulas, and data correlation to assist administrative staff in calculating expenses and payroll based on the information provided by employees.
+
+**Correlation Between Employee and Administration Sections**:
+
+- **Fuel Expenses**:
+  - **Data Source**: Section 9 (Vehicle and Equipment Usage)
+  - **Usage**: Administrative staff uses fuel consumption data to calculate expenses.
+
+- **Materials Purchased**:
+  - **Data Source**: Section 8-B (Materials and Supplies Used)
+  - **Usage**: Quantities used are multiplied by unit costs (from inventory records) to determine material expenses.
+
+- **Equipment Maintenance**:
+  - **Data Source**: Notes in Section 8-C (Tools and Equipment Used) and Section 11 (Post-Work Activities)
+  - **Usage**: Any maintenance costs are added to expenses.
+
+- **Time and Payroll**:
+  - **Data Source**: Section 4 (Time Tracking)
+  - **Usage**: Times are used to calculate total hours worked, regular and overtime hours, and ultimately payroll amounts.
+
+- **Total Expenses and Payroll Calculations**:
+  - **Instructions and Formulas**: Provided to ensure accurate and consistent calculations.
+  - **Examples**: Can be added if desired to illustrate calculations.
+
+**Additional Information**:
+
+- **Fuel Price**: Ensure that the current fuel price per gallon is available for accurate calculations.
+- **Unit Costs of Materials**: Maintain an up-to-date list of material costs for reference during calculations.
+- **Company Policies**: Clearly define policies regarding overtime, rates, and expense approvals.
+
+---
+
+If you have any further questions or need additional modifications, please let me know, and I'll be happy to assist!

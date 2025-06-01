@@ -1,0 +1,31 @@
+name: Supabase CI
+
+on:
+  push:
+    paths:
+      - 'supabase/*.sql'
+      - '.github/workflows/supabase-ci.yml'
+  pull_request:
+    paths:
+      - 'supabase/*.sql'
+      - '.github/workflows/supabase-ci.yml'
+
+jobs:
+  supabase-migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install Supabase CLI
+        run: npm install -g supabase
+      - name: Apply migrations
+        run: supabase db push
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      - name: Seed database
+        run: supabase db execute supabase/09_seed_data.sql
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }} 
