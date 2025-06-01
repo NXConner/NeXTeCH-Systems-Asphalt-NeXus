@@ -1,0 +1,22 @@
+CREATE TABLE IF NOT EXISTS daily_logs (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  date date NOT NULL,
+  employee_id uuid REFERENCES employees(id),
+  employee_name text NOT NULL,
+  start_time time,
+  end_time time,
+  total_hours numeric NOT NULL DEFAULT 0,
+  project_id uuid REFERENCES jobs(id),
+  project_name text,
+  tasks jsonb NOT NULL,
+  materials jsonb NOT NULL,
+  equipment jsonb NOT NULL,
+  weather text,
+  notes text,
+  safety_incidents boolean DEFAULT false,
+  safety_notes text,
+  submitted boolean DEFAULT false,
+  submitted_at timestamptz,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+); 

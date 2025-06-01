@@ -20,7 +20,7 @@ const Landing: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-50 to-gray-100">
       <header className="w-full py-6 px-8 flex justify-between items-center bg-white/80 shadow-sm">
-        <div className="text-2xl font-bold text-blue-700 tracking-tight">Fleet Asphalt Nexus</div>
+        <div className="text-2xl font-bold text-blue-700 tracking-tight">Asphalt-NexTech_Systems</div>
         <Button onClick={() => navigate('/dashboard')}>Go to Dashboard</Button>
       </header>
       <main className="flex-1 flex flex-col items-center justify-center px-4">
@@ -37,7 +37,7 @@ const Landing: React.FC = () => {
           ))}
         </section>
       </main>
-      <footer className="w-full py-4 text-center text-gray-500 text-sm bg-white/70 border-t">© {new Date().getFullYear()} Fleet Asphalt Nexus. All rights reserved.</footer>
+      <footer className="w-full py-4 text-center text-gray-500 text-sm bg-white/70 border-t">© {new Date().getFullYear()} Asphalt-NexTech_Systems. All rights reserved.</footer>
     </div>
   );
 };

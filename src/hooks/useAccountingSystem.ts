@@ -1,19 +1,34 @@
-
-import { useState, useCallback } from 'react';
+import { useState, useEffect } from 'react';
+import { fetchAccounts, fetchCustomers, fetchVendors, fetchTransactions } from '@/services/accountingService';
 import { 
   Account, Transaction, JournalEntry, Customer, Vendor, 
   Bill, BankAccount, BankTransaction, PurchaseOrder 
 } from '@/types/accounting';
-import { mockAccounts, mockCustomers, mockVendors } from '@/data/mockEmployeeData';
 
-export const useAccountingSystem = () => {
-  const [accounts, setAccounts] = useState<Account[]>(mockAccounts);
-  const [customers, setCustomers] = useState<Customer[]>(mockCustomers);
-  const [vendors, setVendors] = useState<Vendor[]>(mockVendors);
+export function useAccountingSystem() {
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [vendors, setVendors] = useState<Vendor[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([]);
-  
-  const addAccount = useCallback((account: Omit<Account, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    Promise.all([
+      fetchAccounts(),
+      fetchCustomers(),
+      fetchVendors(),
+      fetchTransactions()
+    ]).then(([a, c, v, t]) => {
+      setAccounts(a);
+      setCustomers(c);
+      setVendors(v);
+      setTransactions(t);
+    }).finally(() => setLoading(false));
+  }, []);
+
+  const addAccount = (account: Omit<Account, 'id' | 'createdAt' | 'updatedAt'>) => {
     const newAccount: Account = {
       ...account,
       id: `acc-${String(accounts.length + 1).padStart(3, '0')}`,
@@ -23,9 +38,9 @@ export const useAccountingSystem = () => {
     
     setAccounts(prev => [...prev, newAccount]);
     return newAccount;
-  }, [accounts]);
+  };
 
-  const updateAccount = useCallback((id: string, updates: Partial<Account>) => {
+  const updateAccount = (id: string, updates: Partial<Account>) => {
     setAccounts(prev => 
       prev.map(acc => 
         acc.id === id 
@@ -33,9 +48,9 @@ export const useAccountingSystem = () => {
           : acc
       )
     );
-  }, []);
+  };
 
-  const createInvoice = useCallback((customerId: string, items: { description: string; quantity: number; unitPrice: number }[], taxRate = 0.075) => {
+  const createInvoice = (customerId: string, items: { description: string; quantity: number; unitPrice: number }[], taxRate = 0.075) => {
     const customer = customers.find(c => c.id === customerId);
     if (!customer) throw new Error("Customer not found");
     
@@ -114,9 +129,9 @@ export const useAccountingSystem = () => {
     
     setTransactions(prev => [...prev, transaction]);
     return transaction;
-  }, [accounts, customers, transactions]);
+  };
 
-  const recordPayment = useCallback((customerId: string, amount: number, paymentMethod: string) => {
+  const recordPayment = (customerId: string, amount: number, paymentMethod: string) => {
     const customer = customers.find(c => c.id === customerId);
     if (!customer) throw new Error("Customer not found");
     if (amount <= 0) throw new Error("Payment amount must be positive");
@@ -194,9 +209,9 @@ export const useAccountingSystem = () => {
     
     setTransactions(prev => [...prev, transaction]);
     return transaction;
-  }, [accounts, customers, transactions]);
+  };
 
-  const recordExpense = useCallback((vendorId: string, items: { accountId: string; description: string; amount: number }[]) => {
+  const recordExpense = (vendorId: string, items: { accountId: string; description: string; amount: number }[]) => {
     const vendor = vendors.find(v => v.id === vendorId);
     if (!vendor) throw new Error("Vendor not found");
     
@@ -272,9 +287,9 @@ export const useAccountingSystem = () => {
     
     setTransactions(prev => [...prev, transaction]);
     return transaction;
-  }, [accounts, vendors, transactions]);
+  };
 
-  const generateFinancialReports = useCallback(() => {
+  const generateFinancialReports = () => {
     // Generate simplified financial reports
     
     // Income Statement / Profit & Loss
@@ -311,7 +326,7 @@ export const useAccountingSystem = () => {
         equityAccounts: equity
       }
     };
-  }, [accounts]);
+  };
 
   return {
     accounts,
@@ -324,6 +339,7 @@ export const useAccountingSystem = () => {
     createInvoice,
     recordPayment,
     recordExpense,
-    generateFinancialReports
+    generateFinancialReports,
+    loading
   };
-};
+}

@@ -51,6 +51,9 @@ import LoginForm from "./components/LoginForm";
 import "./App.css";
 import { useIsMobile } from "./hooks/use-mobile";
 import { MobileOptimizedLayout } from "./components/mobile/MobileOptimizedLayout";
+import MiniMapWidget from "@/components/ui/MiniMapWidget";
+import ThemeSelector from "@/components/ui/theme-selector";
+import UnifiedMapInterface from "@/components/UnifiedMapInterface";
 
 const queryClient = new QueryClient();
 
@@ -69,9 +72,10 @@ function App() {
                 <div className="flex-1 flex flex-col">
                   <header className="flex items-center h-16 px-4 border-b bg-card">
                     <SidebarTrigger className="mr-4" />
-                    {/* Page title or breadcrumbs can go here */}
+                    <span className="font-bold text-xl ml-4">Asphalt-NexTech_Systems</span>
                   </header>
                   <main className="flex-1">
+                    <MiniMapWidget />
                     {isMobile ? (
                       <MobileOptimizedLayout>
                         <Routes>
@@ -217,6 +221,8 @@ function App() {
                         <Route path="/micro" element={<MicroInteractions />} />
                         <Route path="/landing" element={<Landing />} />
                         <Route path="/login" element={<LoginForm />} />
+                        <Route path="/map" element={<UnifiedMapInterface />} />
+                        <Route path="/theme" element={<ThemeSelector />} />
                         <Route path="*" element={<NotFound />} />
                       </Routes>
                     )}
