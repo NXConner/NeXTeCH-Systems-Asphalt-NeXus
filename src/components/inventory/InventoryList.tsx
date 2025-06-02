@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { fetchInventory } from '@/services/inventoryService';
+import { fetchInventory, updateInventoryItem } from '@/services/inventoryService';
 
 export const InventoryList = ({ onSelect }: { onSelect?: (item: any) => void }) => {
   const [items, setItems] = useState([]);

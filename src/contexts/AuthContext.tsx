@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { UserRole } from '@/types/roles';
+import { createClient } from '@supabase/supabase-js';
 
 interface User {
   id: string;
@@ -16,6 +17,8 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -40,24 +43,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string): Promise<boolean> => {
     setLoading(true);
-    
-    // Mock authentication - replace with real API call
-    if (email === 'admin@asphaltpro.com' && password === 'admin123') {
-      const mockUser: User = {
-        id: '1',
-        email: 'admin@asphaltpro.com',
-        name: 'John Admin',
-        role: 'admin'
-      };
-      
-      setUser(mockUser);
-      localStorage.setItem('asphaltpro_user', JSON.stringify(mockUser));
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
       setLoading(false);
-      return true;
+      return false;
     }
-    
+    setUser(data.user);
+    localStorage.setItem('asphaltpro_user', JSON.stringify(data.user));
     setLoading(false);
-    return false;
+    return true;
   };
 
   const logout = () => {

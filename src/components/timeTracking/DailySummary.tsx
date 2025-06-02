@@ -1,19 +1,14 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-interface MockTimeSummary {
-  employee_id: string;
-  total_hours: number;
-  on_site_hours: number;
-  travel_hours: number;
-  total_miles: number;
-}
+import { useTimeTracking } from '@/hooks/useTimeTracking';
 
 interface DailySummaryProps {
-  summary: MockTimeSummary;
+  employeeId: string;
 }
 
-export const DailySummary = ({ summary }: DailySummaryProps) => {
+export const DailySummary = ({ employeeId }: DailySummaryProps) => {
+  const { summary, loading } = useTimeTracking(employeeId);
+  if (loading) return <div>Loading summary...</div>;
+  if (!summary) return <div>No summary data available.</div>;
   return (
     <Card>
       <CardHeader>

@@ -8,6 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { FileText, Download, Clock, CheckSquare } from "lucide-react";
 import { toast } from "sonner";
+import { useDailyLogs } from '@/hooks/useDailyLogs';
 
 interface DailyLogEntry {
   id: string;
@@ -52,15 +53,19 @@ interface EquipmentUsage {
   condition: 'good' | 'fair' | 'needs-repair';
 }
 
-export function DailyLog() {
-  const [currentLog, setCurrentLog] = useState<DailyLogEntry>({
-    id: `log-${Date.now()}`,
+// Remove TODO for DailyLog integration, ensure it uses real data from Supabase.
+
+export function DailyLog({ employeeId = 'emp-1', employeeName = 'John Doe' }) {
+  const { dailyLogs, isLoading, error, addDailyLog } = useDailyLogs(employeeId);
+  const [currentLog, setCurrentLog] = useState({
     date: new Date().toISOString().split('T')[0],
-    employeeId: 'emp-1',
-    employeeName: 'John Doe',
-    startTime: '',
-    endTime: '',
-    totalHours: 0,
+    employee_id: employeeId,
+    employee_name: employeeName,
+    start_time: '',
+    end_time: '',
+    total_hours: 0,
+    project_id: null,
+    project_name: '',
     tasks: [
       { id: '1', description: 'Set up work zone safety', completed: false, priority: 'high', timeSpent: 0 },
       { id: '2', description: 'Prepare asphalt materials', completed: false, priority: 'high', timeSpent: 0 },
@@ -71,11 +76,10 @@ export function DailyLog() {
     equipment: [],
     weather: '',
     notes: '',
-    safetyIncidents: false,
+    safety_incidents: false,
+    safety_notes: '',
     submitted: false,
   });
-
-  const [savedLogs, setSavedLogs] = useState<DailyLogEntry[]>([]);
 
   const calculateHours = (start: string, end: string) => {
     if (!start || !end) return 0;
@@ -84,9 +88,9 @@ export function DailyLog() {
     return (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60);
   };
 
-  const handleTimeChange = (field: 'startTime' | 'endTime', value: string) => {
+  const handleTimeChange = (field: 'start_time' | 'end_time', value: string) => {
     const updated = { ...currentLog, [field]: value };
-    updated.totalHours = calculateHours(updated.startTime, updated.endTime);
+    updated.total_hours = calculateHours(updated.start_time, updated.end_time);
     setCurrentLog(updated);
   };
 
@@ -132,15 +136,16 @@ export function DailyLog() {
       submittedAt: new Date().toISOString(),
     };
     
-    setSavedLogs(prev => [...prev, submittedLog]);
+    addDailyLog(submittedLog);
     setCurrentLog({
-      id: `log-${Date.now()}`,
       date: new Date().toISOString().split('T')[0],
-      employeeId: 'emp-1',
-      employeeName: 'John Doe',
-      startTime: '',
-      endTime: '',
-      totalHours: 0,
+      employee_id: employeeId,
+      employee_name: employeeName,
+      start_time: '',
+      end_time: '',
+      total_hours: 0,
+      project_id: null,
+      project_name: '',
       tasks: [
         { id: '1', description: 'Set up work zone safety', completed: false, priority: 'high', timeSpent: 0 },
         { id: '2', description: 'Prepare asphalt materials', completed: false, priority: 'high', timeSpent: 0 },
@@ -151,7 +156,8 @@ export function DailyLog() {
       equipment: [],
       weather: '',
       notes: '',
-      safetyIncidents: false,
+      safety_incidents: false,
+      safety_notes: '',
       submitted: false,
     });
     
@@ -208,22 +214,22 @@ NOTES: ${log.notes}
               <Label>Start Time</Label>
               <Input
                 type="time"
-                value={currentLog.startTime}
-                onChange={(e) => handleTimeChange('startTime', e.target.value)}
+                value={currentLog.start_time}
+                onChange={(e) => handleTimeChange('start_time', e.target.value)}
               />
             </div>
             <div>
               <Label>End Time</Label>
               <Input
                 type="time"
-                value={currentLog.endTime}
-                onChange={(e) => handleTimeChange('endTime', e.target.value)}
+                value={currentLog.end_time}
+                onChange={(e) => handleTimeChange('end_time', e.target.value)}
               />
             </div>
             <div>
               <Label>Total Hours</Label>
               <Input
-                value={currentLog.totalHours.toFixed(1)}
+                value={currentLog.total_hours.toFixed(1)}
                 readOnly
                 className="bg-gray-50"
               />
@@ -235,8 +241,8 @@ NOTES: ${log.notes}
             <Label>Project/Location</Label>
             <Input
               placeholder="Enter project name or location"
-              value={currentLog.projectName || ''}
-              onChange={(e) => setCurrentLog({...currentLog, projectName: e.target.value})}
+              value={currentLog.project_name || ''}
+              onChange={(e) => setCurrentLog({...currentLog, project_name: e.target.value})}
             />
           </div>
 
@@ -390,20 +396,20 @@ NOTES: ${log.notes}
             </div>
             <div className="flex items-center space-x-2">
               <Checkbox
-                checked={currentLog.safetyIncidents}
-                onCheckedChange={(checked) => setCurrentLog({...currentLog, safetyIncidents: !!checked})}
+                checked={currentLog.safety_incidents}
+                onCheckedChange={(checked) => setCurrentLog({...currentLog, safety_incidents: !!checked})}
               />
               <Label>Safety Incidents Occurred</Label>
             </div>
           </div>
 
-          {currentLog.safetyIncidents && (
+          {currentLog.safety_incidents && (
             <div>
               <Label>Safety Incident Details</Label>
               <Textarea
                 placeholder="Describe any safety incidents or concerns"
-                value={currentLog.safetyNotes || ''}
-                onChange={(e) => setCurrentLog({...currentLog, safetyNotes: e.target.value})}
+                value={currentLog.safety_notes || ''}
+                onChange={(e) => setCurrentLog({...currentLog, safety_notes: e.target.value})}
               />
             </div>
           )}
@@ -425,14 +431,14 @@ NOTES: ${log.notes}
       </Card>
 
       {/* Submitted Logs */}
-      {savedLogs.length > 0 && (
+      {dailyLogs.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle>Previous Daily Logs</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {savedLogs.map((log) => (
+              {dailyLogs.map((log) => (
                 <div key={log.id} className="flex justify-between items-center p-3 border rounded">
                   <div>
                     <span className="font-medium">{log.date}</span>

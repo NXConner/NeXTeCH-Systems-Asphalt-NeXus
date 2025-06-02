@@ -1,38 +1,57 @@
-
 import { useState, useCallback } from 'react';
 import { Employee, Department, Payroll } from '@/types/employee';
-import { mockEmployees, mockDepartments } from '@/data/mockEmployeeData';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 export const useEmployeeManagement = () => {
-  const [employees, setEmployees] = useState<Employee[]>(mockEmployees);
-  const [departments, setDepartments] = useState<Department[]>(mockDepartments);
+  const queryClient = useQueryClient();
+
+  const { data: employees = [], isLoading: employeesLoading, error: employeesError } = useQuery({
+    queryKey: ['employees'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('employees').select('*');
+      if (error) throw error;
+      return data as Employee[];
+    }
+  });
+
+  const { data: departments = [], isLoading: departmentsLoading, error: departmentsError } = useQuery({
+    queryKey: ['departments'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('departments').select('*');
+      if (error) throw error;
+      return data as Department[];
+    }
+  });
+
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
   
-  const addEmployee = useCallback((employee: Omit<Employee, 'id' | 'createdAt' | 'updatedAt'>) => {
-    const newEmployee: Employee = {
-      ...employee,
-      id: `emp-${String(employees.length + 1).padStart(3, '0')}`,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-    
-    setEmployees(prev => [...prev, newEmployee]);
-    return newEmployee;
-  }, [employees]);
+  const addEmployee = useMutation({
+    mutationFn: async (employee: Omit<Employee, 'id' | 'createdAt' | 'updatedAt'>) => {
+      const { data, error } = await supabase.from('employees').insert(employee).select().single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => queryClient.invalidateQueries(['employees'])
+  });
 
-  const updateEmployee = useCallback((id: string, updates: Partial<Employee>) => {
-    setEmployees(prev => 
-      prev.map(emp => 
-        emp.id === id 
-          ? { ...emp, ...updates, updatedAt: new Date().toISOString() } 
-          : emp
-      )
-    );
-  }, []);
+  const updateEmployee = useMutation({
+    mutationFn: async ({ id, updates }: { id: string, updates: Partial<Employee> }) => {
+      const { data, error } = await supabase.from('employees').update(updates).eq('id', id).select().single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => queryClient.invalidateQueries(['employees'])
+  });
 
-  const removeEmployee = useCallback((id: string) => {
-    setEmployees(prev => prev.filter(emp => emp.id !== id));
-  }, []);
+  const removeEmployee = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('employees').delete().eq('id', id);
+      if (error) throw error;
+      return id;
+    },
+    onSuccess: () => queryClient.invalidateQueries(['employees'])
+  });
 
   const getEmployeeById = useCallback((id: string) => {
     return employees.find(emp => emp.id === id) || null;
@@ -45,29 +64,32 @@ export const useEmployeeManagement = () => {
     return employees.filter(emp => emp.employment.department === department.name);
   }, [employees, departments]);
 
-  const addDepartment = useCallback((department: Omit<Department, 'id'>) => {
-    const newDepartment: Department = {
-      ...department,
-      id: `dept-${String(departments.length + 1).padStart(3, '0')}`
-    };
-    
-    setDepartments(prev => [...prev, newDepartment]);
-    return newDepartment;
-  }, [departments]);
+  const addDepartment = useMutation({
+    mutationFn: async (department: Omit<Department, 'id'>) => {
+      const { data, error } = await supabase.from('departments').insert(department).select().single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => queryClient.invalidateQueries(['departments'])
+  });
 
-  const updateDepartment = useCallback((id: string, updates: Partial<Department>) => {
-    setDepartments(prev => 
-      prev.map(dept => 
-        dept.id === id 
-          ? { ...dept, ...updates } 
-          : dept
-      )
-    );
-  }, []);
+  const updateDepartment = useMutation({
+    mutationFn: async ({ id, updates }: { id: string, updates: Partial<Department> }) => {
+      const { data, error } = await supabase.from('departments').update(updates).eq('id', id).select().single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => queryClient.invalidateQueries(['departments'])
+  });
 
-  const removeDepartment = useCallback((id: string) => {
-    setDepartments(prev => prev.filter(dept => dept.id !== id));
-  }, []);
+  const removeDepartment = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('departments').delete().eq('id', id);
+      if (error) throw error;
+      return id;
+    },
+    onSuccess: () => queryClient.invalidateQueries(['departments'])
+  });
 
   const calculatePayroll = useCallback(() => {
     // Simplified payroll calculation

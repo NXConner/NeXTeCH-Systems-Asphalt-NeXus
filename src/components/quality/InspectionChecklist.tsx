@@ -1,15 +1,12 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { useInspectionChecklists } from '@/hooks/useInspectionChecklists';
+import { toast } from 'sonner';
 
-const checklist = [
-  { id: 1, item: 'Surface Cleaned', checked: false },
-  { id: 2, item: 'Cracks Filled', checked: false },
-  { id: 3, item: 'Sealant Applied', checked: false },
-];
-
-export default function InspectionChecklist() {
-  const [items, setItems] = useState(checklist);
+export default function InspectionChecklist({ employeeId = 'emp-1', jobId = null }) {
+  const { checklists, isLoading, error, addChecklist } = useInspectionChecklists(employeeId);
+  const [items, setItems] = useState([]);
   const [photo, setPhoto] = useState<File|null>(null);
   const [warranty, setWarranty] = useState('');
   return (
@@ -34,7 +31,25 @@ export default function InspectionChecklist() {
           <label className="block mb-1" htmlFor="warranty">Warranty Tracking:</label>
           <input id="warranty" className="border rounded p-2 w-full" value={warranty} onChange={e=>setWarranty(e.target.value)} title="Warranty info" placeholder="Enter warranty info" />
         </div>
-        <Button>Save Checklist</Button>
+        <Button onClick={async () => {
+          try {
+            await addChecklist.mutateAsync({
+              date: new Date().toISOString().split('T')[0],
+              employee_id: employeeId,
+              job_id: jobId,
+              items,
+              photo_url: photo ? photo.name : '',
+              warranty,
+              notes: '',
+            });
+            setItems([]);
+            setPhoto(null);
+            setWarranty('');
+            toast.success('Inspection checklist saved!');
+          } catch (e) {
+            toast.error('Failed to save checklist');
+          }
+        }}>Save Checklist</Button>
       </CardContent>
     </Card>
   );

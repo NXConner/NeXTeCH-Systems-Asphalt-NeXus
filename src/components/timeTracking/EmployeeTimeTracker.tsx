@@ -72,6 +72,9 @@ export const EmployeeTimeTracker = ({ employeeId, employeeName }: EmployeeTimeTr
     fetchTimeSummary().then(setSummary);
   }, []);
 
+  // TODO: Integrate with Supabase for real time entry and summary data.
+  return <div className="p-4 bg-yellow-100 text-yellow-800 rounded">Time tracking integration coming soon.</div>;
+
   return (
     <div className="space-y-6">
       <Card>

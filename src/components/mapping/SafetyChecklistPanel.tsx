@@ -1,15 +1,12 @@
 import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
+import { useSafetyChecklists } from '@/hooks/useSafetyChecklists';
+import { Button } from '../ui/button';
+import { toast } from 'sonner';
 
-const checklistItems = [
-  { id: 1, label: 'PPE Worn', checked: false },
-  { id: 2, label: 'Equipment Inspected', checked: false },
-  { id: 3, label: 'Site Secured', checked: false },
-  // ...add more as needed
-];
-
-export default function SafetyChecklistPanel() {
-  const [items, setItems] = useState(checklistItems);
+export default function SafetyChecklistPanel({ employeeId = 'emp-1' }) {
+  const { checklists, isLoading, error, addChecklist } = useSafetyChecklists(employeeId);
+  const [items, setItems] = useState([]);
   const handleToggle = (id: number) => {
     setItems(items => items.map(item => item.id === id ? { ...item, checked: !item.checked } : item));
   };
@@ -27,6 +24,20 @@ export default function SafetyChecklistPanel() {
             </li>
           ))}
         </ul>
+        <Button onClick={async () => {
+          try {
+            await addChecklist.mutateAsync({
+              date: new Date().toISOString().split('T')[0],
+              employee_id: employeeId,
+              items,
+              notes: '',
+            });
+            setItems([]);
+            toast.success('Safety checklist saved!');
+          } catch (e) {
+            toast.error('Failed to save checklist');
+          }
+        }}>Save Checklist</Button>
       </CardContent>
     </Card>
   );

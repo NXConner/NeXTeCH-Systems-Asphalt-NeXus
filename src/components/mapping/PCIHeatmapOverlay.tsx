@@ -1,23 +1,34 @@
-import React from 'react';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
-// Example props: array of { lat, lng, pciScore }
-export default function PCIHeatmapOverlay({ data }: { data: Array<{ lat: number; lng: number; pciScore: number }> }) {
-  // Color scale: green (good) -> yellow (fair) -> red (poor)
+export default function PCIHeatmapOverlay() {
+  const [polygons, setPolygons] = useState<any[]>([]);
+  useEffect(() => {
+    const fetchPCI = async () => {
+      // Replace with real Supabase table/logic
+      const { data } = await supabase.from('pci_polygons').select('*');
+      setPolygons(data || []);
+    };
+    fetchPCI();
+  }, []);
   const getColor = (score: number) => {
-    if (score >= 85) return 'bg-green-500';
-    if (score >= 70) return 'bg-yellow-400';
-    return 'bg-red-500';
+    if (score >= 85) return 'rgba(34,197,94,0.5)';
+    if (score >= 70) return 'rgba(253,224,71,0.5)';
+    return 'rgba(239,68,68,0.5)';
   };
   return (
-    <div className="absolute inset-0 pointer-events-none z-40">
-      {data.map((point, i) => (
-        <div
+    <svg className="absolute inset-0 pointer-events-none z-40 w-full h-full">
+      {polygons.map((poly, i) => (
+        <polygon
           key={i}
-          className={`absolute rounded-full opacity-60 ${getColor(point.pciScore)}`}
-          style={{ left: `${point.lng}%`, top: `${point.lat}%`, width: 24, height: 24 }}
-          title={`PCI: ${point.pciScore}`}
-        />
+          points={poly.coordinates.map((p: any) => `${p.lng},${p.lat}`).join(' ')}
+          fill={getColor(poly.pciScore)}
+          stroke="#222"
+          strokeWidth={2}
+        >
+          <title>PCI: {poly.pciScore}</title>
+        </polygon>
       ))}
-    </div>
+    </svg>
   );
 } 

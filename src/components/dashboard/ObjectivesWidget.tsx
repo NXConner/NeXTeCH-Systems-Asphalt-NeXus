@@ -6,6 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Target, Calendar } from "lucide-react";
 import { toast } from "sonner";
+import { useObjectives } from '@/hooks/useObjectives';
 
 interface Objective {
   id: string;
@@ -19,60 +20,15 @@ interface Objective {
   progress: number;
 }
 
-export function ObjectivesWidget() {
-  const [objectives, setObjectives] = useState<Objective[]>([
-    {
-      id: '1',
-      title: 'Complete safety inspection',
-      description: 'Inspect all equipment before use',
-      type: 'daily',
-      priority: 'high',
-      completed: false,
-      dueDate: new Date().toISOString().split('T')[0],
-      progress: 0,
-    },
-    {
-      id: '2',
-      title: 'Submit time logs',
-      description: 'Submit daily time tracking logs',
-      type: 'daily',
-      priority: 'medium',
-      completed: true,
-      dueDate: new Date().toISOString().split('T')[0],
-      progress: 100,
-    },
-    {
-      id: '3',
-      title: 'Complete paving project',
-      description: 'Finish Main Street paving project',
-      type: 'weekly',
-      priority: 'high',
-      completed: false,
-      dueDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      progress: 75,
-    },
-  ]);
+export function ObjectivesWidget({ assignedTo = 'emp-1' }) {
+  const { objectives, isLoading, error, addObjective, updateObjective } = useObjectives(assignedTo);
 
   const [showForm, setShowForm] = useState(false);
   const [activeTab, setActiveTab] = useState<'daily' | 'weekly'>('daily');
 
   const toggleObjective = (id: string) => {
-    setObjectives(prev => prev.map(obj => 
-      obj.id === id 
-        ? { ...obj, completed: !obj.completed, progress: !obj.completed ? 100 : 0 }
-        : obj
-    ));
+    updateObjective(id, { completed: !objectives.find(obj => obj.id === id)?.completed });
     toast.success("Objective updated");
-  };
-
-  const addObjective = (newObjective: Omit<Objective, 'id'>) => {
-    const objective: Objective = {
-      ...newObjective,
-      id: `obj-${Date.now()}`,
-    };
-    setObjectives(prev => [...prev, objective]);
-    setShowForm(false);
-    toast.success("Objective added successfully");
   };
 
   const dailyObjectives = objectives.filter(obj => obj.type === 'daily');

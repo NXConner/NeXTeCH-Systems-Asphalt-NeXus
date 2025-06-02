@@ -30,4 +30,6 @@ export default function CostCalculatorPanel() {
       </CardContent>
     </Card>
   );
-} 
+}
+
+// TODO: Integrate with backend for real cost calculation. 

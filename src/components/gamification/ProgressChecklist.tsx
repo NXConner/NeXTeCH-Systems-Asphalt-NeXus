@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
+import { supabase } from '@/integrations/supabase/client';
+
+// TODO: Integrate with Supabase for persistent checklist storage.
 
 export const initialChecklist = [
   { id: 'achievements', label: 'Achievements Dashboard', done: false },
@@ -24,9 +27,25 @@ export const initialChecklist = [
 
 export default function ProgressChecklist() {
   const [checklist, setChecklist] = useState(initialChecklist);
-  const completed = checklist.filter(item => item.done).length;
-  const handleToggle = (id: string) => {
-    setChecklist(list => list.map(item => item.id === id ? { ...item, done: !item.done } : item));
+  useEffect(() => {
+    const fetchChecklist = async () => {
+      try {
+        const { data } = await supabase.from('progress_checklist').select('*');
+        if (data && Array.isArray(data) && data[0]?.id) setChecklist(data);
+      } catch (e) {
+        // fallback to local state
+      }
+    };
+    fetchChecklist();
+  }, []);
+  const toggle = async (id: string) => {
+    const updated = checklist.map(item => item.id === id ? { ...item, done: !item.done } : item);
+    setChecklist(updated);
+    try {
+      await supabase.from('progress_checklist').upsert(updated);
+    } catch (e) {
+      // fallback to local state
+    }
   };
   return (
     <Card>
@@ -37,7 +56,7 @@ export default function ProgressChecklist() {
         <ul className="space-y-2">
           {checklist.map(item => (
             <li key={item.id} className="flex items-center gap-2">
-              <input type="checkbox" checked={item.done} onChange={() => handleToggle(item.id)} title={`Mark ${item.label} as complete`} />
+              <input type="checkbox" checked={item.done} onChange={() => toggle(item.id)} title={`Mark ${item.label} as complete`} />
               <span className={item.done ? 'line-through text-muted-foreground' : ''}>{item.label}</span>
             </li>
           ))}

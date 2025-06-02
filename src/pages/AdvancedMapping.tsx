@@ -24,6 +24,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { HeatmapLayer } from 'react-leaflet-heatmap-layer-v3';
 import ARProjection from '../components/ui/ARProjection';
+import { fetchMapData } from '@/services/mappingService';
 
 const mapProviders = [
   { id: 'leaflet', name: 'Leaflet OSM', style: 'osm' },
@@ -58,6 +59,7 @@ const AdvancedMapping = () => {
   const [pciError, setPciError] = useState<string|null>(null);
   const [editingZone, setEditingZone] = useState<any|null>(null);
   const [arMode, setArMode] = useState(false);
+  const [mapData, setMapData] = useState<any>(null);
 
   const geofenceRegion = useMemo(() => ({
     id: 'demo-geofence',
@@ -68,10 +70,8 @@ const AdvancedMapping = () => {
 
   const handleGeocodeSearch = async () => {
     if (!searchQuery.trim()) return;
-    
-    // Mock geocoding - replace with real Mapbox/Google API
-    console.log("Geocoding address:", searchQuery);
-    // Simulate map pan/zoom to location
+    // TODO: Integrate Mapbox or Google Maps geocoding API here
+    // Example: fetch geocode and pan/zoom map
     setSearchQuery("");
   };
 
@@ -220,6 +220,10 @@ const AdvancedMapping = () => {
     setComplianceZones(zones => zones.filter(z => z.id !== id));
     setEditingZone(null);
   };
+
+  useEffect(() => {
+    fetchMapData().then(setMapData);
+  }, []);
 
   return (
     <div className="container mx-auto px-4 py-8">

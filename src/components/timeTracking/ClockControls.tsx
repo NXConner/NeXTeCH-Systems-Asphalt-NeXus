@@ -3,23 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Clock, Play, Square } from "lucide-react";
 import { toast } from "sonner";
 import QRCodeScanner from "./QRCodeScanner";
-
-interface MockTimeEntry {
-  id: string;
-  employee_id: string;
-  date: string;
-  clock_in: string;
-  clock_out?: string;
-  total_hours: number;
-  status: 'active' | 'completed';
-}
+import { useTimeTracking } from '@/hooks/useTimeTracking';
 
 interface ClockControlsProps {
   employeeId: string;
   employeeName: string;
-  currentTimeEntry: MockTimeEntry | null;
-  onClockIn: (entry: MockTimeEntry) => void;
-  onClockOut: (entry: MockTimeEntry) => void;
+  currentTimeEntry: any | null;
+  onClockIn: (entry: any) => void;
+  onClockOut: (entry: any) => void;
   onLocationStart: () => void;
   onLocationStop: () => void;
 }
@@ -45,7 +36,7 @@ export const ClockControls = ({
 
   const handleClockIn = () => {
     const now = new Date().toISOString();
-    const newEntry: MockTimeEntry = {
+    const newEntry: any = {
       id: `entry-${Date.now()}`,
       employee_id: employeeId,
       date: new Date().toISOString().split('T')[0],

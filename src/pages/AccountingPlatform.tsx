@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,16 +5,44 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Search, DollarSign, TrendingUp, FileText, Users } from "lucide-react";
-import { mockAccounts, mockCustomers, mockVendors } from "@/data/mockEmployeeData";
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 const AccountingPlatform = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
+  const { data: accounts = [] } = useQuery({
+    queryKey: ['accounts'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('accounts').select('*');
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  const { data: customers = [] } = useQuery({
+    queryKey: ['customers'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('customers').select('*');
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  const { data: vendors = [] } = useQuery({
+    queryKey: ['vendors'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('vendors').select('*');
+      if (error) throw error;
+      return data;
+    }
+  });
+
   const accountStats = {
-    totalAssets: mockAccounts.filter(a => a.type === 'asset').reduce((sum, acc) => sum + acc.balance, 0),
-    totalLiabilities: mockAccounts.filter(a => a.type === 'liability').reduce((sum, acc) => sum + acc.balance, 0),
-    totalRevenue: mockAccounts.filter(a => a.type === 'revenue').reduce((sum, acc) => sum + acc.balance, 0),
-    totalExpenses: mockAccounts.filter(a => a.type === 'expense').reduce((sum, acc) => sum + acc.balance, 0)
+    totalAssets: accounts.filter(a => a.type === 'asset').reduce((sum, acc) => sum + acc.balance, 0),
+    totalLiabilities: accounts.filter(a => a.type === 'liability').reduce((sum, acc) => sum + acc.balance, 0),
+    totalRevenue: accounts.filter(a => a.type === 'revenue').reduce((sum, acc) => sum + acc.balance, 0),
+    totalExpenses: accounts.filter(a => a.type === 'expense').reduce((sum, acc) => sum + acc.balance, 0)
   };
 
   const netIncome = accountStats.totalRevenue - accountStats.totalExpenses;
@@ -78,7 +105,7 @@ const AccountingPlatform = () => {
             <div className="flex items-center gap-2">
               <FileText className="h-5 w-5 text-purple-600" />
               <div>
-                <div className="text-2xl font-bold">{mockAccounts.length}</div>
+                <div className="text-2xl font-bold">{accounts.length}</div>
                 <div className="text-sm text-muted-foreground">Chart of Accounts</div>
               </div>
             </div>
@@ -171,7 +198,7 @@ const AccountingPlatform = () => {
           </div>
           
           <div className="grid gap-4">
-            {mockAccounts.map((account) => (
+            {accounts.map((account) => (
               <Card key={account.id} className="hover:shadow-md transition-shadow">
                 <CardContent className="p-6">
                   <div className="flex justify-between items-start">
@@ -209,7 +236,7 @@ const AccountingPlatform = () => {
           </div>
           
           <div className="grid gap-4">
-            {mockCustomers.map((customer) => (
+            {customers.map((customer) => (
               <Card key={customer.id} className="hover:shadow-md transition-shadow">
                 <CardContent className="p-6">
                   <div className="flex justify-between items-start">
@@ -255,7 +282,7 @@ const AccountingPlatform = () => {
           </div>
           
           <div className="grid gap-4">
-            {mockVendors.map((vendor) => (
+            {vendors.map((vendor) => (
               <Card key={vendor.id} className="hover:shadow-md transition-shadow">
                 <CardContent className="p-6">
                   <div className="flex justify-between items-start">

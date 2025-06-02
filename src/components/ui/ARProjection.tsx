@@ -20,10 +20,16 @@ interface ARProjectionProps {
 
 type Theme = 'asphalt-command' | 'light' | 'dark' | 'system';
 
-// NOTE: This is a placeholder for AR projection logic. Full AR implementation requires native plugins and is not yet implemented.
+// TODO: Implement real AR projection logic. Currently a placeholder. Show user-friendly message if not available.
 const ARProjection: React.FC<ARProjectionProps> = ({ type, content, position, region, tooltip, overlays }) => {
   const { theme } = useTheme() as { theme: Theme };
   const projectionRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (Capacitor.getPlatform() === 'web') {
+      return <div className="p-4 bg-yellow-100 text-yellow-800 rounded">AR features coming soon. Please use a supported device.</div>;
+    }
+  }, []);
 
   useEffect(() => {
     if (Capacitor.getPlatform() !== 'web') {

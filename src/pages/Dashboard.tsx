@@ -11,7 +11,6 @@ import { EnhancedDashboard } from "@/components/dashboard/EnhancedDashboard";
 import { MobileDashboard } from "@/components/mobile/MobileDashboard";
 import { ObjectivesWidget } from "@/components/dashboard/ObjectivesWidget";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { mockStats } from "@/data/mockStats";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, FileText, Users } from "lucide-react";
@@ -101,7 +100,7 @@ const Dashboard = () => {
           </p>
         </div>
         <div className="grid grid-cols-1 gap-6 mb-8">
-          <StatsGrid stats={mockStats} />
+          <StatsGrid />
         </div>
         <div className="mt-8">
           <ObjectivesWidget />

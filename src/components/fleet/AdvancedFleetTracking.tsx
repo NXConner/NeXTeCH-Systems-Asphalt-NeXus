@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { OptimizedVehicleSelector } from "./advanced/OptimizedVehicleSelector";
 import { VehicleDiagnostics } from "./advanced/VehicleDiagnostics";
@@ -6,19 +5,21 @@ import { MaintenanceStatus } from "./advanced/MaintenanceStatus";
 import { PerformanceMetrics } from "./advanced/PerformanceMetrics";
 import { FleetOverviewTable } from "./advanced/FleetOverviewTable";
 import { FleetLoadingSkeleton } from "./common/FleetLoadingSkeleton";
-import { mockAdvancedVehicles } from "@/data/mockFleetData";
+import { useFleetData } from '@/hooks/useFleetData';
 import { VehicleMetrics } from "@/types/fleetTypes";
 
 export function AdvancedFleetTracking() {
-  const [vehicles] = useState<VehicleMetrics[]>(mockAdvancedVehicles);
-  const [selectedVehicle, setSelectedVehicle] = useState<string>("ADV-001");
-  const [timeRange, setTimeRange] = useState("24h");
-  const [isLoading, setIsLoading] = useState(false);
+  const { vehicles, isLoading, error } = useFleetData();
+  const [selectedVehicle, setSelectedVehicle] = useState<string>(vehicles[0]?.id || '');
+  const [timeRange, setTimeRange] = useState('24h');
 
   const selectedVehicleData = vehicles.find(v => v.id === selectedVehicle);
 
   if (isLoading) {
     return <FleetLoadingSkeleton />;
+  }
+  if (error) {
+    return <div>Error loading fleet data</div>;
   }
 
   return (

@@ -6,91 +6,19 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Search, Package, AlertTriangle, DollarSign, TrendingDown } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-
-// Mock data that matches our types
-const mockInventoryItems = [
-  {
-    id: "item-1",
-    name: "Hot Mix Asphalt",
-    description: "High-quality hot mix asphalt for road construction",
-    category: "asphalt" as const,
-    sku: "HMA-001",
-    currentStock: 2500,
-    minimumStock: 500,
-    maximumStock: 5000,
-    unit: "tons",
-    unitCost: 85.00,
-    totalValue: 212500,
-    supplierId: "sup-1",
-    supplierName: "ABC Asphalt Supply",
-    location: "Warehouse A",
-    lastRestocked: "2024-01-20T00:00:00Z",
-    isActive: true,
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-20T00:00:00Z"
-  },
-  {
-    id: "item-2",
-    name: "Aggregate Base",
-    description: "21A aggregate base material",
-    category: "aggregate" as const,
-    sku: "AGG-21A",
-    currentStock: 1800,
-    minimumStock: 300,
-    maximumStock: 3000,
-    unit: "tons",
-    unitCost: 25.00,
-    totalValue: 45000,
-    supplierId: "sup-2",
-    supplierName: "Rock & Stone Co.",
-    location: "Yard B",
-    lastRestocked: "2024-01-15T00:00:00Z",
-    isActive: true,
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-15T00:00:00Z"
-  }
-];
-
-const mockSuppliers = [
-  {
-    id: "sup-1",
-    name: "ABC Asphalt Supply",
-    contactPerson: "John Smith",
-    email: "john@abcasphalt.com",
-    phone: "(555) 123-4567",
-    address: {
-      street: "123 Industrial Way",
-      city: "Richmond",
-      state: "VA",
-      zipCode: "23230"
-    },
-    paymentTerms: "Net 30",
-    isActive: true,
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z"
-  },
-  {
-    id: "sup-2",
-    name: "Rock & Stone Co.",
-    contactPerson: "Jane Doe",
-    email: "jane@rockstone.com",
-    phone: "(555) 987-6543",
-    address: {
-      street: "456 Quarry Road",
-      city: "Richmond",
-      state: "VA",
-      zipCode: "23231"
-    },
-    paymentTerms: "Net 15",
-    isActive: true,
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z"
-  }
-];
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 const InventoryManagement = () => {
-  const [inventoryItems] = useState(mockInventoryItems);
-  const [suppliers] = useState(mockSuppliers);
+  const [inventoryItems] = useState([]);
+  const { data: suppliers = [] } = useQuery({
+    queryKey: ['suppliers'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('suppliers').select('*');
+      if (error) throw error;
+      return data;
+    }
+  });
   const [searchTerm, setSearchTerm] = useState("");
   const [purchaseOrders, setPurchaseOrders] = useState([]);
   const [showOrderModal, setShowOrderModal] = useState(false);
