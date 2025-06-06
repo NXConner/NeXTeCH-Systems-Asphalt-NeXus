@@ -339,6 +339,30 @@ export type Database = {
         };
         Relationships: [];
       },
+      contracts: {
+        Row: {
+          id: string;
+          user_id: string;
+          content: string;
+          signed: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          content: string;
+          signed: boolean;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          content?: string;
+          signed?: boolean;
+          created_at?: string;
+        };
+        Relationships: [];
+      },
     }
     Views: {
       [_ in never]: never

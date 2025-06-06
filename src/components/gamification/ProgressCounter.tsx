@@ -10,7 +10,7 @@ export default function ProgressCounter({ checklist = initialChecklist }: { chec
         <CardTitle>Project Progress</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="w-full bg-gray-200 rounded-full h-4 mb-2">
+        <div className="w-full bg-gray-200 rounded-full h-4 mb-2" aria-label="Project progress bar">
           <div className="bg-green-600 h-4 rounded-full" style={{ width: `${percent}%` }}></div>
         </div>
         <div className="text-center font-bold">{percent}% Complete ({completed} / {total})</div>

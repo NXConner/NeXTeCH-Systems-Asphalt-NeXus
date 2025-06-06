@@ -1,1 +1,17 @@
-/* ... existing code ... */ 
+/* ... existing code ... */
+
+/* Basic dark mode and asphalt-command theme styles */
+.dark {
+  background: #181a1b !important;
+  color: #f1f1f1 !important;
+}
+
+.asphalt-command {
+  background: #23272b url('../public/assets/textures/asphalt-grain.png');
+  color: #fff;
+  font-family: 'Futura', sans-serif;
+}
+
+.asphalt-command h1, .asphalt-command h2 {
+  font-family: 'Bebas Neue', sans-serif;
+} 

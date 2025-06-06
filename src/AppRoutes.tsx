@@ -4,6 +4,7 @@ import Jobs from "./pages/Jobs";
 import AdvancedFleetDashboard from "./pages/AdvancedFleetDashboard";
 import EstimatesManagement from "./pages/EstimatesManagement";
 import CustomerManagement from "./pages/CustomerManagement";
+import SignUp from "./pages/SignUp";
 
 const AppRoutes = () => {
   return (
@@ -13,6 +14,7 @@ const AppRoutes = () => {
       <Route path="/fleet" element={<AdvancedFleetDashboard />} />
       <Route path="/estimates" element={<EstimatesManagement />} />
       <Route path="/customer-management" element={<CustomerManagement />} />
+      <Route path="/signup" element={<SignUp />} />
     </Routes>
   );
 };

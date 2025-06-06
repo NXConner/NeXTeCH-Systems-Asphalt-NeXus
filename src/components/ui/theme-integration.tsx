@@ -21,7 +21,7 @@ import {
 import { useTheme } from "@/components/ThemeProvider";
 import { themes } from "@/themes/themeConfig";
 import { ThemeShowcase } from "./theme-showcase";
-import { ThemeSelector } from "./theme-selector";
+import ThemeSelector from "./theme-selector";
 import { ThemeSwitcher } from "./theme-switcher";
 import { ColorPaletteGenerator } from "./color-palette-generator";
 import { GradientText } from "./gradient-text";
@@ -40,6 +40,11 @@ interface ThemeIntegrationProps {
   sidebarBgClass?: string;
 }
 
-export function ThemeIntegration() {
-  return null;
+export function ThemeIntegration(props: ThemeIntegrationProps) {
+  return (
+    <div className="space-y-6">
+      <ThemeSwitcher />
+      {/* ...rest of the UI... */}
+    </div>
+  );
 }

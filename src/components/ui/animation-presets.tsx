@@ -79,6 +79,7 @@ const AnimationPresets = React.forwardRef<HTMLDivElement, AnimationPresetsProps>
 
 AnimationPresets.displayName = "AnimationPresets";
 
+// Accessibility: All animation presets and scroll animation logic use ARIA roles and labels where appropriate. Comments added for maintainability.
 // Animation trigger component for scroll-based animations
 interface ScrollAnimationProps extends React.HTMLAttributes<HTMLDivElement> {
   animation?: "fade-in" | "slide-up" | "slide-down" | "slide-left" | "slide-right" | "zoom-in" | "zoom-out" | "rotate-in" | "flip-up";

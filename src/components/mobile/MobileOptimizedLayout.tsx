@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -69,57 +68,6 @@ export const MobileOptimizedLayout = ({ children }: MobileOptimizedLayoutProps) 
         </Card>
 
         {children}
-      </div>
-
-      {/* Mobile Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-background border-t">
-        <div className="grid grid-cols-5 p-2">
-          <Button 
-            variant={isActive("/dashboard") ? "default" : "ghost"} 
-            size="sm" 
-            className="flex flex-col gap-1 h-auto py-2"
-            onClick={() => navigate("/dashboard")}
-          >
-            <Home className="h-4 w-4" />
-            <span className="text-xs">Home</span>
-          </Button>
-          <Button 
-            variant={isActive("/fleet") ? "default" : "ghost"} 
-            size="sm" 
-            className="flex flex-col gap-1 h-auto py-2"
-            onClick={() => navigate("/fleet")}
-          >
-            <Truck className="h-4 w-4" />
-            <span className="text-xs">Fleet</span>
-          </Button>
-          <Button 
-            variant={isActive("/jobs") ? "default" : "ghost"}
-            size="sm" 
-            className="flex flex-col gap-1 h-auto py-2"
-            onClick={() => navigate("/jobs")}
-          >
-            <Calendar className="h-4 w-4" />
-            <span className="text-xs">Jobs</span>
-          </Button>
-          <Button 
-            variant={isActive("/employee-management") ? "default" : "ghost"}
-            size="sm" 
-            className="flex flex-col gap-1 h-auto py-2"
-            onClick={() => navigate("/employee-management")}
-          >
-            <Users className="h-4 w-4" />
-            <span className="text-xs">Staff</span>
-          </Button>
-          <Button 
-            variant={isActive("/accounting") ? "default" : "ghost"}
-            size="sm" 
-            className="flex flex-col gap-1 h-auto py-2"
-            onClick={() => navigate("/accounting")}
-          >
-            <FileText className="h-4 w-4" />
-            <span className="text-xs">Finance</span>
-          </Button>
-        </div>
       </div>
     </div>
   );

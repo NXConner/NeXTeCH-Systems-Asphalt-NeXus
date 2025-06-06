@@ -165,8 +165,8 @@ export const CostCalculator = () => {
         {/* Add Item Form */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="text-sm font-medium mb-2 block">Material/Service</label>
-            <Select value={selectedMaterial} onValueChange={setSelectedMaterial}>
+            <label htmlFor="material-select" className="text-sm font-medium mb-2 block">Material/Service</label>
+            <Select id="material-select" value={selectedMaterial} onValueChange={setSelectedMaterial} aria-label="Material/Service">
               <SelectTrigger>
                 <SelectValue placeholder="Select item..." />
               </SelectTrigger>

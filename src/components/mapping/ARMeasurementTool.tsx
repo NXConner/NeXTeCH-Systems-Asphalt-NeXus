@@ -1,14 +1,35 @@
 import React from 'react';
 
-// TODO: Implement real AR measurement logic. Currently a placeholder. Show user-friendly message if not available.
+interface Measurement {
+  id: string;
+  points: Array<{ lat: number; lng: number }>;
+  length: number;
+  area?: number;
+}
 
-// Placeholder for AR measurement tool UI
-export default function ARMeasurementTool() {
+interface ARMeasurementToolProps {
+  measurements?: Measurement[];
+}
+
+const ARMeasurementTool: React.FC<ARMeasurementToolProps> = ({ measurements = [] }) => {
+  if (!measurements.length) return <div className="text-xs text-muted-foreground">No AR measurements.</div>;
   return (
-    <div className="p-4 border rounded bg-white shadow">
-      <h2 className="font-bold mb-2">AR Measurement Tool</h2>
-      <p className="text-sm text-gray-600 mb-2">AR measurement coming soon. Point your device and tap to measure distances or areas in AR.</p>
-      <button className="bg-blue-600 text-white px-4 py-2 rounded" disabled>Start AR Measurement (Coming Soon)</button>
+    <div className="absolute inset-0 pointer-events-none z-40">
+      {measurements.map((m) => (
+        <div
+          key={m.id}
+          className="absolute border-2 border-blue-500 bg-blue-200/30 rounded"
+          style={{
+            left: `${m.points[0].lng}%`,
+            top: `${m.points[0].lat}%`,
+            width: 40,
+            height: 40,
+          }}
+          title={`Length: ${m.length} ft${m.area ? ", Area: " + m.area + " sq ft" : ''}`}
+        />
+      ))}
     </div>
   );
-} 
+};
+
+export default ARMeasurementTool; 

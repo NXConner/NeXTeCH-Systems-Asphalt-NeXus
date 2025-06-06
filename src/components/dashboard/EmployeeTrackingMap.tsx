@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,8 +13,12 @@ import {
   Activity,
   TrendingUp,
   Eye,
-  Settings
+  Settings,
+  Car
 } from "lucide-react";
+import { supabase } from '@/integrations/supabase/client';
+import { MapContainer, TileLayer, Marker, Popup, Tooltip, useMap } from 'react-leaflet';
+import L from 'leaflet';
 
 interface EmployeeLocation {
   id: string;
@@ -40,55 +43,27 @@ interface MapSource {
   type: 'satellite' | 'street' | 'terrain' | 'dark';
 }
 
-export function EmployeeTrackingMap() {
-  const [employees] = useState<EmployeeLocation[]>([
-    {
-      id: "emp-001",
-      name: "John Smith",
-      position: "Crew Leader",
-      lat: 40.7128,
-      lng: -74.0060,
-      status: "active",
-      speed: 0,
-      lastUpdate: new Date().toISOString(),
-      currentJob: "Main Street Paving",
-      todayHours: 6.5,
-      completedTasks: 8,
-      efficiency: 95
-    },
-    {
-      id: "emp-002",
-      name: "Mike Johnson",
-      position: "Equipment Operator",
-      lat: 40.7589,
-      lng: -73.9851,
-      status: "active",
-      speed: 25,
-      lastUpdate: new Date(Date.now() - 120000).toISOString(),
-      currentJob: "Highway Maintenance",
-      todayHours: 7.2,
-      completedTasks: 12,
-      efficiency: 88
-    },
-    {
-      id: "emp-003",
-      name: "Sarah Wilson",
-      position: "Quality Inspector",
-      lat: 40.7505,
-      lng: -73.9934,
-      status: "break",
-      speed: 0,
-      lastUpdate: new Date(Date.now() - 300000).toISOString(),
-      currentJob: "Shopping Center Project",
-      todayHours: 4.8,
-      completedTasks: 6,
-      efficiency: 92
-    }
-  ]);
+interface VehicleLocation {
+  id: string;
+  name: string;
+  type: string;
+  lat: number;
+  lng: number;
+  status: string;
+  speed: number;
+  lastUpdate: string;
+  driver?: string;
+}
 
+const PATRICK_COUNTY_CENTER = { lat: 36.6354, lng: -80.3210 };
+
+export function EmployeeTrackingMap() {
+  const [employees, setEmployees] = useState<EmployeeLocation[]>([]);
+  const [vehicles, setVehicles] = useState<VehicleLocation[]>([]);
   const [selectedEmployee, setSelectedEmployee] = useState<string | null>(null);
-  const [mapSource, setMapSource] = useState("osm");
+  const [mapSource, setMapSource] = useState("satellite");
   const [trackingEnabled, setTrackingEnabled] = useState(true);
+  const mapRef = useRef<any>(null);
 
   const mapSources: MapSource[] = [
     {
@@ -128,6 +103,111 @@ export function EmployeeTrackingMap() {
     }
   ];
 
+  useEffect(() => {
+    let empSub: any, vehSub: any;
+    async function fetchAndSubscribe() {
+      // Fetch employee locations
+      const { data: locations, error } = await supabase
+        .from('employee_locations')
+        .select('*');
+      if (!error && locations) {
+        setEmployees(locations.map((loc: any) => ({
+          id: loc.user_id,
+          name: loc.name || 'Unknown',
+          position: loc.position || '',
+          lat: loc.lat,
+          lng: loc.lng,
+          status: 'active',
+          speed: 0,
+          lastUpdate: loc.timestamp,
+          currentJob: '',
+          todayHours: 0,
+          completedTasks: 0,
+          efficiency: 0
+        })));
+      }
+      // Fetch vehicle locations
+      const { data: vehiclesData, error: vehError } = await supabase
+        .from('vehicles')
+        .select('*');
+      if (!vehError && vehiclesData) {
+        setVehicles(vehiclesData.map((v: any) => ({
+          id: v.id,
+          name: v.name,
+          type: v.type,
+          lat: v.location.lat,
+          lng: v.location.lng,
+          status: v.status,
+          speed: v.speed,
+          lastUpdate: v.location.lastUpdate,
+          driver: v.driver
+        })));
+      }
+      // Subscribe to employee locations
+      empSub = supabase
+        .channel('employee_locations')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'employee_locations' }, payload => {
+          setEmployees(prev => {
+            const idx = prev.findIndex(e => e.id === payload.new.user_id);
+            const updated = {
+              id: payload.new.user_id,
+              name: payload.new.name || 'Unknown',
+              position: payload.new.position || '',
+              lat: payload.new.lat,
+              lng: payload.new.lng,
+              status: 'active',
+              speed: 0,
+              lastUpdate: payload.new.timestamp,
+              currentJob: '',
+              todayHours: 0,
+              completedTasks: 0,
+              efficiency: 0
+            };
+            if (idx !== -1) {
+              const arr = [...prev];
+              arr[idx] = updated;
+              return arr;
+            } else {
+              return [...prev, updated];
+            }
+          });
+        })
+        .subscribe();
+      // Subscribe to vehicle locations
+      vehSub = supabase
+        .channel('vehicles')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'vehicles' }, payload => {
+          setVehicles(prev => {
+            const idx = prev.findIndex(v => v.id === payload.new.id);
+            const updated = {
+              id: payload.new.id,
+              name: payload.new.name,
+              type: payload.new.type,
+              lat: payload.new.location.lat,
+              lng: payload.new.location.lng,
+              status: payload.new.status,
+              speed: payload.new.speed,
+              lastUpdate: payload.new.location.lastUpdate,
+              driver: payload.new.driver
+            };
+            if (idx !== -1) {
+              const arr = [...prev];
+              arr[idx] = updated;
+              return arr;
+            } else {
+              return [...prev, updated];
+            }
+          });
+        })
+        .subscribe();
+    }
+    fetchAndSubscribe();
+    return () => {
+      if (empSub) supabase.removeChannel(empSub);
+      if (vehSub) supabase.removeChannel(vehSub);
+    };
+  }, []);
+
   const getStatusColor = (status: EmployeeLocation['status']) => {
     switch (status) {
       case 'active': return 'bg-green-100 text-green-800';
@@ -165,6 +245,16 @@ export function EmployeeTrackingMap() {
     active: employees.filter(e => e.status === 'active').length,
     avgEfficiency: Math.round(employees.reduce((sum, e) => sum + e.efficiency, 0) / employees.length),
     totalHours: employees.reduce((sum, e) => sum + e.todayHours, 0)
+  };
+
+  const handleGPS = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(pos => {
+        if (mapRef.current) {
+          mapRef.current.setView([pos.coords.latitude, pos.coords.longitude], 10);
+        }
+      });
+    }
   };
 
   return (
@@ -218,6 +308,18 @@ export function EmployeeTrackingMap() {
             </div>
           </CardContent>
         </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2">
+              <Car className="h-5 w-5 text-blue-700" />
+              <div>
+                <div className="text-2xl font-bold">{vehicles.length}</div>
+                <div className="text-sm text-muted-foreground">Vehicles</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -255,36 +357,66 @@ export function EmployeeTrackingMap() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="bg-slate-100 h-96 rounded-lg flex items-center justify-center relative">
-                {/* Mock Map Interface */}
-                <div className="text-center">
-                  <Navigation className="h-12 w-12 mx-auto mb-4 text-slate-400" />
-                  <p className="text-slate-600">Live Employee Map</p>
-                  <p className="text-sm text-slate-500 mt-2">
-                    Using {mapSources.find(s => s.id === mapSource)?.name} tiles
-                  </p>
-                </div>
-                
-                {/* Employee Markers Overlay */}
-                <div className="absolute top-4 left-4 space-y-2">
+              <div className="relative h-96 rounded-lg overflow-hidden">
+                <Button style={{ position: 'absolute', zIndex: 1000, top: 10, right: 10 }} onClick={handleGPS}>
+                  My Location
+                </Button>
+                <MapContainer
+                  center={[PATRICK_COUNTY_CENTER.lat, PATRICK_COUNTY_CENTER.lng]}
+                  zoom={14}
+                  style={{ width: '100%', height: 600 }}
+                  scrollWheelZoom={true}
+                  className="h-[600px] w-full"
+                  whenCreated={mapInstance => { mapRef.current = mapInstance; }}
+                >
+                  <TileLayer
+                    attribution={mapSources.find(s => s.id === mapSource)?.attribution}
+                    url={mapSources.find(s => s.id === mapSource)?.url || mapSources[1].url}
+                  />
                   {employees.map((employee) => (
-                    <div 
+                    <Marker
                       key={employee.id}
-                      className={`
-                        flex items-center gap-2 px-3 py-2 rounded-lg bg-white shadow-sm cursor-pointer transition-all
-                        ${selectedEmployee === employee.id ? 'ring-2 ring-blue-500 scale-105' : 'hover:shadow-md'}
-                      `}
-                      onClick={() => setSelectedEmployee(selectedEmployee === employee.id ? null : employee.id)}
+                      position={[employee.lat, employee.lng]}
+                      icon={L.divIcon({
+                        className: `employee-marker ${selectedEmployee === employee.id ? 'ring-2 ring-blue-500 scale-110' : ''}`,
+                        html: `<div style='background:#fff;padding:4px 8px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.12);display:flex;align-items:center;gap:4px;'>👤 ${employee.name}</div>`
+                      })}
+                      eventHandlers={{
+                        click: () => setSelectedEmployee(selectedEmployee === employee.id ? null : employee.id)
+                      }}
                     >
-                      {getStatusIcon(employee.status)}
-                      <span className="text-sm font-medium">{employee.name}</span>
-                      <Badge className={getStatusColor(employee.status)} variant="secondary">
-                        {employee.status}
-                      </Badge>
-                    </div>
+                      <Tooltip direction="top" offset={[0, -10]}>{employee.name} ({employee.status})</Tooltip>
+                      <Popup>
+                        <div>
+                          <strong>{employee.name}</strong><br />
+                          {employee.position}<br />
+                          Status: {employee.status}<br />
+                          Last update: {formatTimestamp(employee.lastUpdate)}
+                        </div>
+                      </Popup>
+                    </Marker>
                   ))}
-                </div>
-                
+                  {vehicles.map((vehicle) => (
+                    <Marker
+                      key={vehicle.id}
+                      position={[vehicle.lat, vehicle.lng]}
+                      icon={L.divIcon({
+                        className: 'vehicle-marker',
+                        html: `<div style='background:#e0f2fe;padding:4px 8px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.12);display:flex;align-items:center;gap:4px;'>🚗 ${vehicle.name}</div>`
+                      })}
+                    >
+                      <Tooltip direction="top" offset={[0, -10]}>{vehicle.name} ({vehicle.status})</Tooltip>
+                      <Popup>
+                        <div>
+                          <strong>{vehicle.name}</strong><br />
+                          Type: {vehicle.type}<br />
+                          Status: {vehicle.status}<br />
+                          Last update: {formatTimestamp(vehicle.lastUpdate)}
+                        </div>
+                      </Popup>
+                    </Marker>
+                  ))}
+                </MapContainer>
                 {/* Map Legend */}
                 <div className="absolute bottom-4 left-4 bg-white p-3 rounded-lg shadow-sm">
                   <h4 className="text-sm font-medium mb-2">Status Legend</h4>

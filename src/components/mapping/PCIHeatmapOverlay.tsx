@@ -1,34 +1,38 @@
-import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import React from 'react';
 
-export default function PCIHeatmapOverlay() {
-  const [polygons, setPolygons] = useState<any[]>([]);
-  useEffect(() => {
-    const fetchPCI = async () => {
-      // Replace with real Supabase table/logic
-      const { data } = await supabase.from('pci_polygons').select('*');
-      setPolygons(data || []);
-    };
-    fetchPCI();
-  }, []);
-  const getColor = (score: number) => {
-    if (score >= 85) return 'rgba(34,197,94,0.5)';
-    if (score >= 70) return 'rgba(253,224,71,0.5)';
-    return 'rgba(239,68,68,0.5)';
-  };
+interface PCIHeatmapOverlayProps {
+  pciData?: Array<{ lat: number; lng: number; pci: number }>;
+}
+
+const getColor = (pci: number) => {
+  if (pci >= 85) return 'rgba(0,200,0,0.5)'; // Excellent
+  if (pci >= 55) return 'rgba(255,200,0,0.5)'; // Fair
+  return 'rgba(255,0,0,0.5)'; // Poor
+};
+
+const PCIHeatmapOverlay: React.FC<PCIHeatmapOverlayProps> = ({ pciData = [] }) => {
+  if (!pciData.length) return <div className="text-xs text-muted-foreground">No PCI data available.</div>;
   return (
-    <svg className="absolute inset-0 pointer-events-none z-40 w-full h-full">
-      {polygons.map((poly, i) => (
-        <polygon
+    <div className="absolute inset-0 pointer-events-none z-40" aria-label="PCI heatmap overlay">
+      {pciData.map((point, i) => (
+        <div
           key={i}
-          points={poly.coordinates.map((p: any) => `${p.lng},${p.lat}`).join(' ')}
-          fill={getColor(poly.pciScore)}
-          stroke="#222"
-          strokeWidth={2}
-        >
-          <title>PCI: {poly.pciScore}</title>
-        </polygon>
+          className="absolute rounded-full"
+          style={{
+            left: `${point.lng}%`,
+            top: `${point.lat}%`,
+            width: 32,
+            height: 32,
+            background: getColor(point.pci),
+            filter: 'blur(8px)',
+          }}
+          title={`PCI: ${point.pci}`}
+          role="img"
+          aria-label={`PCI value: ${point.pci} at lat ${point.lat}, lng ${point.lng}`}
+        />
       ))}
-    </svg>
+    </div>
   );
-} 
+};
+
+export default PCIHeatmapOverlay; 

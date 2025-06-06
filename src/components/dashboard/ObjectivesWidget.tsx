@@ -139,20 +139,20 @@ export function ObjectivesWidget({ assignedTo = 'emp-1' }) {
               <div className="space-y-3">
                 <Input name="title" placeholder="Objective title" required />
                 <Input name="description" placeholder="Description" required />
-                <div className="grid grid-cols-2 gap-2">
-                  <select
-                    aria-label="Objective status select"
-                    title="Objective status select"
-                    name="priority"
-                    required
-                    className="p-2 border rounded"
-                  >
-                    <option value="high">High Priority</option>
-                    <option value="medium">Medium Priority</option>
-                    <option value="low">Low Priority</option>
-                  </select>
-                  <Input name="dueDate" type="date" required />
-                </div>
+                <label htmlFor="priority-select" className="text-sm font-medium mb-1">Priority</label>
+                <select
+                  id="priority-select"
+                  aria-label="Objective status select"
+                  title="Objective status select"
+                  name="priority"
+                  required
+                  className="p-2 border rounded"
+                >
+                  <option value="high">High Priority</option>
+                  <option value="medium">Medium Priority</option>
+                  <option value="low">Low Priority</option>
+                </select>
+                <Input name="dueDate" type="date" required />
                 <div className="flex gap-2">
                   <Button type="submit" size="sm">Add Objective</Button>
                   <Button type="button" size="sm" variant="outline" onClick={() => setShowForm(false)}>

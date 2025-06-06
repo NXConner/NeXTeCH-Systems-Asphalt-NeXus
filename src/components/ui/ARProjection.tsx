@@ -1,6 +1,8 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTheme } from '../ThemeProvider';
 import { Capacitor } from '@capacitor/core';
+import { Camera } from '@capacitor/camera';
+import { Geolocation } from '@capacitor/geolocation';
 
 interface ARProjectionProps {
   type: 'measurement' | 'task' | 'alert' | 'compliance' | 'crack' | 'pci' | 'line' | 'geofence';
@@ -20,30 +22,32 @@ interface ARProjectionProps {
 
 type Theme = 'asphalt-command' | 'light' | 'dark' | 'system';
 
-// TODO: Implement real AR projection logic. Currently a placeholder. Show user-friendly message if not available.
 const ARProjection: React.FC<ARProjectionProps> = ({ type, content, position, region, tooltip, overlays }) => {
   const { theme } = useTheme() as { theme: Theme };
   const projectionRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (Capacitor.getPlatform() === 'web') {
-      return <div className="p-4 bg-yellow-100 text-yellow-800 rounded">AR features coming soon. Please use a supported device.</div>;
-    }
-  }, []);
+  const [arSupported, setArSupported] = useState(false);
 
   useEffect(() => {
     if (Capacitor.getPlatform() !== 'web') {
+      setArSupported(true);
       // Simulate AR projection using device camera and GPS
-      // Note: Requires Capacitor Camera and Geolocation plugins
       const projectAR = async () => {
+        await Camera.getPhoto({ resultType: 'uri', source: 'camera' });
+        await Geolocation.getCurrentPosition();
         // Placeholder for AR rendering logic
         if (projectionRef.current) {
           projectionRef.current.style.transform = `translate(${position.lat}px, ${position.lng}px)`;
         }
       };
       projectAR();
+    } else {
+      setArSupported(false);
     }
   }, [position]);
+
+  if (!arSupported) {
+    return <div className="p-4 bg-yellow-100 text-yellow-800 rounded">AR features coming soon. Please use a supported device.</div>;
+  }
 
   const className =
     theme === 'asphalt-command'
@@ -67,7 +71,7 @@ const ARProjection: React.FC<ARProjectionProps> = ({ type, content, position, re
       : '';
 
   return (
-    <div ref={projectionRef} className={`absolute ${className}`} title={tooltip || region}>
+    <div ref={projectionRef} className={className} title={tooltip} style={{ position: 'absolute', left: position.lng, top: position.lat }}>
       {content}
       {overlays && overlays.map((o, i) => (
         <div

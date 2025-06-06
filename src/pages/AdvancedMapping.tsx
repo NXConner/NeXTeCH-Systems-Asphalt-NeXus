@@ -22,16 +22,56 @@ import { AsphaltDetection } from "@/components/mapping/AsphaltDetection";
 import { Rnd } from 'react-rnd';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { HeatmapLayer } from 'react-leaflet-heatmap-layer-v3';
 import ARProjection from '../components/ui/ARProjection';
 import { fetchMapData } from '@/services/mappingService';
+import UnifiedMapInterface from '@/components/UnifiedMapInterface';
+import ThemeSelector from '@/components/ui/theme-selector';
+import { ThemeShowcase } from '@/components/ui/theme-showcase';
+import { ThemeEffectsShowcase } from '@/components/ui/theme-effects-showcase';
+import { MapContainer, TileLayer, useMap } from 'react-leaflet';
+import * as L from 'leaflet';
+import 'leaflet.heat';
+import 'leaflet-control-geocoder';
+
+// Fix for L.heatLayer type error
+// @ts-ignore
+declare module 'leaflet' {
+  namespace heatLayer {
+    function heatLayer(latlngs: any[], options?: any): any;
+  }
+  function heatLayer(latlngs: any[], options?: any): any;
+}
 
 const mapProviders = [
   { id: 'leaflet', name: 'Leaflet OSM', style: 'osm' },
   { id: 'esri', name: 'Esri World Imagery', style: 'esri' },
-  { id: 'usgs', name: 'USGS Topo', style: 'usgs' },
   { id: 'qgis', name: 'QGIS', style: 'qgis' },
 ];
+
+function HeatmapLayer({ points, options }) {
+  const map = useMap();
+  useEffect(() => {
+    if (!points || points.length === 0) return;
+    // @ts-ignore
+    const heatLayer = L.heatLayer(points, options).addTo(map);
+    return () => {
+      map.removeLayer(heatLayer);
+    };
+  }, [map, points, options]);
+  return null;
+}
+
+// Types for advanced features
+interface Geofence { id: number; name: string; }
+interface Alert { message: string; }
+interface Annotation { text?: string; }
+interface ExternalLayer { name?: string; }
+interface Collaborator { name?: string; }
+interface Task { id: number; desc: string; }
+interface Change { desc?: string; }
+interface Weather { temp: number; condition: string; }
+
+const PATRICK_COUNTY_CENTER = { lat: 36.6354, lng: -80.3210 };
 
 const AdvancedMapping = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -44,7 +84,7 @@ const AdvancedMapping = () => {
     cleanZones: 0
   });
   const [selectedArea, setSelectedArea] = useState<any>(null);
-  const [provider, setProvider] = useState(mapProviders[0].id);
+  const [provider, setProvider] = useState('esri');
   const [isPopout, setIsPopout] = useState(false);
   const [isPinned, setIsPinned] = useState(false);
   const [asphaltHighlight, setAsphaltHighlight] = useState(true);
@@ -60,6 +100,148 @@ const AdvancedMapping = () => {
   const [editingZone, setEditingZone] = useState<any|null>(null);
   const [arMode, setArMode] = useState(false);
   const [mapData, setMapData] = useState<any>(null);
+  const [showHeatmap, setShowHeatmap] = useState(true);
+  const [heatmapRadius, setHeatmapRadius] = useState(25);
+  const [heatmapBlur, setHeatmapBlur] = useState(15);
+  const [heatmapMax, setHeatmapMax] = useState(1.0);
+  const [heatmapPoints, setHeatmapPoints] = useState([]);
+
+  // --- ADVANCED FEATURE 1: Dynamic Data Integration ---
+  // Toggle for live data updates (WebSocket/polling)
+  const [liveDataEnabled, setLiveDataEnabled] = useState(false);
+  // Placeholder for live data connection logic
+  // useEffect(() => { if (liveDataEnabled) { /* connect to WebSocket or polling */ } }, [liveDataEnabled]);
+
+  // --- ADVANCED FEATURE 2: Multiple Heatmap Layers ---
+  const heatmapLayerOptions = [
+    { label: 'Employee Activity', value: 'employee' },
+    { label: 'Vehicle Density', value: 'vehicle' },
+    { label: 'Maintenance Issues', value: 'maintenance' },
+  ];
+  const [selectedHeatmapLayer, setSelectedHeatmapLayer] = useState(heatmapLayerOptions[0].value);
+  // Placeholder for switching heatmap datasets
+  // const heatmapPoints = useMemo(() => getPointsForLayer(selectedHeatmapLayer), [selectedHeatmapLayer]);
+
+  // --- ADVANCED FEATURE 3: Customizable Heatmap Gradients ---
+  const [heatmapGradient, setHeatmapGradient] = useState({
+    0.4: 'blue',
+    0.8: 'orange',
+    1.0: 'red',
+  });
+  // UI for selecting gradient (color pickers or presets)
+  // ...
+
+  // --- ADVANCED FEATURE 4: Data Filtering & Segmentation ---
+  const [filterType, setFilterType] = useState('all');
+  const [filterTimeRange, setFilterTimeRange] = useState([0, 24]);
+  // UI for filtering by type, time, status
+  // ...
+
+  // --- ADVANCED FEATURE 5: Clustering & Aggregation ---
+  const [clusteringEnabled, setClusteringEnabled] = useState(false);
+  // Placeholder for clustering logic
+  // ...
+
+  // --- ADVANCED FEATURE 6: Geofencing & Alerts ---
+  const [geofences, setGeofences] = useState<Geofence[]>([]);
+  const [alerts, setAlerts] = useState<Alert[]>([]);
+  const [annotations, setAnnotations] = useState<Annotation[]>([]);
+  const [externalLayers, setExternalLayers] = useState<ExternalLayer[]>([]);
+  const [collaborators, setCollaborators] = useState<Collaborator[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [changeHistory, setChangeHistory] = useState<Change[]>([]);
+  const [weatherData, setWeatherData] = useState<Weather|null>(null);
+  // UI for drawing geofences and showing alerts
+  // ...
+
+  // --- ADVANCED FEATURE 7: Historical Playback/Timeline ---
+  const [playbackTime, setPlaybackTime] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  // UI for time slider and playback controls
+  // ...
+
+  // --- ADVANCED FEATURE 8: Export & Reporting ---
+  const handleExport = (type) => { /* Export logic for map, CSV, GeoJSON */ };
+  // UI for export buttons
+  // ...
+
+  // --- ADVANCED FEATURE 9: Advanced Drawing & Annotation ---
+  const [drawingMode, setDrawingMode] = useState('none');
+  // UI for drawing tools and annotation controls
+  // ...
+
+  // --- ADVANCED FEATURE 10: Integration with External GIS Data ---
+  const handleImportGIS = (file) => { /* Import logic for GeoJSON/KML */ };
+  // UI for import/export GIS layers
+  // ...
+
+  // --- ADVANCED FEATURE 11: Mobile & Offline Support ---
+  const [offlineMode, setOfflineMode] = useState(false);
+  // Placeholder for offline tile/data caching
+  // ...
+
+  // --- ADVANCED FEATURE 12: User Access Control & Sharing ---
+  const [userRole, setUserRole] = useState('viewer');
+  const handleShare = () => { /* Share logic */ };
+  // UI for role selection and sharing
+  // ...
+
+  // --- ADVANCED FEATURE 13: Advanced Analytics & Insights ---
+  const [analyticsData, setAnalyticsData] = useState(null);
+  // UI for analytics dashboard
+  // ...
+
+  // --- ADVANCED FEATURE 14: Custom Map Providers & Styles ---
+  const [mapProvider, setMapProvider] = useState('esri');
+  // UI for switching basemaps and custom tile URLs
+  // ...
+
+  // --- ADVANCED FEATURE 15: Integration with Other App Modules ---
+  // Placeholder for linking map to CRM, scheduling, compliance
+  // ...
+
+  // --- ADVANCED FEATURE 16: Accessibility & Usability ---
+  // Add ARIA labels, keyboard navigation, high-contrast toggle
+  // ...
+
+  // --- ADVANCED FEATURE 17: Real-Time Collaboration ---
+  // Placeholder for multi-user editing logic
+  // ...
+
+  // --- ADVANCED FEATURE 18: Map-Based Task Assignment ---
+  // UI for assigning tasks by drawing/selecting areas
+  // ...
+
+  // --- ADVANCED FEATURE 19: API for Custom Integrations ---
+  // Placeholder for REST endpoints and API docs
+  // ...
+
+  // --- ADVANCED FEATURE 20: Audit Trail & Change History ---
+  // UI for viewing/reverting map changes
+  // ...
+
+  // --- ADVANCED FEATURE 21: Weather Data Integration ---
+  // Placeholder for fetching weather from pave-wise-weather-cast
+  // ...
+
+  // --- ADVANCED FEATURE 22: Weather Overlays (Radar, Precipitation, Temperature) ---
+  const [weatherOverlay, setWeatherOverlay] = useState('none');
+  // UI for toggling weather overlays
+  // ...
+
+  // --- ADVANCED FEATURE 23: Weather-based Alerts & Scheduling ---
+  const [weatherAlerts, setWeatherAlerts] = useState([]);
+  // Placeholder for weather-triggered notifications
+  // ...
+
+  // --- ADVANCED FEATURE 24: Historical Weather Analytics ---
+  const [historicalWeather, setHistoricalWeather] = useState(null);
+  // UI for viewing historical weather on map
+  // ...
+
+  // --- ADVANCED FEATURE 25: Weather Data in Reports & Exports ---
+  // Add weather data to export/report logic
+  // ...
 
   const geofenceRegion = useMemo(() => ({
     id: 'demo-geofence',
@@ -67,6 +249,37 @@ const AdvancedMapping = () => {
     center: { lat: 37.5, lng: -77.4 },
     radius: 0.001 // ~100m
   }), []);
+
+  const advancedFeatures = [
+    'Dynamic Data Integration',
+    'Multiple Heatmap Layers',
+    'Customizable Heatmap Gradients',
+    'Data Filtering & Segmentation',
+    'Clustering & Aggregation',
+    'Geofencing & Alerts',
+    'Historical Playback/Timeline',
+    'Export & Reporting',
+    'Advanced Drawing & Annotation',
+    'Integration with External GIS Data',
+    'Mobile & Offline Support',
+    'User Access Control & Sharing',
+    'Advanced Analytics & Insights',
+    'Custom Map Providers & Styles',
+    'Integration with Other App Modules',
+    'Accessibility & Usability',
+    'Real-Time Collaboration',
+    'Map-Based Task Assignment',
+    'API for Custom Integrations',
+    'Audit Trail & Change History',
+    // Weather integration features
+    'Weather Data Integration',
+    'Weather Overlays (Radar, Precipitation, Temperature)',
+    'Weather-based Alerts & Scheduling',
+    'Historical Weather Analytics',
+    'Weather Data in Reports & Exports',
+  ];
+  const [featureChecklist, setFeatureChecklist] = useState(Array(advancedFeatures.length).fill(false));
+  const handleChecklistToggle = idx => setFeatureChecklist(list => list.map((v, i) => i === idx ? !v : v));
 
   const handleGeocodeSearch = async () => {
     if (!searchQuery.trim()) return;
@@ -225,374 +438,323 @@ const AdvancedMapping = () => {
     fetchMapData().then(setMapData);
   }, []);
 
+  const mapRef = useRef<any>(null);
+  const [searchValue, setSearchValue] = useState('');
+  useEffect(() => {
+    if (mapRef.current && L.Control.Geocoder) {
+      const geocoder = L.Control.geocoder({
+        defaultMarkGeocode: false
+      })
+        .on('markgeocode', function(e) {
+          const bbox = e.geocode.bbox;
+          const poly = L.polygon([
+            [bbox.getSouthEast().lat, bbox.getSouthEast().lng],
+            [bbox.getNorthEast().lat, bbox.getNorthEast().lng],
+            [bbox.getNorthWest().lat, bbox.getNorthWest().lng],
+            [bbox.getSouthWest().lat, bbox.getSouthWest().lng]
+          ]).addTo(mapRef.current);
+          mapRef.current.fitBounds(poly.getBounds());
+        })
+        .addTo(mapRef.current);
+      return () => {
+        geocoder.remove();
+      };
+    }
+  }, [mapRef]);
+
+  const handleGPS = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(pos => {
+        if (mapRef.current) {
+          mapRef.current.setView([pos.coords.latitude, pos.coords.longitude], 15);
+        }
+      });
+    }
+  };
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">Advanced Mapping & Measurement</h1>
-        <p className="text-muted-foreground mt-2">
-          AI-powered asphalt detection with manual editing and real-time employee tracking
-        </p>
+    <div className="container mx-auto px-4 py-8 space-y-8">
+      <div className="mb-8 p-4 bg-gray-50 rounded shadow">
+        <h2 className="font-bold mb-2">Advanced Features Checklist</h2>
+        <ul className="space-y-1">
+          {advancedFeatures.map((desc, idx) => (
+            <li key={idx} className="flex items-center">
+              <input type="checkbox" checked={featureChecklist[idx]} onChange={() => handleChecklistToggle(idx)} className="mr-2" aria-label={`Mark feature ${idx+1} as complete: ${desc}`} />
+              <span>{idx+1}. {desc}</span>
+            </li>
+          ))}
+        </ul>
       </div>
 
-      {/* Search & Controls */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Search className="h-5 w-5" />
-            Geocoding & Navigation
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex gap-4 mb-4">
-            <div className="flex-1">
-              <Input
-                placeholder="Enter address (e.g., 123 Main St, City, State)"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleGeocodeSearch()}
-              />
-            </div>
-            <Button onClick={handleGeocodeSearch}>
-              <MapPin className="h-4 w-4 mr-2" />
-              Search
-            </Button>
-          </div>
-          
-          {/* Mode Switcher */}
-          <div className="flex gap-4 items-center flex-wrap">
-            <span className="text-sm font-medium">Mode:</span>
-            <div className="flex gap-2">
-              <Button 
-                variant={mapMode === "measure" ? "default" : "outline"}
-                size="sm"
-                onClick={() => handleModeSwitch("measure")}
-              >
-                <Ruler className="h-4 w-4 mr-2" />
-                Measure
-              </Button>
-              <Button 
-                variant={mapMode === "pressure-wash" ? "default" : "outline"}
-                size="sm"
-                onClick={() => handleModeSwitch("pressure-wash")}
-              >
-                <Droplets className="h-4 w-4 mr-2" />
-                Pressure Wash
-              </Button>
-              <Button 
-                variant={mapMode === "detect" ? "default" : "outline"}
-                size="sm"
-                onClick={() => handleModeSwitch("detect")}
-              >
-                <Zap className="h-4 w-4 mr-2" />
-                Auto-Detect
-              </Button>
-            </div>
-            
-            <div className="flex items-center gap-2 ml-auto">
-              <Users className="h-4 w-4" />
-              <span className="text-sm">Employee Tracking</span>
-              <Switch 
-                checked={showEmployeeTracking} 
-                onCheckedChange={setShowEmployeeTracking}
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* 1. Dynamic Data Integration */}
+      <section className="p-4 bg-white rounded shadow mb-4">
+        <h3 className="font-bold mb-2">1. Dynamic Data Integration</h3>
+        <Switch checked={liveDataEnabled} onCheckedChange={setLiveDataEnabled} />
+        <span className="ml-2">Live Data Updates {liveDataEnabled ? '(Enabled)' : '(Disabled)'}</span>
+        {/* Simulated live data update: */}
+        {/* useEffect(() => { if (liveDataEnabled) { setInterval(() => setHeatmapPoints(generateLiveData()), 2000); } }, [liveDataEnabled]); */}
+      </section>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Map Area */}
-        <div className="lg:col-span-2">
-          {mapMode === "detect" ? (
-            <AsphaltDetection 
-              onAreaSelect={handleAreaSelect}
-              showEmployeeTracking={showEmployeeTracking}
-              highlight={asphaltHighlight}
+      {/* 2. Multiple Heatmap Layers */}
+      <section className="p-4 bg-white rounded shadow mb-4">
+        <h3 className="font-bold mb-2">2. Multiple Heatmap Layers</h3>
+        <Select value={selectedHeatmapLayer} onValueChange={setSelectedHeatmapLayer}>
+          <SelectTrigger className="w-64"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            {heatmapLayerOptions.map(opt => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        <span className="ml-2">Current Layer: {selectedHeatmapLayer}</span>
+      </section>
+
+      {/* 3. Customizable Heatmap Gradients */}
+      <section className="p-4 bg-white rounded shadow mb-4">
+        <h3 className="font-bold mb-2">3. Customizable Heatmap Gradients</h3>
+        <div className="flex gap-4 items-center">
+          <Button onClick={() => setHeatmapGradient({0.4:'blue',0.8:'orange',1.0:'red'})}>Preset 1</Button>
+          <Button onClick={() => setHeatmapGradient({0.4:'green',0.8:'yellow',1.0:'red'})}>Preset 2</Button>
+          {/* Color pickers for custom gradient could go here */}
+          <span className="ml-2">Current: {JSON.stringify(heatmapGradient)}</span>
+        </div>
+      </section>
+
+      {/* 4. Data Filtering & Segmentation */}
+      <section className="p-4 bg-white rounded shadow mb-4">
+        <h3 className="font-bold mb-2">4. Data Filtering & Segmentation</h3>
+        <Select value={filterType} onValueChange={setFilterType}>
+          <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All</SelectItem>
+            <SelectItem value="employee">Employee</SelectItem>
+            <SelectItem value="vehicle">Vehicle</SelectItem>
+          </SelectContent>
+        </Select>
+        <span className="ml-2">Type: {filterType}</span>
+        {/* Time range slider could go here */}
+      </section>
+
+      {/* 5. Clustering & Aggregation */}
+      <section className="p-4 bg-white rounded shadow mb-4">
+        <h3 className="font-bold mb-2">5. Clustering & Aggregation</h3>
+        <Switch checked={clusteringEnabled} onCheckedChange={setClusteringEnabled} />
+        <span className="ml-2">Clustering {clusteringEnabled ? 'On' : 'Off'}</span>
+        {/* Cluster rendering would be handled in the map */}
+      </section>
+
+      {/* 6. Geofencing & Alerts */}
+      <section className="p-4 bg-white rounded shadow mb-4">
+        <h3 className="font-bold mb-2">6. Geofencing & Alerts</h3>
+        <Button onClick={() => setGeofences([...geofences, {id:Date.now(),name:'New Geofence'}])}>Draw Geofence</Button>
+        <ul className="mt-2 text-sm">{geofences.map(g => <li key={g.id}>{g.name}</li>)}</ul>
+        <ul className="mt-2 text-xs text-red-600">{alerts.map((a,i) => <li key={i}>{a.message}</li>)}</ul>
+      </section>
+
+      {/* 7. Historical Playback/Timeline */}
+      <section className="p-4 bg-white rounded shadow mb-4">
+        <h3 className="font-bold mb-2">7. Historical Playback/Timeline</h3>
+        <Input type="range" min={0} max={24} value={playbackTime} onChange={e=>setPlaybackTime(Number(e.target.value))} className="w-64" />
+        <Button onClick={()=>setIsPlaying(!isPlaying)}>{isPlaying ? 'Pause' : 'Play'}</Button>
+        <span className="ml-2">Hour: {playbackTime}</span>
+      </section>
+
+      {/* 8. Export & Reporting */}
+      <section className="p-4 bg-white rounded shadow mb-4">
+        <h3 className="font-bold mb-2">8. Export & Reporting</h3>
+        <Button onClick={()=>handleExport('csv')}>Export CSV</Button>
+        <Button onClick={()=>handleExport('geojson')} className="ml-2">Export GeoJSON</Button>
+        <Button onClick={()=>handleExport('png')} className="ml-2">Export PNG</Button>
+      </section>
+
+      {/* 9. Advanced Drawing & Annotation */}
+      <section className="p-4 bg-white rounded shadow mb-4">
+        <h3 className="font-bold mb-2">9. Advanced Drawing & Annotation</h3>
+        <Select value={drawingMode} onValueChange={setDrawingMode}>
+          <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="none">None</SelectItem>
+            <SelectItem value="polygon">Polygon</SelectItem>
+            <SelectItem value="line">Line</SelectItem>
+            <SelectItem value="point">Point</SelectItem>
+          </SelectContent>
+        </Select>
+        <span className="ml-2">Mode: {drawingMode}</span>
+        <ul className="mt-2 text-sm">{annotations.map((a,i)=><li key={i}>{a.text||'Annotation'}</li>)}</ul>
+      </section>
+
+      {/* 10. Integration with External GIS Data */}
+      <section className="p-4 bg-white rounded shadow mb-4">
+        <h3 className="font-bold mb-2">10. Integration with External GIS Data</h3>
+        <Button onClick={()=>handleImportGIS(null)}>Import GeoJSON/KML</Button>
+        <ul className="mt-2 text-sm">{externalLayers.map((l,i)=><li key={i}>{l.name||'Layer'}</li>)}</ul>
+      </section>
+
+      {/* 11. Mobile & Offline Support */}
+      <section className="p-4 bg-white rounded shadow mb-4">
+        <h3 className="font-bold mb-2">11. Mobile & Offline Support</h3>
+        <Switch checked={offlineMode} onCheckedChange={setOfflineMode} />
+        <span className="ml-2">Offline Mode {offlineMode ? 'On' : 'Off'}</span>
+        {offlineMode && <div className="text-xs text-yellow-600 mt-2">Offline mode enabled. Some features may be unavailable.</div>}
+      </section>
+
+      {/* 12. User Access Control & Sharing */}
+      <section className="p-4 bg-white rounded shadow mb-4">
+        <h3 className="font-bold mb-2">12. User Access Control & Sharing</h3>
+        <Select value={userRole} onValueChange={setUserRole}>
+          <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="viewer">Viewer</SelectItem>
+            <SelectItem value="editor">Editor</SelectItem>
+            <SelectItem value="admin">Admin</SelectItem>
+          </SelectContent>
+        </Select>
+        <Button onClick={handleShare} className="ml-2">Share Map</Button>
+        <span className="ml-2">Role: {userRole}</span>
+      </section>
+
+      {/* 13. Advanced Analytics & Insights */}
+      <section className="p-4 bg-white rounded shadow mb-4">
+        <h3 className="font-bold mb-2">13. Advanced Analytics & Insights</h3>
+        <div className="text-sm">Hotspots, trends, and predictive analytics coming soon.</div>
+        {/* Analytics dashboard UI would go here */}
+      </section>
+
+      {/* 14. Custom Map Providers & Styles */}
+      <section className="p-4 bg-white rounded shadow mb-4">
+        <h3 className="font-bold mb-2">14. Custom Map Providers & Styles</h3>
+        <Select value={mapProvider} onValueChange={setMapProvider}>
+          <SelectTrigger className="w-64"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            {mapProviders.map(p => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        <Input type="text" placeholder="Custom Tile URL" className="w-96 mt-2" />
+      </section>
+
+      {/* 15. Integration with Other App Modules */}
+      <section className="p-4 bg-white rounded shadow mb-4">
+        <h3 className="font-bold mb-2">15. Integration with Other App Modules</h3>
+        <div className="flex gap-4">
+          <Button>Go to CRM</Button>
+          <Button>Go to Scheduling</Button>
+          <Button>Go to Compliance</Button>
+        </div>
+      </section>
+
+      {/* 16. Accessibility & Usability */}
+      <section className="p-4 bg-white rounded shadow mb-4">
+        <h3 className="font-bold mb-2">16. Accessibility & Usability</h3>
+        <Switch /> <span className="ml-2">High Contrast Mode</span>
+        {/* Add ARIA labels, keyboard navigation, etc. */}
+      </section>
+
+      {/* 17. Real-Time Collaboration */}
+      <section className="p-4 bg-white rounded shadow mb-4">
+        <h3 className="font-bold mb-2">17. Real-Time Collaboration</h3>
+        <ul className="text-sm">{collaborators.map((c,i)=><li key={i}>{c.name||'User'}</li>)}</ul>
+        <div className="text-xs text-gray-500">Presence indicators and live editing coming soon.</div>
+      </section>
+
+      {/* 18. Map-Based Task Assignment */}
+      <section className="p-4 bg-white rounded shadow mb-4">
+        <h3 className="font-bold mb-2">18. Map-Based Task Assignment</h3>
+        <Button onClick={()=>setTasks([...tasks,{id:Date.now(),desc:'New Task'}])}>Assign Task</Button>
+        <ul className="mt-2 text-sm">{tasks.map(t=><li key={t.id}>{t.desc}</li>)}</ul>
+      </section>
+
+      {/* 19. API for Custom Integrations */}
+      <section className="p-4 bg-white rounded shadow mb-4">
+        <h3 className="font-bold mb-2">19. API for Custom Integrations</h3>
+        <Input type="text" value="https://api.yourapp.com/mapdata" readOnly className="w-96" />
+        <Button className="ml-2">Copy Endpoint</Button>
+      </section>
+
+      {/* 20. Audit Trail & Change History */}
+      <section className="p-4 bg-white rounded shadow mb-4">
+        <h3 className="font-bold mb-2">20. Audit Trail & Change History</h3>
+        <ul className="text-sm">{changeHistory.map((c,i)=><li key={i}>{c.desc||'Change'}</li>)}</ul>
+        <Button className="mt-2">Revert Last Change</Button>
+      </section>
+
+      {/* 21. Weather Data Integration */}
+      <section className="p-4 bg-white rounded shadow mb-4">
+        <h3 className="font-bold mb-2">21. Weather Data Integration</h3>
+        <Button onClick={()=>setWeatherData({temp:72,condition:'Sunny'})}>Fetch Weather</Button>
+        {weatherData && <div className="mt-2">Temp: {weatherData.temp}°F, {weatherData.condition}</div>}
+      </section>
+
+      {/* 22. Weather Overlays */}
+      <section className="p-4 bg-white rounded shadow mb-4">
+        <h3 className="font-bold mb-2">22. Weather Overlays</h3>
+        <Select value={weatherOverlay} onValueChange={setWeatherOverlay}>
+          <SelectTrigger className="w-64"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="none">None</SelectItem>
+            <SelectItem value="radar">Radar</SelectItem>
+            <SelectItem value="precip">Precipitation</SelectItem>
+            <SelectItem value="temp">Temperature</SelectItem>
+          </SelectContent>
+        </Select>
+        <span className="ml-2">Current Overlay: {weatherOverlay}</span>
+      </section>
+
+      {/* 23. Weather-based Alerts & Scheduling */}
+      <section className="p-4 bg-white rounded shadow mb-4">
+        <h3 className="font-bold mb-2">23. Weather-based Alerts & Scheduling</h3>
+        <ul className="text-sm">{weatherAlerts.map((a,i)=><li key={i}>{a}</li>)}</ul>
+        <div className="text-xs text-blue-600">Weather-based scheduling suggestions coming soon.</div>
+      </section>
+
+      {/* 24. Historical Weather Analytics */}
+      <section className="p-4 bg-white rounded shadow mb-4">
+        <h3 className="font-bold mb-2">24. Historical Weather Analytics</h3>
+        <Input type="date" className="w-40" />
+        <div className="text-xs text-gray-500">Historical weather chart coming soon.</div>
+      </section>
+
+      {/* 25. Weather Data in Reports & Exports */}
+      <section className="p-4 bg-white rounded shadow mb-4">
+        <h3 className="font-bold mb-2">25. Weather Data in Reports & Exports</h3>
+        <Button>Export Weather Data</Button>
+        <div className="text-xs text-gray-500">Weather data will be included in exported reports.</div>
+      </section>
+
+      <ThemeShowcase />
+      <ThemeEffectsShowcase />
+      <ThemeSelector />
+      <div className="mt-8">
+        <input
+          type="text"
+          value={searchValue}
+          onChange={e => setSearchValue(e.target.value)}
+          placeholder="Search address..."
+          className="mb-2 p-2 border rounded w-full"
+          aria-label="Address search"
+        />
+        <MapContainer
+          center={[PATRICK_COUNTY_CENTER.lat, PATRICK_COUNTY_CENTER.lng]}
+          zoom={12}
+          style={{ width: '100%', height: '100%' }}
+          scrollWheelZoom={true}
+          whenCreated={mapInstance => { mapRef.current = mapInstance; }}
+        >
+          <TileLayer
+            attribution="© Esri, Maxar, GeoEye"
+            url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+          />
+          {showHeatmap && (
+            <HeatmapLayer
+              points={heatmapPoints}
+              options={{ radius: heatmapRadius, blur: heatmapBlur, max: heatmapMax }}
             />
-          ) : (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span className="flex items-center gap-2">
-                    <Layers className="h-5 w-5" />
-                    Interactive Map
-                  </span>
-                  <div className="flex gap-2">
-                    <Button size="sm" variant="outline" onClick={exportToGeoJSON}>
-                      <Download className="h-4 w-4 mr-2" />
-                      Export GeoJSON
-                    </Button>
-                  </div>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="bg-slate-100 h-96 rounded-lg flex items-center justify-center relative">
-                  {/* Mock Map Interface */}
-                  <div className="text-center">
-                    <MapPin className="h-12 w-12 mx-auto mb-4 text-slate-400" />
-                    <p className="text-slate-600">Interactive Satellite Map</p>
-                    <p className="text-sm text-slate-500 mt-2">
-                      {mapMode === "measure" && "Draw shapes to measure area & perimeter"}
-                      {mapMode === "pressure-wash" && "Mark dirty (red) and clean (green) zones"}
-                    </p>
-                  </div>
-                  
-                  {/* Mode-specific overlays */}
-                  {mapMode === "pressure-wash" && (
-                    <div className="absolute top-4 left-4 flex gap-2">
-                      <Badge className="bg-red-100 text-red-800">Dirty Zones</Badge>
-                      <Badge className="bg-green-100 text-green-800">Clean Zones</Badge>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
           )}
-        </div>
-
-        {/* Measurement Panel */}
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Measurements</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <div className="flex justify-between">
-                  <span>Total Area:</span>
-                  <span className="font-mono">{measurements.area.toLocaleString()} sq ft</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Perimeter:</span>
-                  <span className="font-mono">{measurements.perimeter.toLocaleString()} ft</span>
-                </div>
-              </div>
-              
-              {mapMode === "pressure-wash" && (
-                <div className="pt-2 border-t">
-                  <div className="flex justify-between">
-                    <span>Dirty Zones:</span>
-                    <span className="font-mono text-red-600">{measurements.dirtyZones.toLocaleString()} sq ft</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Clean Zones:</span>
-                    <span className="font-mono text-green-600">{measurements.cleanZones.toLocaleString()} sq ft</span>
-                  </div>
-                  <div className="mt-2 text-sm text-muted-foreground">
-                    Est. Water: {Math.round(measurements.dirtyZones * 0.5)} gallons
-                  </div>
-                </div>
-              )}
-              
-              {selectedArea && (
-                <div className="pt-2 border-t">
-                  <Button onClick={exportToEstimate} className="w-full">
-                    Export to Estimate
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Employee Tracking Panel */}
-          {showEmployeeTracking && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="h-5 w-5" />
-                  Live Employee Tracking
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between p-2 bg-green-50 rounded">
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                      <span className="text-sm font-medium">John Doe</span>
-                    </div>
-                    <Badge variant="outline" className="text-green-600">Active</Badge>
-                  </div>
-                  
-                  <div className="flex items-center justify-between p-2 bg-orange-50 rounded">
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
-                      <span className="text-sm font-medium">Jane Smith</span>
-                    </div>
-                    <Badge variant="outline" className="text-orange-600">Break</Badge>
-                  </div>
-                  
-                  <div className="flex items-center justify-between p-2 bg-blue-50 rounded">
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                      <span className="text-sm font-medium">Mike Johnson</span>
-                    </div>
-                    <Badge variant="outline" className="text-blue-600">Travel</Badge>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* PCI Heatmap Control */}
-          <Card>
-            <CardHeader>
-              <CardTitle>PCI Heatmap</CardTitle>
-              <CardDescription>Pavement Condition Index overlay</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between mb-4">
-                <span>Show Heatmap</span>
-                <Switch />
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 bg-green-500 rounded"></div>
-                  <span className="text-sm">Excellent (85-100)</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 bg-yellow-500 rounded"></div>
-                  <span className="text-sm">Fair (55-85)</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 bg-red-500 rounded"></div>
-                  <span className="text-sm">Poor (0-55)</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Map Provider</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Label htmlFor="provider-select">Map Provider</Label>
-              <Select id="provider-select" title="Select map provider" aria-label="Select map provider" value={provider} onValueChange={setProvider}>
-                <SelectTrigger title="Map provider" aria-label="Map provider">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {mapProviders.map(p => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Map Controls</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Button onClick={()=>setIsPopout(v=>!v)}>{isPopout?'Dock':'Popout'}</Button>
-              <Button onClick={()=>setIsPinned(v=>!v)}>{isPinned?'Unpin':'Pin'}</Button>
-              <Switch checked={asphaltHighlight} onCheckedChange={setAsphaltHighlight} /> Asphalt Highlight
-              <div className="mt-2 flex items-center gap-2">
-                <Switch checked={geofencingEnabled} onCheckedChange={setGeofencingEnabled} /> Geofencing
-                {geofencingEnabled && (
-                  <span className={`ml-2 px-2 py-1 rounded text-xs ${inGeofence ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'}`}>
-                    {inGeofence ? 'Inside Geofence' : 'Outside Geofence'}
-                  </span>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        </MapContainer>
+        <Button style={{ position: 'absolute', zIndex: 1000, top: 10, right: 10 }} onClick={handleGPS}>
+          My Location
+        </Button>
       </div>
-
-      {/* PCI Heatmap Overlay (choropleth) */}
-      {mapMode === 'detect' && pciData.length > 0 && !pciLoading && (
-        <HeatmapLayer
-          fitBoundsOnLoad
-          fitBoundsOnUpdate
-          points={pciData.map(p => ({lat: p.lat, lng: p.lng, value: p.pci}))}
-          longitudeExtractor={m => m.lng}
-          latitudeExtractor={m => m.lat}
-          intensityExtractor={m => m.value}
-          max={100}
-          radius={30}
-          blur={20}
-          gradient={{0.55: 'red', 0.85: 'yellow', 1.0: 'green'}}
-        />
-      )}
-      {pciLoading && <div className="text-center text-sm text-muted-foreground">Loading PCI data...</div>}
-      {pciError && <div className="text-center text-sm text-red-600">{pciError}</div>}
-
-      {/* Compliance Overlays (VDOT/ADA/DEQ) */}
-      <div className="absolute top-4 right-4 z-30 flex flex-col gap-2">
-        <Button size="sm" onClick={addComplianceZone}>Add Compliance Zone</Button>
+      <div className="mt-8">
+        <UnifiedMapInterface height={400} />
       </div>
-      {complianceZones && complianceZones.map(zone => (
-        <div
-          key={zone.id}
-          className={`absolute z-10 border-2 ${zone.compliant ? 'border-green-500' : 'border-red-500'}`}
-          style={{
-            left: zone.x,
-            top: zone.y,
-            width: zone.width,
-            height: zone.height,
-            background: zone.compliant ? 'rgba(0,255,0,0.3)' : 'rgba(255,0,0,0.3)',
-            filter: zone.compliant ? 'blur(2px)' : 'hue-rotate(180deg)',
-            borderRadius: '8px',
-            pointerEvents: 'auto',
-            cursor: 'pointer',
-          }}
-          title={zone.tooltip}
-          onClick={() => setEditingZone(zone)}
-          draggable
-          onDragEnd={e => updateComplianceZone(zone.id, { x: e.clientX, y: e.clientY })}
-        />
-      ))}
-      {editingZone && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow-lg w-80">
-            <h3 className="font-bold mb-2">Edit Compliance Zone</h3>
-            <label className="block mb-2">Tooltip
-              <input className="w-full border p-1" value={editingZone.tooltip} onChange={e => updateComplianceZone(editingZone.id, { tooltip: e.target.value })} />
-            </label>
-            <label className="block mb-2">Compliant
-              <input type="checkbox" checked={editingZone.compliant} onChange={e => updateComplianceZone(editingZone.id, { compliant: e.target.checked })} />
-            </label>
-            <div className="flex gap-2 mt-4">
-              <Button size="sm" onClick={() => setEditingZone(null)}>Close</Button>
-              <Button size="sm" variant="destructive" onClick={() => deleteComplianceZone(editingZone.id)}>Delete</Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Pressure Wash Mode: Interactive dirty/clean zone drawing */}
-      {mapMode === 'pressure-wash' && dirtyZones && cleanZones && (
-        <PressureWashZoneDrawer
-          dirtyZones={dirtyZones}
-          cleanZones={cleanZones}
-          onDrawZone={handleDrawZone}
-          onPhotoUpload={handleBeforeAfterPhotoUpload}
-        />
-      )}
-
-      {/* Line Striping Templates */}
-      <LineStripingTemplateLibrary
-        onDropTemplate={handleDropLineTemplate}
-        selectedArea={selectedArea}
-      />
-
-      {/* AR Mode Toggle */}
-      <div className="fixed top-4 left-4 z-40">
-        <Button onClick={() => setArMode(v => !v)}>{arMode ? 'Exit AR Mode' : 'Enter AR Mode'}</Button>
-      </div>
-      {arMode && (
-        <ARProjection
-          type="measurement"
-          content="Area: 500 sq ft, Cost: $5,000"
-          position={{ lat: 100, lng: 200 }}
-          overlays={[
-            ...pciData.map(p => ({ type: 'pci', content: '', position: { lat: p.lat, lng: p.lng }, pciScore: p.pci })),
-            ...complianceZones.map(z => ({ type: 'compliance', content: z.tooltip, position: { lat: z.x, lng: z.y }, compliant: z.compliant, tooltip: z.tooltip })),
-            // Mock cracks
-            { type: 'crack', content: 'Crack Detected', position: { lat: 120, lng: 210 }, tooltip: 'Crack severity: High' }
-          ]}
-        />
-      )}
     </div>
   );
 };

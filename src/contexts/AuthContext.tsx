@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { UserRole } from '@/types/roles';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/integrations/supabase/client';
 
 interface User {
   id: string;
@@ -11,14 +11,13 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
-  login: (email: string, password: string) => Promise<boolean>;
+  login: (email: string, password: string, remember?: boolean) => Promise<boolean>;
   logout: () => void;
   loading: boolean;
+  savedCredentials?: { email: string; password: string } | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -31,6 +30,7 @@ export const useAuth = () => {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [savedCredentials, setSavedCredentials] = useState<{ email: string; password: string } | null>(null);
 
   useEffect(() => {
     // Check for stored user session
@@ -38,10 +38,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
+    // Check for saved credentials
+    const creds = localStorage.getItem('asphaltpro_saved_credentials');
+    if (creds) {
+      setSavedCredentials(JSON.parse(creds));
+    }
     setLoading(false);
   }, []);
 
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (email: string, password: string, remember?: boolean): Promise<boolean> => {
     setLoading(true);
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
@@ -50,6 +55,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
     setUser(data.user);
     localStorage.setItem('asphaltpro_user', JSON.stringify(data.user));
+    if (remember) {
+      localStorage.setItem('asphaltpro_saved_credentials', JSON.stringify({ email, password }));
+      setSavedCredentials({ email, password });
+    } else {
+      localStorage.removeItem('asphaltpro_saved_credentials');
+      setSavedCredentials(null);
+    }
     setLoading(false);
     return true;
   };
@@ -63,7 +75,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     user,
     login,
     logout,
-    loading
+    loading,
+    savedCredentials
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -28,8 +28,9 @@ export default function SignUp() {
       });
       toast.success('Account created!');
       navigate('/dashboard');
-    } catch (err) {
-      toast.error('Sign up failed');
+    } catch (err: any) {
+      console.error('SignUp error:', err);
+      toast.error(err.message || 'Sign up failed');
     } finally {
       setLoading(false);
     }

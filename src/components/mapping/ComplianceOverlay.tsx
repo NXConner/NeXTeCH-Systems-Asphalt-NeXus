@@ -8,16 +8,18 @@ export default function ComplianceOverlay({ data }: { data: Array<{ lat: number;
     return 'bg-gray-400';
   };
   return (
-    <div className="absolute inset-0 pointer-events-none z-40">
+    <div className="absolute inset-0 pointer-events-none z-40" aria-label="Compliance overlay">
       {data.map((point, i) => (
         <div
           key={i}
           className={`absolute rounded-full opacity-50 ${getColor(point.type)}`}
           style={{ left: `${point.lng}%`, top: `${point.lat}%`, width: 32, height: 32 }}
           title={point.warning || point.type}
+          role="img"
+          aria-label={`${point.type} compliance${point.warning ? ', warning: ' + point.warning : ''}`}
         >
           {point.warning && (
-            <span className="absolute left-8 top-0 bg-red-600 text-white text-xs px-2 py-1 rounded shadow-lg z-50">{point.warning}</span>
+            <span className="absolute left-8 top-0 bg-red-600 text-white text-xs px-2 py-1 rounded shadow-lg z-50" aria-label={point.warning}>{point.warning}</span>
           )}
         </div>
       ))}

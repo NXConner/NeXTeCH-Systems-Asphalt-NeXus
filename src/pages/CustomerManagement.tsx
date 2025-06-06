@@ -1,9 +1,9 @@
-
 import { useState } from "react";
 import CustomersList from "@/components/customers/CustomersList";
 import CustomerForm from "@/components/customers/CustomerForm";
 import { Customer } from "@/types/customer";
 import { toast } from "sonner";
+import CustomerDetailView from '@/components/customers/CustomerDetailView';
 
 const CustomerManagement = () => {
   const [customers, setCustomers] = useState<Customer[]>([
@@ -70,6 +70,7 @@ const CustomerManagement = () => {
 
   const [showForm, setShowForm] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState<Customer | undefined>();
+  const [viewingCustomer, setViewingCustomer] = useState<Customer | undefined>();
 
   const handleSaveCustomer = (customerData: Partial<Customer>) => {
     if (editingCustomer) {
@@ -126,8 +127,7 @@ const CustomerManagement = () => {
   };
 
   const handleViewCustomer = (customer: Customer) => {
-    // TODO: Implement customer detail view
-    toast.info(`Viewing ${customer.name} - Detail view coming soon`);
+    setViewingCustomer(customer);
   };
 
   if (showForm) {
@@ -153,6 +153,12 @@ const CustomerManagement = () => {
         onEditCustomer={handleEditCustomer}
         onNewCustomer={handleNewCustomer}
       />
+      {viewingCustomer && (
+        <CustomerDetailView
+          customer={viewingCustomer}
+          onClose={() => setViewingCustomer(undefined)}
+        />
+      )}
     </div>
   );
 };

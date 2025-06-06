@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Truck, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
@@ -91,6 +91,9 @@ const LoginForm = () => {
           <div className="mt-6 text-center">
             <p className="text-sm text-muted-foreground">
               Demo credentials: admin@asphaltpro.com / admin123
+            </p>
+            <p className="text-sm mt-2">
+              Don't have an account? <Link to="/signup" className="text-blue-600 underline">Sign up</Link>
             </p>
           </div>
         </CardContent>

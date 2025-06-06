@@ -13,7 +13,17 @@ export const EnhancedDashboard = () => {
   const { jobs, isLoading: jobsLoading, error: jobsError } = useJobsData();
   const { maintenanceRecords, isLoading: maintenanceLoading, error: maintenanceError } = useMaintenanceRecordsData();
   if (vehiclesLoading || jobsLoading || maintenanceLoading) return <div>Loading...</div>;
-  if (vehiclesError || jobsError || maintenanceError) return <div>Error loading dashboard data</div>;
+  if (vehiclesError || jobsError || maintenanceError) {
+    console.error('Dashboard data error:', { vehiclesError, jobsError, maintenanceError });
+    return (
+      <div>
+        Error loading dashboard data
+        <pre style={{ color: 'red', fontSize: 12, marginTop: 8 }}>
+          {vehiclesError?.message || jobsError?.message || maintenanceError?.message}
+        </pre>
+      </div>
+    );
+  }
 
   const activeVehicles = vehicles.filter(v => v.status === 'active');
   const criticalMaintenanceCount = maintenanceRecords.filter(m => m.priority === 'critical').length;

@@ -1,3 +1,4 @@
+import 'vitest';
 import { render } from '@testing-library/react';
 import { UnifiedReports } from '../components/dashboard/UnifiedReports';
 import { ExportUtility } from '../components/export/ExportUtility';

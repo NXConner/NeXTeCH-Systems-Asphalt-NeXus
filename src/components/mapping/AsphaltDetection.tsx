@@ -344,6 +344,7 @@ export function AsphaltDetection({ onAreaSelect, showEmployeeTracking = false, h
             height={600}
             className="border rounded-lg cursor-crosshair"
             onClick={handleCanvasClick}
+            aria-label="Asphalt detection map"
           />
         </CardContent>
       </Card>

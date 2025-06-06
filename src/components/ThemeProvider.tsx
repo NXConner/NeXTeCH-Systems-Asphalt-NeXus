@@ -1,10 +1,11 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { allThemes } from '../themes/themeConfig';
 
-const ThemeContext = createContext({ theme: 'dark', setTheme: (t: string) => {} });
+const ThemeContext = createContext({ theme: 'asphalt', setTheme: (t: string) => {}, themes: allThemes });
 export const useTheme = () => useContext(ThemeContext);
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  const [theme, setThemeState] = useState(() => localStorage.getItem('theme') || 'dark');
+  const [theme, setThemeState] = useState(() => localStorage.getItem('theme') || 'asphalt');
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -17,7 +18,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme }}>
+    <ThemeContext.Provider value={{ theme, setTheme, themes: allThemes }}>
       {children}
     </ThemeContext.Provider>
   );

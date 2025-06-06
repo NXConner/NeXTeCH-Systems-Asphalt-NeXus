@@ -1,9 +1,8 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Palette, Sparkles, Eye } from "lucide-react";
-import { ThemeSelector } from "@/components/ui/theme-selector";
+import ThemeSelector from "@/components/ui/theme-selector";
 import { PremiumButton } from "@/components/ui/premium-button";
 import { AdvancedCard } from "@/components/ui/advanced-card";
 import { cn } from "@/lib/utils";

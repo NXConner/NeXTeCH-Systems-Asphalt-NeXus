@@ -14,4 +14,9 @@ VALUES
 INSERT INTO maintenance_records (id, vehicle_id, type, title, description, status, priority, scheduled_date, completed_date, cost, mileage, performed_by, notes, parts)
 VALUES
   (gen_random_uuid(), (SELECT id FROM vehicles LIMIT 1), 'scheduled', 'Oil Change', 'Routine oil change', 'pending', 'medium', '2024-06-05T09:00:00Z', NULL, 100, 12000, 'John Doe', 'Change oil and filter', '[{"part":"oil filter","qty":1}]'),
-  (gen_random_uuid(), (SELECT id FROM vehicles OFFSET 1 LIMIT 1), 'repair', 'Brake Repair', 'Replace brake pads', 'completed', 'high', '2024-05-20T09:00:00Z', '2024-05-20T12:00:00Z', 300, 8000, 'Jane Smith', 'Replaced front brake pads', '[{"part":"brake pad","qty":4}]'); 
+  (gen_random_uuid(), (SELECT id FROM vehicles OFFSET 1 LIMIT 1), 'repair', 'Brake Repair', 'Replace brake pads', 'completed', 'high', '2024-05-20T09:00:00Z', '2024-05-20T12:00:00Z', 300, 8000, 'Jane Smith', 'Replaced front brake pads', '[{"part":"brake pad","qty":4}]');
+
+-- Demo Admin User (for Supabase Auth, must be created via Supabase CLI or API)
+-- To automate demo user creation, run the following command with Supabase CLI:
+-- supabase auth signups create --email admin@asphaltpro.com --password admin123
+-- Or use a Node.js script with @supabase/supabase-js to create the user programmatically. 

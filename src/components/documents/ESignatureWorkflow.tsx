@@ -22,15 +22,15 @@ export default function ESignatureWorkflow() {
       <CardContent>
         <div className="mb-4">
           <div className="font-bold mb-2">Documents</div>
-          <ul>{docs.map(d=>(<li key={d.id}><button className={`underline ${selected===d.id?'font-bold':''}`} onClick={()=>setSelected(d.id)}>{d.name} ({d.type})</button></li>))}</ul>
+          <ul>{docs.map(d=>(<li key={d.id}><button className={`underline ${selected===d.id?'font-bold':''}`} onClick={()=>setSelected(d.id)} aria-label={`Select document ${d.name}`}>{d.name} ({d.type})</button></li>))}</ul>
         </div>
         {selected && (
           <div className="mb-4">
             <div className="mb-2">Sign below:</div>
-            <canvas ref={canvasRef} width={300} height={100} className="border" style={{background:'#fff'}} />
+            <canvas ref={canvasRef} width={300} height={100} className="border" style={{background:'#fff'}} aria-label="Signature pad" />
             <div className="mt-2 flex gap-2">
-              <Button onClick={clear}>Clear</Button>
-              <Button>Save Signature</Button>
+              <Button onClick={clear} aria-label="Clear signature">Clear</Button>
+              <Button aria-label="Save signature">Save Signature</Button>
             </div>
           </div>
         )}
