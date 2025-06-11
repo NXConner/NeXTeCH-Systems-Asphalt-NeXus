@@ -28,7 +28,8 @@ createRoot(document.getElementById("root")!).render(
   </BrowserRouter>
 );
 
-if ('serviceWorker' in navigator) {
+// Register service worker only in production (avoid intercepting dev module requests)
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js');
   });

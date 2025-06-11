@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styles from './PopoutCalculator.module.css';
+import { evaluate } from 'mathjs';
 
 export const PopoutCalculator = () => {
   const [input, setInput] = useState('');
@@ -17,8 +18,7 @@ export const PopoutCalculator = () => {
 
   const handleEquals = () => {
     try {
-      // eslint-disable-next-line no-eval
-      const evalResult = eval(input);
+      const evalResult = evaluate(input);
       setResult(evalResult.toString());
     } catch {
       setResult('Error');

@@ -1,7 +1,7 @@
-
 import { useState, useEffect } from "react";
 import { X, CheckCircle, AlertCircle, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ErrorBoundary } from './ErrorBoundary';
 
 interface Notification {
   id: string;
@@ -19,15 +19,20 @@ interface NotificationBannerProps {
 
 const NotificationBanner = ({ notifications, onClose }: NotificationBannerProps) => {
   useEffect(() => {
+    const timers: NodeJS.Timeout[] = [];
+    
     notifications.forEach((notification) => {
       if (notification.autoClose !== false) {
         const timer = setTimeout(() => {
           onClose(notification.id);
         }, notification.duration || 5000);
-
-        return () => clearTimeout(timer);
+        timers.push(timer);
       }
     });
+
+    return () => {
+      timers.forEach(timer => clearTimeout(timer));
+    };
   }, [notifications, onClose]);
 
   const getIcon = (type: string) => {
@@ -90,4 +95,8 @@ const NotificationBanner = ({ notifications, onClose }: NotificationBannerProps)
   );
 };
 
-export default NotificationBanner;
+export default (props: NotificationBannerProps) => (
+  <ErrorBoundary>
+    <NotificationBanner {...props} />
+  </ErrorBoundary>
+);

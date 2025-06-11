@@ -7,24 +7,40 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Truck, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import { AuthError } from '@supabase/supabase-js';
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  const { login, loading } = useAuth();
+  const { signIn, loading } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-
-    const success = await login(email, password);
-    if (!success) {
-      setError('Invalid email or password');
-    } else {
+    try {
+      await signIn(email, password);
       navigate('/dashboard');
+    } catch (error: any) {
+      if (error instanceof AuthError) {
+        switch (error.message) {
+          case 'Invalid login credentials':
+            setError('Invalid email or password. Please try again.');
+            break;
+          case 'Email not confirmed':
+            setError('Please confirm your email address before signing in.');
+            break;
+          case 'Too many requests':
+            setError('Too many login attempts. Please try again later.');
+            break;
+          default:
+            setError(error.message || 'An error occurred during sign in.');
+        }
+      } else {
+        setError('An unexpected error occurred. Please try again.');
+      }
     }
   };
 
@@ -59,7 +75,7 @@ const LoginForm = () => {
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  placeholder="admin123"
+                  placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -88,12 +104,14 @@ const LoginForm = () => {
               {loading ? 'Signing in...' : 'Sign in'}
             </Button>
           </form>
-          <div className="mt-6 text-center">
+          <div className="mt-6 text-center space-y-2">
             <p className="text-sm text-muted-foreground">
-              Demo credentials: admin@asphaltpro.com / admin123
+              <Link to="/forgot-password" className="text-primary hover:underline">
+                Forgot your password?
+              </Link>
             </p>
-            <p className="text-sm mt-2">
-              Don't have an account? <Link to="/signup" className="text-blue-600 underline">Sign up</Link>
+            <p className="text-sm">
+              Don't have an account? <Link to="/signup" className="text-primary hover:underline">Sign up</Link>
             </p>
           </div>
         </CardContent>

@@ -13,7 +13,7 @@ export default function Settings() {
           <CardTitle>Localization</CardTitle>
         </CardHeader>
         <CardContent>
-          <select value={localization} onChange={e => setLocalization(e.target.value)}>
+          <select value={localization} onChange={e => setLocalization(e.target.value)} aria-label="Localization Language" title="Localization Language">
             <option value="en-US">English (US)</option>
             <option value="es-ES">Español (ES)</option>
             {/* Add more locales */}
@@ -25,7 +25,7 @@ export default function Settings() {
           <CardTitle>PWA & Offline Support</CardTitle>
         </CardHeader>
         <CardContent>
-          <Switch checked={pwaEnabled} onCheckedChange={setPwaEnabled} /> Enable PWA/Offline
+          <Switch checked={pwaEnabled} onCheckedChange={setPwaEnabled} aria-label="Enable PWA/Offline" /> Enable PWA/Offline
         </CardContent>
       </Card>
       <Card className="mt-4">
@@ -33,7 +33,7 @@ export default function Settings() {
           <CardTitle>Notifications</CardTitle>
         </CardHeader>
         <CardContent>
-          <Switch checked={notificationsEnabled} onCheckedChange={setNotificationsEnabled} /> Enable Notifications
+          <Switch checked={notificationsEnabled} onCheckedChange={setNotificationsEnabled} aria-label="Enable Notifications" /> Enable Notifications
         </CardContent>
       </Card>
       <Card className="mt-4">

@@ -11,7 +11,7 @@ import UserMenu from './UserMenu';
 import { NotificationCenter } from '../components/notifications/NotificationCenter';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { GripVertical } from 'lucide-react';
-import { Trophy, Award, Gift, Users, MessageCircle, BookOpen } from 'lucide-react';
+import { Trophy, Award, Gift, Users, MessageCircle, BookOpen, User } from 'lucide-react';
 import { SidebarMenu, SidebarMenuItem, SidebarMenuButton } from './ui/sidebar';
 import { Home, Truck, Calendar, FileText } from 'lucide-react';
 
@@ -33,6 +33,9 @@ const navItems = [
   { path: '/leaderboard', label: 'Leaderboard', icon: Users },
   { path: '/feedback', label: 'Feedback', icon: MessageCircle },
   { path: '/forum', label: 'Forum', icon: BookOpen },
+  { path: '/theme', label: 'Theme', icon: Palette },
+  { path: '/profile', label: 'Profile', icon: User },
+  { path: '/settings', label: 'Settings', icon: LucideIcons.Settings },
 ];
 
 const Navigation = () => {

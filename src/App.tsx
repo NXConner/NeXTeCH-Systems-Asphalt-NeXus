@@ -1,10 +1,11 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation, BrowserRouter as Router } from 'react-router-dom';
 import Navigation from "./components/Navigation";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { Sidebar, SidebarTrigger } from "@/components/ui/sidebar";
-import { useIsMobile } from "./hooks/use-mobile";
 import { MobileOptimizedLayout } from "./components/mobile/MobileOptimizedLayout";
 import MiniMapWidget from "@/components/ui/MiniMapWidget";
+import { SidebarProvider } from "@/contexts/SidebarContext";
+import { useSidebar } from "@/contexts/SidebarContext";
 import Index from './pages/Index';
 import Dashboard from './pages/Dashboard';
 import FleetManagement from './pages/FleetManagement';
@@ -55,10 +56,45 @@ import FeedbackPage from './pages/Feedback';
 import ForumPage from './pages/Forum';
 import SignUp from './pages/SignUp';
 import './App.css';
+import { AuthProvider } from '@/contexts/AuthContext';
+import AuthCallback from '@/pages/auth/callback';
+import GlobalSearch from './components/ui/GlobalSearch';
+import NotificationsDropdown from './components/ui/NotificationsDropdown';
+import UserAvatarMenu from './components/ui/UserAvatarMenu';
+import OnboardingTour from './components/ui/OnboardingTour';
+import KeyboardShortcuts from './components/ui/KeyboardShortcuts';
+import ExportImport from './components/ui/ExportImport';
+import Commenting from './components/ui/Commenting';
+import AuditLogs from './components/ui/AuditLogs';
+import AdvancedAnalytics from './components/ui/AdvancedAnalytics';
+import Integrations from './components/ui/Integrations';
+import Security from './components/ui/Security';
+import MobilePWA from './components/ui/MobilePWA';
+import Customization from './components/ui/Customization';
+import Support from './components/ui/Support';
+import Performance from './components/ui/Performance';
+import Growth from './components/ui/Growth';
+import API from './components/ui/API';
 
-function App() {
-  const isMobile = useIsMobile();
-  
+function AppContent() {
+  const { isMobile } = useSidebar();
+  const location = useLocation();
+  // Define auth routes where sidebar/header should be hidden
+  const authRoutes = ['/login', '/signup', '/auth/callback'];
+  const isAuthPage = authRoutes.some((route) => location.pathname.startsWith(route));
+
+  if (isAuthPage) {
+    return (
+      <main className="min-h-screen flex flex-col items-center justify-center bg-background">
+        <Routes>
+          <Route path="/login" element={<LoginForm />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
+        </Routes>
+      </main>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background flex">
       <Sidebar collapsible="offcanvas">
@@ -67,10 +103,27 @@ function App() {
       <div className="flex-1 flex flex-col">
         <header className="flex items-center h-16 px-4 border-b bg-card">
           <SidebarTrigger className="mr-4" />
+          <GlobalSearch />
+          <NotificationsDropdown />
+          <UserAvatarMenu />
           <span className="font-bold text-xl ml-4">Asphalt-NexTech_Systems</span>
         </header>
         <main className="flex-1">
           <MiniMapWidget />
+          <OnboardingTour />
+          <KeyboardShortcuts />
+          <ExportImport />
+          <Commenting />
+          <AuditLogs />
+          <AdvancedAnalytics />
+          <Integrations />
+          <Security />
+          <MobilePWA />
+          <Customization />
+          <Support />
+          <Performance />
+          <Growth />
+          <API />
           {isMobile ? (
             <MobileOptimizedLayout>
               <Routes>
@@ -122,6 +175,7 @@ function App() {
                 <Route path="/leaderboard" element={<LeaderboardPage />} />
                 <Route path="/feedback" element={<FeedbackPage />} />
                 <Route path="/forum" element={<ForumPage />} />
+                <Route path="/auth/callback" element={<AuthCallback />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </MobileOptimizedLayout>
@@ -175,12 +229,23 @@ function App() {
               <Route path="/leaderboard" element={<LeaderboardPage />} />
               <Route path="/feedback" element={<FeedbackPage />} />
               <Route path="/forum" element={<ForumPage />} />
+              <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           )}
         </main>
       </div>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <SidebarProvider>
+        <AppContent />
+      </SidebarProvider>
+    </AuthProvider>
   );
 }
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { fetchAccounts, fetchCustomers, fetchVendors, fetchTransactions } from '@/services/accountingService';
 import { 
   Account, Transaction, JournalEntry, Customer, Vendor, 
@@ -12,35 +12,46 @@ export function useAccountingSystem() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
-    Promise.all([
-      fetchAccounts(),
-      fetchCustomers(),
-      fetchVendors(),
-      fetchTransactions()
-    ]).then(([a, c, v, t]) => {
+    setError(null);
+    try {
+      const [a, c, v, t] = await Promise.all([
+        fetchAccounts(),
+        fetchCustomers(),
+        fetchVendors(),
+        fetchTransactions()
+      ]);
       setAccounts(a);
       setCustomers(c);
       setVendors(v);
       setTransactions(t);
-    }).finally(() => setLoading(false));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load accounting data');
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  const addAccount = (account: Omit<Account, 'id' | 'createdAt' | 'updatedAt'>) => {
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const addAccount = useCallback((account: Omit<Account, 'id' | 'createdAt' | 'updatedAt'>) => {
     const newAccount: Account = {
       ...account,
-      id: `acc-${String(accounts.length + 1).padStart(3, '0')}`,
+      id: crypto.randomUUID(),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
     
     setAccounts(prev => [...prev, newAccount]);
     return newAccount;
-  };
+  }, []);
 
-  const updateAccount = (id: string, updates: Partial<Account>) => {
+  const updateAccount = useCallback((id: string, updates: Partial<Account>) => {
     setAccounts(prev => 
       prev.map(acc => 
         acc.id === id 
@@ -48,7 +59,11 @@ export function useAccountingSystem() {
           : acc
       )
     );
-  };
+  }, []);
+
+  const deleteAccount = useCallback((id: string) => {
+    setAccounts(prev => prev.filter(acc => acc.id !== id));
+  }, []);
 
   const createInvoice = (customerId: string, items: { description: string; quantity: number; unitPrice: number }[], taxRate = 0.075) => {
     const customer = customers.find(c => c.id === customerId);
@@ -334,12 +349,15 @@ export function useAccountingSystem() {
     vendors,
     transactions,
     bankAccounts,
+    loading,
+    error,
     addAccount,
     updateAccount,
+    deleteAccount,
+    refetch: fetchData,
     createInvoice,
     recordPayment,
     recordExpense,
-    generateFinancialReports,
-    loading
+    generateFinancialReports
   };
 }

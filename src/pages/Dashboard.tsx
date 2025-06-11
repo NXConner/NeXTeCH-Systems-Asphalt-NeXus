@@ -10,7 +10,7 @@ import { DashboardOptimization } from "@/components/dashboard/DashboardOptimizat
 import { EnhancedDashboard } from "@/components/dashboard/EnhancedDashboard";
 import { MobileDashboard } from "@/components/mobile/MobileDashboard";
 import { ObjectivesWidget } from "@/components/dashboard/ObjectivesWidget";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { useSidebar } from "@/contexts/SidebarContext";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, FileText, Users } from "lucide-react";
@@ -40,9 +40,92 @@ import { ThemeEffectsShowcase } from '@/components/ui/theme-effects-showcase';
 import ThemeSelector from '@/components/ui/theme-selector';
 import { ResourceAllocation } from '@/components/dashboard/ResourceAllocation';
 import { useResourceData } from '@/hooks/useResourceData';
+import { useAuth } from '@/contexts/AuthContext';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { supabase } from '@/integrations/supabase/client';
+import type { Database } from '@/integrations/supabase/types';
+
+type Notification = Database['public']['Tables']['notifications']['Row'];
+type Activity = { id: string; description: string; created_at: string };
+
+function StatsOverview({ stats, loading }: { stats: any, loading: boolean }) {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      {loading ? (
+        Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="h-24 bg-muted animate-pulse rounded" />
+        ))
+      ) : (
+        <>
+          <div className="p-4 bg-card rounded shadow">
+            <div className="text-xs text-muted-foreground mb-1">Total Jobs</div>
+            <div className="text-2xl font-bold">{stats.jobs}</div>
+          </div>
+          <div className="p-4 bg-card rounded shadow">
+            <div className="text-xs text-muted-foreground mb-1">Active Vehicles</div>
+            <div className="text-2xl font-bold">{stats.vehicles}</div>
+          </div>
+          <div className="p-4 bg-card rounded shadow">
+            <div className="text-xs text-muted-foreground mb-1">Open Estimates</div>
+            <div className="text-2xl font-bold">{stats.estimates}</div>
+          </div>
+          <div className="p-4 bg-card rounded shadow">
+            <div className="text-xs text-muted-foreground mb-1">Staff</div>
+            <div className="text-2xl font-bold">{stats.staff}</div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function FleetStatus({ vehicles, loading }: { vehicles: any[], loading: boolean }) {
+  return (
+    <Card className="mb-6">
+      <CardHeader>
+        <CardTitle>Fleet Status</CardTitle>
+      </CardHeader>
+      <CardContent>
+        {loading ? (
+          <div>Loading fleet...</div>
+        ) : vehicles.length === 0 ? (
+          <div className="text-muted-foreground">No vehicles found.</div>
+        ) : (
+          <ul className="flex flex-wrap gap-4">
+            {vehicles.slice(0, 6).map(v => (
+              <li key={v.id} className="p-2 border rounded min-w-[120px]">
+                <div className="font-bold">{v.name}</div>
+                <div className="text-xs text-muted-foreground">{v.status}</div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function QuickLinks() {
+  const navigate = useNavigate();
+  return (
+    <Card className="mb-6">
+      <CardHeader>
+        <CardTitle>Quick Links</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-wrap gap-2">
+          <Button onClick={() => navigate('/inventory')}>Inventory</Button>
+          <Button onClick={() => navigate('/maintenance')}>Maintenance</Button>
+          <Button onClick={() => navigate('/crm')}>CRM</Button>
+          <Button onClick={() => navigate('/settings')}>Settings</Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
 const Dashboard = () => {
-  const isMobile = useIsMobile();
+  const { isMobile } = useSidebar();
   const navigate = useNavigate();
   const { hasPermission } = useRoleAccess();
   const [arMode, setArMode] = useState(false);
@@ -57,12 +140,87 @@ const Dashboard = () => {
   const [checklist, setChecklist, completed] = useChecklistState();
   const [tab, setTab] = useState('overview');
   const { resources, isLoading, error } = useResourceData();
+  const { user, loading } = useAuth();
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [activity, setActivity] = useState<Activity[]>([]);
+  const [loadingData, setLoadingData] = useState(true);
+  const [stats, setStats] = useState({ jobs: 0, vehicles: 0, estimates: 0, staff: 0 });
+  const [fleet, setFleet] = useState<any[]>([]);
+  const [loadingStats, setLoadingStats] = useState(true);
+  const [loadingFleet, setLoadingFleet] = useState(true);
+
+  useEffect(() => {
+    if (!user) return;
+    setLoadingData(true);
+    setLoadingStats(true);
+    setLoadingFleet(true);
+    const fetchData = async () => {
+      const { data: notifData } = await supabase
+        .from<Database['public']['Tables']['notifications']['Row']>('notifications')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(5);
+      // Fallback: If activity_feed table does not exist, use forum_posts and jobs as activity
+      let activityArr: Activity[] = [];
+      const { data: forumPosts } = await supabase
+        .from('forum_posts')
+        .select('id, title, created_at')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(3);
+      if (forumPosts) {
+        activityArr = activityArr.concat(forumPosts.map((p: any) => ({ id: p.id, description: `Posted in forum: ${p.title}`, created_at: p.created_at })));
+      }
+      const { data: jobs } = await supabase
+        .from('jobs')
+        .select('id, job_name, created_at')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(2);
+      if (jobs) {
+        activityArr = activityArr.concat(jobs.map((j: any) => ({ id: j.id, description: `Created job: ${j.job_name}`, created_at: j.created_at })));
+      }
+      activityArr.sort((a, b) => b.created_at.localeCompare(a.created_at));
+      setNotifications(notifData || []);
+      setActivity(activityArr);
+      setLoadingData(false);
+    };
+    fetchData();
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) return;
+    const fetchStats = async () => {
+      const { count: jobs } = await supabase.from('jobs').select('*', { count: 'exact', head: true });
+      const { count: vehicles } = await supabase.from('vehicles').select('*', { count: 'exact', head: true }).eq('status', 'active');
+      const { count: estimates } = await supabase.from('estimates').select('*', { count: 'exact', head: true });
+      const { count: staff } = await supabase.from('employees').select('*', { count: 'exact', head: true });
+      setStats({ jobs: jobs || 0, vehicles: vehicles || 0, estimates: estimates || 0, staff: staff || 0 });
+      setLoadingStats(false);
+    };
+    const fetchFleet = async () => {
+      const { data } = await supabase.from('vehicles').select('id, name, status').order('created_at', { ascending: false });
+      setFleet(data || []);
+      setLoadingFleet(false);
+    };
+    fetchStats();
+    fetchFleet();
+  }, [user]);
 
   useEffect(() => {
     achievements.forEach(a => {
       if (a.progress === 100) setAchievementNotification(`${a.name} unlocked!`);
     });
   }, [achievements]);
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  }
+  if (!user) {
+    navigate('/login');
+    return null;
+  }
 
   if (isMobile) {
     return (
@@ -141,6 +299,9 @@ const Dashboard = () => {
             </div>
             {tab === 'overview' && (
               <>
+                <StatsOverview stats={stats} loading={loadingStats} />
+                <FleetStatus vehicles={fleet} loading={loadingFleet} />
+                <QuickLinks />
                 <div className="grid grid-cols-1 gap-6 mb-8">
                   <StatsGrid />
                 </div>
@@ -239,6 +400,9 @@ const Dashboard = () => {
           {showSpreadsheet && <SealcoatingSpreadsheetApp />}
           {showCalculator && <PopoutCalculator />}
         </div>
+      </div>
+      <div className="mt-8 text-center text-muted-foreground">
+        <p>If you see this message, no dashboard widgets are available. Please check your data sources or contact support.</p>
       </div>
     </div>
   );

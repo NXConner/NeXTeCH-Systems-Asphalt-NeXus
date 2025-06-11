@@ -296,7 +296,7 @@ export const RegulatoryCompliance = () => {
                         </div>
                         {regulation.documentation_url && (
                           <Button size="sm" variant="outline" asChild>
-                            <a href={regulation.documentation_url} target="_blank" rel="noopener noreferrer">
+                            <a href={regulation.documentation_url} target="_blank" rel="noopener noreferrer" title="View documentation">
                               <ExternalLink className="h-4 w-4" />
                             </a>
                           </Button>
@@ -381,40 +381,40 @@ export const RegulatoryCompliance = () => {
                 <div>
                   <h3 className="font-semibold mb-3">Federal Resources</h3>
                   <ul className="space-y-2 text-sm">
-                    <li><a href="#" className="text-blue-600 hover:underline">OSHA Construction Safety Training</a></li>
-                    <li><a href="#" className="text-blue-600 hover:underline">FHWA Quality Assurance Programs</a></li>
-                    <li><a href="#" className="text-blue-600 hover:underline">EPA Environmental Compliance</a></li>
-                    <li><a href="#" className="text-blue-600 hover:underline">DOT Commercial Driver Training</a></li>
+                    <li><a href="#" className="text-blue-600 hover:underline" title="OSHA Construction Safety Training">OSHA Construction Safety Training</a></li>
+                    <li><a href="#" className="text-blue-600 hover:underline" title="FHWA Quality Assurance Programs">FHWA Quality Assurance Programs</a></li>
+                    <li><a href="#" className="text-blue-600 hover:underline" title="EPA Environmental Compliance">EPA Environmental Compliance</a></li>
+                    <li><a href="#" className="text-blue-600 hover:underline" title="DOT Commercial Driver Training">DOT Commercial Driver Training</a></li>
                   </ul>
                 </div>
                 
                 <div>
                   <h3 className="font-semibold mb-3">Virginia Resources</h3>
                   <ul className="space-y-2 text-sm">
-                    <li><a href="#" className="text-blue-600 hover:underline">VDOT Contractor Certification</a></li>
-                    <li><a href="#" className="text-blue-600 hover:underline">Virginia DEQ Training Programs</a></li>
-                    <li><a href="#" className="text-blue-600 hover:underline">VAPA Technical Seminars</a></li>
-                    <li><a href="#" className="text-blue-600 hover:underline">Local Government Training</a></li>
+                    <li><a href="#" className="text-blue-600 hover:underline" title="VDOT Contractor Certification">VDOT Contractor Certification</a></li>
+                    <li><a href="#" className="text-blue-600 hover:underline" title="Virginia DEQ Training Programs">Virginia DEQ Training Programs</a></li>
+                    <li><a href="#" className="text-blue-600 hover:underline" title="VAPA Technical Seminars">VAPA Technical Seminars</a></li>
+                    <li><a href="#" className="text-blue-600 hover:underline" title="Local Government Training">Local Government Training</a></li>
                   </ul>
                 </div>
                 
                 <div>
                   <h3 className="font-semibold mb-3">Industry Organizations</h3>
                   <ul className="space-y-2 text-sm">
-                    <li><a href="#" className="text-blue-600 hover:underline">NAPA Educational Programs</a></li>
-                    <li><a href="#" className="text-blue-600 hover:underline">AASHTO Training Resources</a></li>
-                    <li><a href="#" className="text-blue-600 hover:underline">AI Technical Publications</a></li>
-                    <li><a href="#" className="text-blue-600 hover:underline">TRB Training Opportunities</a></li>
+                    <li><a href="#" className="text-blue-600 hover:underline" title="NAPA Educational Programs">NAPA Educational Programs</a></li>
+                    <li><a href="#" className="text-blue-600 hover:underline" title="AASHTO Training Resources">AASHTO Training Resources</a></li>
+                    <li><a href="#" className="text-blue-600 hover:underline" title="AI Technical Publications">AI Technical Publications</a></li>
+                    <li><a href="#" className="text-blue-600 hover:underline" title="TRB Training Opportunities">TRB Training Opportunities</a></li>
                   </ul>
                 </div>
                 
                 <div>
                   <h3 className="font-semibold mb-3">Certification Programs</h3>
                   <ul className="space-y-2 text-sm">
-                    <li><a href="#" className="text-blue-600 hover:underline">Nuclear Gauge Safety Training</a></li>
-                    <li><a href="#" className="text-blue-600 hover:underline">Superpave Mix Design</a></li>
-                    <li><a href="#" className="text-blue-600 hover:underline">Quality Control Technician</a></li>
-                    <li><a href="#" className="text-blue-600 hover:underline">Construction Inspector Certification</a></li>
+                    <li><a href="#" className="text-blue-600 hover:underline" title="Nuclear Gauge Safety Training">Nuclear Gauge Safety Training</a></li>
+                    <li><a href="#" className="text-blue-600 hover:underline" title="Superpave Mix Design">Superpave Mix Design</a></li>
+                    <li><a href="#" className="text-blue-600 hover:underline" title="Quality Control Technician">Quality Control Technician</a></li>
+                    <li><a href="#" className="text-blue-600 hover:underline" title="Construction Inspector Certification">Construction Inspector Certification</a></li>
                   </ul>
                 </div>
               </div>

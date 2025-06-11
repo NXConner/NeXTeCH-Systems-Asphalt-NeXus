@@ -1,18 +1,18 @@
 import React from 'react';
-import { useIsMobile } from '@/hooks/use-mobile';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Truck, Calendar, AlertTriangle, MapPin, Users, FileText, Home } from 'lucide-react';
 import { useCrossComponentLinks } from '@/hooks/useCrossComponentLinks';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useSidebar } from '@/contexts/SidebarContext';
 
 interface MobileOptimizedLayoutProps {
   children: React.ReactNode;
 }
 
 export const MobileOptimizedLayout = ({ children }: MobileOptimizedLayoutProps) => {
-  const isMobile = useIsMobile();
+  const { isMobile } = useSidebar();
   const { linkToVehicle, linkToJob } = useCrossComponentLinks();
   const navigate = useNavigate();
   const location = useLocation();
@@ -67,7 +67,10 @@ export const MobileOptimizedLayout = ({ children }: MobileOptimizedLayoutProps) 
           </CardContent>
         </Card>
 
-        {children}
+        {/* Main Content */}
+        <div className="mt-4">
+          {children}
+        </div>
       </div>
     </div>
   );

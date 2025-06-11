@@ -363,6 +363,132 @@ export type Database = {
         };
         Relationships: [];
       },
+      notifications: {
+        Row: {
+          id: string;
+          user_id: string;
+          type: string;
+          message: string;
+          read: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          type: string;
+          message: string;
+          read?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          type?: string;
+          message?: string;
+          read?: boolean;
+          created_at?: string;
+        };
+        Relationships: [];
+      },
+      forum_posts: {
+        Row: {
+          id: string;
+          user_id: string;
+          title: string;
+          content: string;
+          category: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          title: string;
+          content: string;
+          category: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          title?: string;
+          content?: string;
+          category?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      },
+      jobs: {
+        Row: {
+          id: string;
+          user_id: string;
+          job_name: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          job_name: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          job_name?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      },
+      estimates: {
+        Row: {
+          id: string;
+          user_id: string;
+          status: string;
+          value: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          status: string;
+          value: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          status?: string;
+          value?: number;
+          created_at?: string;
+        };
+        Relationships: [];
+      },
+      employees: {
+        Row: {
+          id: string;
+          name: string;
+          email: string;
+          role: string;
+          status: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          email: string;
+          role: string;
+          status: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          email?: string;
+          role?: string;
+          status?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      },
     }
     Views: {
       [_ in never]: never

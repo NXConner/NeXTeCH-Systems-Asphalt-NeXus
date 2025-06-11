@@ -184,7 +184,7 @@
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border;
   }
 
   body {
@@ -196,8 +196,7 @@
 
   html {
     scroll-behavior: smooth;
-    scrollbar-width: thin; /* Not supported in all browsers */
-    scrollbar-color: hsl(var(--muted)) transparent;
+    /* scrollbar-width and scrollbar-color are not fully supported, so we use ::-webkit-scrollbar for styling */
     /* For Webkit browsers */
     &::-webkit-scrollbar {
       width: 8px;
@@ -430,8 +429,8 @@
   /* Enhanced Text gradients */
   .text-gradient-primary {
     background: var(--gradient-primary);
-    background-clip: text;
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     background-size: 200% 200%;
   }
@@ -439,8 +438,8 @@
   .text-gradient-rainbow {
     background: var(--gradient-rainbow);
     background-size: 400% 400%;
-    background-clip: text;
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     animation: gradientShift 6s ease-in-out infinite;
   }
@@ -448,8 +447,8 @@
   .text-gradient-cosmic {
     background: var(--gradient-cosmic);
     background-size: 400% 400%;
-    background-clip: text;
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     animation: gradientShift 8s ease-in-out infinite;
   }
@@ -457,8 +456,8 @@
   .text-holographic {
     background: linear-gradient(45deg, #ff0080, #ff8c00, #40e0d0, #ff0080);
     background-size: 400% 400%;
-    background-clip: text;
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     animation: holographic 3s linear infinite;
   }
@@ -557,6 +556,7 @@
     @apply relative;
     background: linear-gradient(var(--tw-gradient-angle, 45deg), var(--tw-gradient-stops)) border-box;
     border: 2px solid transparent;
+    -webkit-background-clip: padding-box, border-box;
     background-clip: padding-box, border-box;
     background-origin: padding-box, border-box;
   }
@@ -579,7 +579,10 @@
 
   .border-holographic {
     border: 2px solid transparent;
-    background: 
+    -webkit-background-clip: padding-box,
+      linear-gradient(var(--tw-gradient-angle, 45deg), var(--tw-gradient-stops)) padding-box,
+      linear-gradient(45deg, #ff0080, #ff8c00, #40e0d0, #ff0080) border-box;
+    background-clip: padding-box,
       linear-gradient(var(--tw-gradient-angle, 45deg), var(--tw-gradient-stops)) padding-box,
       linear-gradient(45deg, #ff0080, #ff8c00, #40e0d0, #ff0080) border-box;
     background-size: 400% 400%;

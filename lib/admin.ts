@@ -1,4 +1,4 @@
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { supabase } from '@/integrations/supabase/client';
 
 export type User = {
   id: string;
@@ -19,7 +19,6 @@ export type Profile = {
 };
 
 export async function isAdmin(): Promise<boolean> {
-  const supabase = createClientComponentClient();
   const { data: { user } } = await supabase.auth.getUser();
   
   if (!user) return false;
@@ -34,7 +33,6 @@ export async function isAdmin(): Promise<boolean> {
 }
 
 export async function getAllUsers(): Promise<User[]> {
-  const supabase = createClientComponentClient();
   const { data: users, error } = await supabase
     .from('users')
     .select('*')
@@ -45,7 +43,6 @@ export async function getAllUsers(): Promise<User[]> {
 }
 
 export async function updateUserRole(userId: string, role: 'user' | 'admin'): Promise<void> {
-  const supabase = createClientComponentClient();
   const { error } = await supabase
     .from('users')
     .update({ role })
@@ -55,7 +52,6 @@ export async function updateUserRole(userId: string, role: 'user' | 'admin'): Pr
 }
 
 export async function deleteUser(userId: string): Promise<void> {
-  const supabase = createClientComponentClient();
   const { error } = await supabase.auth.admin.deleteUser(userId);
   if (error) throw error;
 } 

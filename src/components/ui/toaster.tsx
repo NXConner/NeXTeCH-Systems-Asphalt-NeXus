@@ -1,6 +1,6 @@
 import React from 'react';
+import { Toaster as SonnerToaster } from 'sonner';
 
 export function Toaster() {
-  // Minimal placeholder for toast notifications
-  return null;
+  return <SonnerToaster />;
 }

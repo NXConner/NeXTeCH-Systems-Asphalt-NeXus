@@ -20,7 +20,6 @@ import {
   Download
 } from "lucide-react";
 import { Employee } from "@/types/employee";
-import { mockEmployees } from "@/data/mockEmployeeData";
 import { DocumentUpload } from "@/components/employee/DocumentUpload";
 import { CustomerContractManager } from "@/components/contracts/CustomerContractManager";
 import { DailyLog } from "@/components/reports/DailyLog";
@@ -38,7 +37,7 @@ interface Document {
 }
 
 export default function EmployeeManagement() {
-  const [employees, setEmployees] = useState<Employee[]>(mockEmployees);
+  const [employees, setEmployees] = useState<Employee[]>([]);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState<string>("all");

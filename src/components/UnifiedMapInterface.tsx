@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { MapContainer, TileLayer, LayersControl } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Button } from './ui/button';
+import L, { Map as LeafletMap } from 'leaflet';
 
 interface UnifiedMapInterfaceProps {
   width?: number | string;
@@ -18,7 +19,7 @@ const UnifiedMapInterface: React.FC<UnifiedMapInterfaceProps> = ({ width = '100v
     bearing: 0,
     pitch: 0,
   });
-  const [mapInstance, setMapInstance] = React.useState<any>(null);
+  const [mapInstance, setMapInstance] = React.useState<LeafletMap | null>(null);
   const mapRef = useRef<any>(null);
   const [themeModalOpen, setThemeModalOpen] = React.useState(false);
 
@@ -71,16 +72,23 @@ const UnifiedMapInterface: React.FC<UnifiedMapInterfaceProps> = ({ width = '100v
   };
 
   return (
-    <div style={{ width: '100vw', height, position: 'relative', zIndex: themeModalOpen ? 10 : 'auto', pointerEvents: themeModalOpen ? 'none' : 'auto', maxWidth: '100vw', minWidth: '100vw' }}>
+    <div style={{
+      width: '100%',
+      height,
+      position: 'relative',
+      zIndex: themeModalOpen ? 10 : 'auto',
+      pointerEvents: themeModalOpen ? 'none' : 'auto',
+      overflow: 'hidden'
+    }}>
       <Button style={{ position: 'absolute', zIndex: 1000, top: 10, right: 10 }} onClick={handleGPS}>
         My Location
       </Button>
       <MapContainer
-        center={[viewState.latitude, viewState.longitude]}
+        center={[viewState.latitude, viewState.longitude] as [number, number]}
         zoom={viewState.zoom}
-        style={{ width: '100vw', height: '100%' }}
+        style={{ width: '100%', height: '100%' }}
         scrollWheelZoom={true}
-        whenReady={instance => setMapInstance(instance)}
+        whenCreated={(instance: LeafletMap) => setMapInstance(instance)}
       >
         <LayersControl position="topright">
           <LayersControl.BaseLayer checked name="Satellite">

@@ -1,12 +1,12 @@
 import { Outlet } from 'react-router-dom';
-import { useIsMobile } from '@/hooks/use-mobile';
 import { Sidebar, SidebarTrigger } from '@/components/ui/sidebar';
 import Navigation from '@/components/Navigation';
 import MiniMapWidget from '@/components/ui/MiniMapWidget';
 import { MobileOptimizedLayout } from '@/components/mobile/MobileOptimizedLayout';
+import { useSidebar } from '@/contexts/SidebarContext';
 
 const MainLayout = () => {
-  const isMobile = useIsMobile();
+  const { isMobile } = useSidebar();
   
   return (
     <div className="min-h-screen bg-background flex">

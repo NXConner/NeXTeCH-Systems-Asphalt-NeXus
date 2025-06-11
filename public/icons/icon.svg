@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="512" height="512" fill="#1E293B"/>
+  
+  <!-- Road/Asphalt Pattern -->
+  <path d="M64 256 L448 256" stroke="#334155" stroke-width="32" stroke-linecap="round"/>
+  <path d="M64 192 L448 192" stroke="#334155" stroke-width="16" stroke-linecap="round"/>
+  <path d="M64 320 L448 320" stroke="#334155" stroke-width="16" stroke-linecap="round"/>
+  
+  <!-- Construction Elements -->
+  <circle cx="256" cy="256" r="96" fill="#0F172A" stroke="#475569" stroke-width="8"/>
+  
+  <!-- Road Markings -->
+  <path d="M192 256 L320 256" stroke="#F8FAFC" stroke-width="8" stroke-dasharray="16 16"/>
+  
+  <!-- Tools/Equipment -->
+  <path d="M224 192 L288 192" stroke="#F8FAFC" stroke-width="4"/>
+  <path d="M224 320 L288 320" stroke="#F8FAFC" stroke-width="4"/>
+  
+  <!-- Company Initials -->
+  <text x="256" y="256" font-family="Arial" font-size="64" fill="#F8FAFC" text-anchor="middle" dominant-baseline="middle">N</text>
+</svg> 

@@ -27,7 +27,10 @@ const Landing: React.FC = () => {
         <section className="max-w-3xl w-full text-center mt-16 mb-12">
           <h1 className="text-5xl font-extrabold text-gray-900 mb-4">Asphalt Business Management, Reimagined</h1>
           <p className="text-lg text-gray-600 mb-8">All-in-one platform for CRM, estimates, fleet, jobs, analytics, and more. Built for modern paving and asphalt companies.</p>
-          <Button size="lg" className="text-lg px-8 py-4" onClick={() => navigate('/login')}>Get Started</Button>
+          <div className="flex justify-center gap-4">
+            <Button size="lg" className="text-lg px-8 py-4" onClick={() => navigate('/login')}>Get Started</Button>
+            <Button size="lg" variant="outline" className="text-lg px-8 py-4" onClick={() => navigate('/signup')}>Sign Up</Button>
+          </div>
         </section>
         <section className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl mb-16">
           {features.map((feature) => (
