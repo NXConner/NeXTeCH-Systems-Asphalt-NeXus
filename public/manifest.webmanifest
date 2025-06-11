@@ -1,0 +1,20 @@
+{
+  "name": "Asphalt Nexus",
+  "short_name": "AsphaltNexus",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#181A20",
+  "theme_color": "#181A20",
+  "icons": [
+    {
+      "src": "/pwa-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/pwa-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+} 
