@@ -13,18 +13,36 @@ pnpm-debug.log*
 lerna-debug.log*
 
 # Dependencies
-node_modules
-dist
-dist-ssr
-*.local
+node_modules/
+/.pnp
+.pnp.js
+
+# Testing
+/coverage
+
+# Production
+/build
+/dist
+
+# Misc
+.DS_Store
+.env.development.local
+.env.test.local
+.env.production.local
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
 .idea
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# OS generated files
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
