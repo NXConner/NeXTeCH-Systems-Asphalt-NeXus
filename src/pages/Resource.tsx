@@ -3,7 +3,7 @@ import { ResourceAllocation } from '@/components/dashboard/ResourceAllocation';
 import { useResourceData } from '@/hooks/useResourceData';
 import { ThemeShowcase } from '@/components/ui/theme-showcase';
 import { ThemeEffectsShowcase } from '@/components/ui/theme-effects-showcase';
-import UnifiedMapInterface from '@/components/UnifiedMapInterface';
+import { UnifiedMapInterface } from '@/components';
 
 export default function ResourcePage() {
   const { resources, isLoading, error } = useResourceData();

@@ -2,7 +2,6 @@ import { createBrowserRouter } from 'react-router-dom';
 import { Outlet } from 'react-router-dom';
 import { Sidebar, SidebarTrigger } from '@/components/ui/sidebar';
 import Navigation from '@/components/Navigation';
-import MiniMapWidget from '@/components/ui/MiniMapWidget';
 import { MobileOptimizedLayout } from '@/components/mobile/MobileOptimizedLayout';
 import { useSidebar } from '@/contexts/SidebarContext';
 import ProtectedRoute from '@/components/ProtectedRoute';
@@ -24,7 +23,6 @@ const Layout = () => {
           <span className="font-bold text-xl ml-4">Asphalt-NexTech_Systems</span>
         </header>
         <main className="flex-1">
-          <MiniMapWidget />
           {isMobile ? (
             <MobileOptimizedLayout>
               <Outlet />

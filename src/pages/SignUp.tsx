@@ -27,12 +27,7 @@ export default function SignUp() {
     setConfirmationSent(false);
     setLoading(true);
     try {
-      const user = await apiService.signUp({
-        email: form.email,
-        password: form.password,
-        name: form.name,
-        avatar: form.avatar,
-      });
+      const user = await apiService.signUp(form.email, form.password);
       
       if (user) {
         toast.success('Account created! Please check your email for confirmation.');

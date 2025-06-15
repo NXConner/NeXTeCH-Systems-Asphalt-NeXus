@@ -180,13 +180,32 @@
     --outline: 217.2 32.6% 25%;
     --outline-variant: 217.2 32.6% 20%;
   }
+
+  /* Remove global border and outline for a cleaner look */
+  * {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+  }
+  /* Subtle card and sidebar styling */
+  .card, .sidebar, .popover, .hover-card, .enhanced-card, .advanced-card {
+    border-radius: 16px !important;
+    border: 1px solid hsl(var(--border) / 0.12) !important;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.06) !important;
+    background: hsl(var(--card));
+  }
+  /* Remove white outlines from all elements */
+  *:focus, *:active {
+    outline: none !important;
+    box-shadow: 0 0 0 2px hsl(var(--primary) / 0.12) !important;
+  }
+  /* Remove grid/pattern backgrounds unless explicitly set */
+  .pattern-grid, .pattern-dots, .pattern-diagonal {
+    background-image: none !important;
+  }
 }
 
 @layer base {
-  * {
-    @apply border;
-  }
-
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;

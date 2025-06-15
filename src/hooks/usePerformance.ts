@@ -1,6 +1,7 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import { performanceService } from '@/services/performanceService';
 import { logger } from '@/services/logger';
+import { useAnalytics } from './useAnalytics';
 
 export interface PerformanceOptions {
   name?: string;
@@ -11,6 +12,8 @@ export interface PerformanceOptions {
 export function usePerformance(options: PerformanceOptions = {}) {
   const { name, threshold, onThresholdExceeded } = options;
   const measurementRef = useRef<{ start: number; startMemory: any } | null>(null);
+  const [metrics, setMetrics] = useState<PerformanceMetric[]>([]);
+  const { trackPerformance } = useAnalytics();
 
   useEffect(() => {
     if (threshold && name) {
@@ -81,10 +84,56 @@ export function usePerformance(options: PerformanceOptions = {}) {
     };
   }, [endMeasurement]);
 
+  useEffect(() => {
+    if (!window.performance) return;
+
+    const observer = new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        const metric: PerformanceMetric = {
+          name: entry.name,
+          value: entry.duration,
+          rating: getRating(entry.duration, entry.name),
+        };
+
+        setMetrics((prev) => [...prev, metric]);
+        trackPerformance(metric);
+      }
+    });
+
+    observer.observe({ entryTypes: ['measure', 'resource', 'paint'] });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  const getRating = (value: number, name: string): PerformanceMetric['rating'] => {
+    const thresholds = {
+      'First Contentful Paint': { good: 1800, poor: 3000 },
+      'Largest Contentful Paint': { good: 2500, poor: 4000 },
+      'First Input Delay': { good: 100, poor: 300 },
+      'Cumulative Layout Shift': { good: 0.1, poor: 0.25 },
+      'Time to Interactive': { good: 3800, poor: 7300 },
+    };
+
+    const threshold = thresholds[name as keyof typeof thresholds];
+    if (!threshold) return 'good';
+
+    if (value <= threshold.good) return 'good';
+    if (value <= threshold.poor) return 'needs-improvement';
+    return 'poor';
+  };
+
+  const getMetricsByRating = (rating: PerformanceMetric['rating']) => {
+    return metrics.filter((metric) => metric.rating === rating);
+  };
+
   return {
     startMeasurement,
     endMeasurement,
-    measure
+    measure,
+    metrics,
+    getMetricsByRating,
   };
 }
 

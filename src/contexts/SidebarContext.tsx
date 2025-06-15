@@ -4,8 +4,10 @@ import { useIsMobile } from "@/hooks/use-mobile"
 const SIDEBAR_COOKIE_NAME = "sidebar:state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
 
+type SidebarState = "expanded" | "collapsed"
+
 type SidebarContext = {
-  state: "expanded" | "collapsed"
+  state: SidebarState
   open: boolean
   setOpen: (open: boolean) => void
   openMobile: boolean
@@ -27,29 +29,47 @@ export function useSidebar() {
 export function SidebarProvider({ children }: { children: React.ReactNode }) {
   const isMobile = useIsMobile()
   const [openMobile, setOpenMobile] = React.useState(false)
-  const [open, setOpen] = React.useState(true)
+  const [state, setState] = React.useState<SidebarState>("expanded")
+
+  React.useEffect(() => {
+    const savedState = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith(SIDEBAR_COOKIE_NAME))
+      ?.split("=")[1]
+    if (savedState) {
+      setState(savedState as SidebarState)
+    }
+  }, [])
 
   const toggleSidebar = React.useCallback(() => {
-    return isMobile
-      ? setOpenMobile((open) => !open)
-      : setOpen((open) => !open)
+    if (isMobile) {
+      setOpenMobile((open) => !open)
+    } else {
+      setState((currentState) => {
+        const newState = currentState === "expanded" ? "collapsed" : "expanded"
+        document.cookie = `${SIDEBAR_COOKIE_NAME}=${newState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
+        return newState
+      })
+    }
   }, [isMobile])
+
+  const setOpen = React.useCallback((open: boolean) => {
+    const newState = open ? "expanded" : "collapsed"
+    setState(newState)
+    document.cookie = `${SIDEBAR_COOKIE_NAME}=${newState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
+  }, [])
 
   const contextValue = React.useMemo<SidebarContext>(
     () => ({
-      state: open ? "expanded" : "collapsed",
-      open,
-      setOpen: (value: boolean | ((value: boolean) => boolean)) => {
-        const openState = typeof value === "function" ? value(open) : value
-        setOpen(openState)
-        document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
-      },
+      state,
+      open: state === "expanded",
+      setOpen,
       isMobile,
       openMobile,
       setOpenMobile,
       toggleSidebar,
     }),
-    [open, isMobile, openMobile, toggleSidebar]
+    [state, setOpen, isMobile, openMobile, toggleSidebar]
   )
 
   return (
@@ -57,4 +77,6 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
       {children}
     </SidebarContext.Provider>
   )
-} 
+}
+
+export default SidebarContext 

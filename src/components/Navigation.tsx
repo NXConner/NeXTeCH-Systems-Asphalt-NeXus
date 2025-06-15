@@ -1,63 +1,122 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useMatch, useLocation } from 'react-router-dom';
-import * as LucideIcons from 'lucide-react';
+import React from 'react';
+import { useLocation, Link } from 'react-router-dom';
 import { NavigationService } from '../services/navigationService';
-import { Collapsible, CollapsibleTrigger, CollapsibleContent } from './ui/collapsible';
-import { Palette } from 'lucide-react';
-import { ThemeIntegration } from './ui/theme-integration';
-import { Badge } from './ui/badge';
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './ui/tooltip';
-import UserMenu from './UserMenu';
-import { NotificationCenter } from '../components/notifications/NotificationCenter';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { GripVertical } from 'lucide-react';
-import { Trophy, Award, Gift, Users, MessageCircle, BookOpen, User } from 'lucide-react';
-import { SidebarMenu, SidebarMenuItem, SidebarMenuButton } from './ui/sidebar';
-import { Home, Truck, Calendar, FileText } from 'lucide-react';
+import { Sidebar, SidebarContent, SidebarHeader, SidebarTrigger, SidebarFooter, SidebarSeparator } from './ui/sidebar';
+import { getIcon } from '../utils/iconUtils';
+import { useSidebar } from '@/contexts/SidebarContext';
+import { ChevronLeft, ChevronRight, Search, MapPin, Calculator, FileSpreadsheet, Palette } from 'lucide-react';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { ThemeSwitcher } from './ui/theme-switcher';
 
-const navSections = NavigationService.getMainNavigation();
-const quickActions = NavigationService.getQuickActions();
-
-const navItems = [
-  { path: '/', label: 'Home', icon: Home },
-  { path: '/fleet', label: 'Fleet', icon: Truck },
-  { path: '/jobs', label: 'Jobs', icon: Calendar },
-  { path: '/employee-management', label: 'Staff', icon: Users },
-  { path: '/accounting', label: 'Finance', icon: FileText },
-  { path: '/dashboard', label: 'Dashboard', icon: LucideIcons.BarChart3 },
-  { path: '/analytics', label: 'Analytics', icon: LucideIcons.BarChart3 },
-  { label: 'Gamification & Community', type: 'section' },
-  { path: '/achievements', label: 'Achievements', icon: Trophy },
-  { path: '/badges', label: 'Badges', icon: Award },
-  { path: '/rewards', label: 'Rewards', icon: Gift },
-  { path: '/leaderboard', label: 'Leaderboard', icon: Users },
-  { path: '/feedback', label: 'Feedback', icon: MessageCircle },
-  { path: '/forum', label: 'Forum', icon: BookOpen },
-  { path: '/theme', label: 'Theme', icon: Palette },
-  { path: '/profile', label: 'Profile', icon: User },
-  { path: '/settings', label: 'Settings', icon: LucideIcons.Settings },
-];
-
-const Navigation = () => {
+export const Navigation: React.FC = () => {
   const location = useLocation();
+  const { state, toggleSidebar } = useSidebar();
+  const isCollapsed = state === "collapsed";
+  const navSections = NavigationService.getMainNavigation();
 
   return (
-    <SidebarMenu>
-      {navItems.filter(item => item.path && item.icon).map(item => {
-        const isActive = location.pathname === item.path || 
-          (item.path === '/' && location.pathname === '/landing');
-        return (
-          <SidebarMenuItem key={item.path + '-' + item.label}>
-            <Link to={item.path} style={{ width: '100%' }}>
-              <SidebarMenuButton isActive={isActive}>
-                {item.icon && React.createElement(item.icon, { className: 'mr-2 h-5 w-5' })}
-                <span>{item.label}</span>
-              </SidebarMenuButton>
-            </Link>
-          </SidebarMenuItem>
-        );
-      })}
-    </SidebarMenu>
+    <Sidebar variant="floating" collapsible="icon" className="bg-background/80 backdrop-blur-sm">
+      <SidebarHeader className="flex items-center gap-2 p-4">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={toggleSidebar}
+          className="h-8 w-8"
+        >
+          {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+        </Button>
+        <h2 className={`text-lg font-semibold transition-all duration-200 ${isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100 w-auto'}`}>
+          Navigation
+        </h2>
+      </SidebarHeader>
+
+      <div className="px-4 pb-4">
+        <div className={`transition-all duration-200 ${isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100'}`}>
+          <div className="relative">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input placeholder="Search address..." className="pl-8" />
+          </div>
+        </div>
+      </div>
+
+      <SidebarContent className="hover:bg-background/90 hover:backdrop-blur-md transition-all duration-200">
+        {navSections.map((section, index) => (
+          <React.Fragment key={section.title}>
+            {index > 0 && <SidebarSeparator />}
+            <div className="px-3 py-2">
+              {!isCollapsed && (
+                <h3 className="text-sm font-medium text-muted-foreground mb-2">
+                  {section.title}
+                </h3>
+              )}
+              <div className="space-y-1">
+                {section.links.map((link) => {
+                  const Icon = getIcon(link.icon || '');
+                  const isActive = location.pathname === link.path;
+                  return (
+                    <Link 
+                      key={link.path} 
+                      to={link.path}
+                      className="block"
+                    >
+                      <Button
+                        variant={isActive ? "secondary" : "ghost"}
+                        className={`w-full justify-start gap-2 hover:bg-background/90 hover:backdrop-blur-md ${isCollapsed ? "px-2" : "px-3"}`}
+                        size="sm"
+                      >
+                        <Icon className="h-4 w-4 flex-shrink-0" />
+                        {!isCollapsed && <span>{link.label}</span>}
+                      </Button>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          </React.Fragment>
+        ))}
+
+        <div className="px-3 py-2">
+          <div className="space-y-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              className={`w-full justify-start gap-2 hover:bg-background/90 hover:backdrop-blur-md ${isCollapsed ? "px-2" : "px-3"}`}
+            >
+              <MapPin className="h-4 w-4 flex-shrink-0" />
+              {!isCollapsed && <span>Current Location</span>}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className={`w-full justify-start gap-2 hover:bg-background/90 hover:backdrop-blur-md ${isCollapsed ? "px-2" : "px-3"}`}
+            >
+              <Calculator className="h-4 w-4 flex-shrink-0" />
+              {!isCollapsed && <span>Calculator</span>}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className={`w-full justify-start gap-2 hover:bg-background/90 hover:backdrop-blur-md ${isCollapsed ? "px-2" : "px-3"}`}
+            >
+              <FileSpreadsheet className="h-4 w-4 flex-shrink-0" />
+              {!isCollapsed && <span>Spreadsheet</span>}
+            </Button>
+          </div>
+        </div>
+      </SidebarContent>
+
+      <SidebarFooter className="p-4">
+        <div className="flex items-center justify-between">
+          <ThemeSwitcher />
+          {!isCollapsed && (
+            <div className="text-xs text-muted-foreground">
+              © 2024 NeXTeCH Systems
+            </div>
+          )}
+        </div>
+      </SidebarFooter>
+    </Sidebar>
   );
 };
 

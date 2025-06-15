@@ -8,20 +8,30 @@ import { Truck, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthError } from '@supabase/supabase-js';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+
+// Define validation schema
+const loginSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+});
+type LoginFormInputs = z.infer<typeof loginSchema>;
 
 const LoginForm = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  // Use react-hook-form for validation
+  const { register, handleSubmit, formState: { errors } } = useForm<LoginFormInputs>({ resolver: zodResolver(loginSchema) });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const { signIn, loading } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Submit handler with validated values
+  const onSubmit = async (data: LoginFormInputs) => {
     setError('');
     try {
-      await signIn(email, password);
+      await signIn(data.email, data.password);
       navigate('/dashboard');
     } catch (error: any) {
       if (error instanceof AuthError) {
@@ -57,17 +67,16 @@ const LoginForm = () => {
           <CardDescription>Sign in to your account to continue</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
                 type="email"
                 placeholder="admin@asphaltpro.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
+                {...register('email')}
               />
+              {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
@@ -76,10 +85,9 @@ const LoginForm = () => {
                   id="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
+                  {...register('password')}
                 />
+                {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
                 <Button
                   type="button"
                   variant="ghost"

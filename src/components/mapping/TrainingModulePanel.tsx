@@ -1,5 +1,6 @@
 import React from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
+import { EnhancedModule } from '../ui/enhanced-module';
+import { BookOpen } from 'lucide-react';
 
 const modules = [
   { id: 1, name: 'OSHA 10', status: 'Completed' },
@@ -9,20 +10,21 @@ const modules = [
 
 export default function TrainingModulePanel() {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Training Modules</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <ul className="space-y-2">
-          {modules.map(m => (
-            <li key={m.id} className="flex justify-between items-center">
-              <span>{m.name}</span>
-              <span className={m.status === 'Completed' ? 'text-green-600' : 'text-yellow-600'}>{m.status}</span>
-            </li>
-          ))}
-        </ul>
-      </CardContent>
-    </Card>
+    <EnhancedModule
+      title="Training Modules"
+      icon={<BookOpen className="h-6 w-6 text-primary" />}
+      status="active"
+      description="Your required and optional training modules."
+      hover
+    >
+      <ul className="space-y-2">
+        {modules.map(m => (
+          <li key={m.id} className="flex justify-between items-center">
+            <span>{m.name}</span>
+            <span className={m.status === 'Completed' ? 'text-green-600' : 'text-yellow-600'}>{m.status}</span>
+          </li>
+        ))}
+      </ul>
+    </EnhancedModule>
   );
 } 

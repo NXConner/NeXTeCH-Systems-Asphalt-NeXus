@@ -1,10 +1,8 @@
-import { Routes, Route, Navigate, useLocation, BrowserRouter as Router } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Navigation from "./components/Navigation";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { Sidebar, SidebarTrigger } from "@/components/ui/sidebar";
 import { MobileOptimizedLayout } from "./components/mobile/MobileOptimizedLayout";
-import MiniMapWidget from "@/components/ui/MiniMapWidget";
-import { SidebarProvider } from "@/contexts/SidebarContext";
 import { useSidebar } from "@/contexts/SidebarContext";
 import Index from './pages/Index';
 import Dashboard from './pages/Dashboard';
@@ -46,7 +44,7 @@ import TooltipHelp from './components/help/TooltipHelp';
 import MicroInteractions from './components/ui/MicroInteractions';
 import Landing from './pages/Landing';
 import LoginForm from './components/LoginForm';
-import UnifiedMapInterface from './components/UnifiedMapInterface';
+import { UnifiedMapInterface } from './components';
 import ThemeSelector from './components/ui/theme-selector';
 import AchievementsPage from './pages/Achievements';
 import BadgesPage from './pages/Badges';
@@ -60,6 +58,7 @@ import { AuthProvider } from '@/contexts/AuthContext';
 import AuthCallback from '@/pages/auth/callback';
 import GlobalSearch from './components/ui/GlobalSearch';
 import NotificationsDropdown from './components/ui/NotificationsDropdown';
+import OnlineUsers from '@/components/Presence/OnlineUsers';
 import UserAvatarMenu from './components/ui/UserAvatarMenu';
 import OnboardingTour from './components/ui/OnboardingTour';
 import KeyboardShortcuts from './components/ui/KeyboardShortcuts';
@@ -75,11 +74,72 @@ import Support from './components/ui/Support';
 import Performance from './components/ui/Performance';
 import Growth from './components/ui/Growth';
 import API from './components/ui/API';
+import { MapProvider } from '@/contexts/MapContext';
+import { ChatProvider } from '@/contexts/ChatContext';
+import { ToastProvider } from '@/contexts/ToastContext';
+import { PermissionsProvider } from '@/contexts/PermissionsContext';
+import { AnalyticsProvider } from '@/contexts/AnalyticsContext';
+import { LayersProvider } from '@/contexts/LayersContext';
+import ToastContainer from '@/components/Toast/ToastContainer';
+
+const AppRoutes = () => (
+  <Routes>
+    <Route path="/" element={<Navigate to="/landing" replace />} />
+    <Route path="/landing" element={<Landing />} />
+    <Route path="/login" element={<LoginForm />} />
+    <Route path="/signup" element={<SignUp />} />
+    <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+    <Route path="/fleet" element={<ProtectedRoute><FleetManagement /></ProtectedRoute>} />
+    <Route path="/maintenance" element={<ProtectedRoute><MaintenanceTracking /></ProtectedRoute>} />
+    <Route path="/vendors" element={<ProtectedRoute><VendorManagement /></ProtectedRoute>} />
+    <Route path="/enhanced-maintenance" element={<ProtectedRoute><EnhancedMaintenanceTracking /></ProtectedRoute>} />
+    <Route path="/jobs" element={<ProtectedRoute><Jobs /></ProtectedRoute>} />
+    <Route path="/estimates" element={<ProtectedRoute><Estimates /></ProtectedRoute>} />
+    <Route path="/gps" element={<ProtectedRoute><RealTimeGPS /></ProtectedRoute>} />
+    <Route path="/mapping" element={<ProtectedRoute><AdvancedMapping /></ProtectedRoute>} />
+    <Route path="/employee-management" element={<ProtectedRoute><EmployeeManagement /></ProtectedRoute>} />
+    <Route path="/employee-management-enhanced" element={<ProtectedRoute><EmployeeManagementEnhanced /></ProtectedRoute>} />
+    <Route path="/inventory-enhanced" element={<ProtectedRoute><InventoryManagementEnhanced /></ProtectedRoute>} />
+    <Route path="/time-tracking" element={<ProtectedRoute><TimeTracking /></ProtectedRoute>} />
+    <Route path="/scheduling" element={<ProtectedRoute><Scheduling /></ProtectedRoute>} />
+    <Route path="/invoices" element={<ProtectedRoute><Invoices /></ProtectedRoute>} />
+    <Route path="/invoice-management" element={<ProtectedRoute><InvoiceManagement /></ProtectedRoute>} />
+    <Route path="/crm" element={<ProtectedRoute><CRM /></ProtectedRoute>} />
+    <Route path="/inventory" element={<ProtectedRoute><InventoryManagement /></ProtectedRoute>} />
+    <Route path="/inventory-audit" element={<ProtectedRoute><InventoryAudit /></ProtectedRoute>} />
+    <Route path="/safety" element={<ProtectedRoute><SafetyCompliance /></ProtectedRoute>} />
+    <Route path="/documents" element={<ProtectedRoute><DocumentManagement /></ProtectedRoute>} />
+    <Route path="/financial" element={<ProtectedRoute><FinancialManagement /></ProtectedRoute>} />
+    <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+    <Route path="/estimates-management" element={<ProtectedRoute><EstimatesManagement /></ProtectedRoute>} />
+    <Route path="/accounting" element={<ProtectedRoute><AccountingPlatform /></ProtectedRoute>} />
+    <Route path="/analytics" element={<PredictiveAnalytics />} />
+    <Route path="/reports" element={<CustomReportBuilder />} />
+    <Route path="/customer-portal" element={<CustomerPortal />} />
+    <Route path="/quality" element={<InspectionChecklist />} />
+    <Route path="/integrations" element={<IntegrationSettings />} />
+    <Route path="/onboarding" element={<OnboardingWalkthrough />} />
+    <Route path="/esignature" element={<ESignatureWorkflow />} />
+    <Route path="/resource" element={<ProtectedRoute><ResourcePage /></ProtectedRoute>} />
+    <Route path="/gantt" element={<GanttCalendar />} />
+    <Route path="/help" element={<TooltipHelp text='Help and onboarding' />} />
+    <Route path="/micro" element={<MicroInteractions />} />
+    <Route path="/map" element={<UnifiedMapInterface />} />
+    <Route path="/theme" element={<ThemeSelector />} />
+    <Route path="/achievements" element={<AchievementsPage />} />
+    <Route path="/badges" element={<BadgesPage />} />
+    <Route path="/rewards" element={<RewardsPage />} />
+    <Route path="/leaderboard" element={<LeaderboardPage />} />
+    <Route path="/feedback" element={<FeedbackPage />} />
+    <Route path="/forum" element={<ForumPage />} />
+    <Route path="/auth/callback" element={<AuthCallback />} />
+    <Route path="*" element={<NotFound />} />
+  </Routes>
+);
 
 function AppContent() {
   const { isMobile } = useSidebar();
   const location = useLocation();
-  // Define auth routes where sidebar/header should be hidden
   const authRoutes = ['/login', '/signup', '/auth/callback'];
   const isAuthPage = authRoutes.some((route) => location.pathname.startsWith(route));
 
@@ -105,11 +165,11 @@ function AppContent() {
           <SidebarTrigger className="mr-4" />
           <GlobalSearch />
           <NotificationsDropdown />
+          <OnlineUsers />
           <UserAvatarMenu />
           <span className="font-bold text-xl ml-4">Asphalt-NexTech_Systems</span>
         </header>
         <main className="flex-1">
-          <MiniMapWidget />
           <OnboardingTour />
           <KeyboardShortcuts />
           <ExportImport />
@@ -126,112 +186,10 @@ function AppContent() {
           <API />
           {isMobile ? (
             <MobileOptimizedLayout>
-              <Routes>
-                <Route path="/" element={<Navigate to="/landing" replace />} />
-                <Route path="/landing" element={<Landing />} />
-                <Route path="/login" element={<LoginForm />} />
-                <Route path="/signup" element={<SignUp />} />
-                <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-                <Route path="/fleet" element={<ProtectedRoute><FleetManagement /></ProtectedRoute>} />
-                <Route path="/maintenance" element={<ProtectedRoute><MaintenanceTracking /></ProtectedRoute>} />
-                <Route path="/vendors" element={<ProtectedRoute><VendorManagement /></ProtectedRoute>} />
-                <Route path="/enhanced-maintenance" element={<ProtectedRoute><EnhancedMaintenanceTracking /></ProtectedRoute>} />
-                <Route path="/jobs" element={<ProtectedRoute><Jobs /></ProtectedRoute>} />
-                <Route path="/estimates" element={<ProtectedRoute><Estimates /></ProtectedRoute>} />
-                <Route path="/gps" element={<ProtectedRoute><RealTimeGPS /></ProtectedRoute>} />
-                <Route path="/mapping" element={<ProtectedRoute><AdvancedMapping /></ProtectedRoute>} />
-                <Route path="/employee-management" element={<ProtectedRoute><EmployeeManagement /></ProtectedRoute>} />
-                <Route path="/employee-management-enhanced" element={<ProtectedRoute><EmployeeManagementEnhanced /></ProtectedRoute>} />
-                <Route path="/inventory-enhanced" element={<ProtectedRoute><InventoryManagementEnhanced /></ProtectedRoute>} />
-                <Route path="/time-tracking" element={<ProtectedRoute><TimeTracking /></ProtectedRoute>} />
-                <Route path="/scheduling" element={<ProtectedRoute><Scheduling /></ProtectedRoute>} />
-                <Route path="/invoices" element={<ProtectedRoute><Invoices /></ProtectedRoute>} />
-                <Route path="/invoice-management" element={<ProtectedRoute><InvoiceManagement /></ProtectedRoute>} />
-                <Route path="/crm" element={<ProtectedRoute><CRM /></ProtectedRoute>} />
-                <Route path="/inventory" element={<ProtectedRoute><InventoryManagement /></ProtectedRoute>} />
-                <Route path="/safety" element={<ProtectedRoute><SafetyCompliance /></ProtectedRoute>} />
-                <Route path="/documents" element={<ProtectedRoute><DocumentManagement /></ProtectedRoute>} />
-                <Route path="/financial" element={<ProtectedRoute><FinancialManagement /></ProtectedRoute>} />
-                <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-                <Route path="/estimates-management" element={<ProtectedRoute><EstimatesManagement /></ProtectedRoute>} />
-                <Route path="/accounting" element={<ProtectedRoute><AccountingPlatform /></ProtectedRoute>} />
-                <Route path="/analytics" element={<PredictiveAnalytics />} />
-                <Route path="/reports" element={<CustomReportBuilder />} />
-                <Route path="/customer-portal" element={<CustomerPortal />} />
-                <Route path="/inventory" element={<InventoryAudit />} />
-                <Route path="/quality" element={<InspectionChecklist />} />
-                <Route path="/integrations" element={<IntegrationSettings />} />
-                <Route path="/onboarding" element={<OnboardingWalkthrough />} />
-                <Route path="/esignature" element={<ESignatureWorkflow />} />
-                <Route path="/resource" element={<ProtectedRoute><ResourcePage /></ProtectedRoute>} />
-                <Route path="/scheduling" element={<GanttCalendar />} />
-                <Route path="/help" element={<TooltipHelp text='Help and onboarding' />} />
-                <Route path="/micro" element={<MicroInteractions />} />
-                <Route path="/map" element={<UnifiedMapInterface />} />
-                <Route path="/theme" element={<ThemeSelector />} />
-                <Route path="/achievements" element={<AchievementsPage />} />
-                <Route path="/badges" element={<BadgesPage />} />
-                <Route path="/rewards" element={<RewardsPage />} />
-                <Route path="/leaderboard" element={<LeaderboardPage />} />
-                <Route path="/feedback" element={<FeedbackPage />} />
-                <Route path="/forum" element={<ForumPage />} />
-                <Route path="/auth/callback" element={<AuthCallback />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+              <AppRoutes />
             </MobileOptimizedLayout>
           ) : (
-            <Routes>
-              <Route path="/" element={<Navigate to="/landing" replace />} />
-              <Route path="/landing" element={<Landing />} />
-              <Route path="/login" element={<LoginForm />} />
-              <Route path="/signup" element={<SignUp />} />
-              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-              <Route path="/fleet" element={<ProtectedRoute><FleetManagement /></ProtectedRoute>} />
-              <Route path="/maintenance" element={<ProtectedRoute><MaintenanceTracking /></ProtectedRoute>} />
-              <Route path="/vendors" element={<ProtectedRoute><VendorManagement /></ProtectedRoute>} />
-              <Route path="/enhanced-maintenance" element={<ProtectedRoute><EnhancedMaintenanceTracking /></ProtectedRoute>} />
-              <Route path="/jobs" element={<ProtectedRoute><Jobs /></ProtectedRoute>} />
-              <Route path="/estimates" element={<ProtectedRoute><Estimates /></ProtectedRoute>} />
-              <Route path="/gps" element={<ProtectedRoute><RealTimeGPS /></ProtectedRoute>} />
-              <Route path="/mapping" element={<ProtectedRoute><AdvancedMapping /></ProtectedRoute>} />
-              <Route path="/employee-management" element={<ProtectedRoute><EmployeeManagement /></ProtectedRoute>} />
-              <Route path="/employee-management-enhanced" element={<ProtectedRoute><EmployeeManagementEnhanced /></ProtectedRoute>} />
-              <Route path="/inventory-enhanced" element={<ProtectedRoute><InventoryManagementEnhanced /></ProtectedRoute>} />
-              <Route path="/time-tracking" element={<ProtectedRoute><TimeTracking /></ProtectedRoute>} />
-              <Route path="/scheduling" element={<ProtectedRoute><Scheduling /></ProtectedRoute>} />
-              <Route path="/invoices" element={<ProtectedRoute><Invoices /></ProtectedRoute>} />
-              <Route path="/invoice-management" element={<ProtectedRoute><InvoiceManagement /></ProtectedRoute>} />
-              <Route path="/crm" element={<ProtectedRoute><CRM /></ProtectedRoute>} />
-              <Route path="/inventory" element={<ProtectedRoute><InventoryManagement /></ProtectedRoute>} />
-              <Route path="/safety" element={<ProtectedRoute><SafetyCompliance /></ProtectedRoute>} />
-              <Route path="/documents" element={<ProtectedRoute><DocumentManagement /></ProtectedRoute>} />
-              <Route path="/financial" element={<ProtectedRoute><FinancialManagement /></ProtectedRoute>} />
-              <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-              <Route path="/estimates-management" element={<ProtectedRoute><EstimatesManagement /></ProtectedRoute>} />
-              <Route path="/accounting" element={<ProtectedRoute><AccountingPlatform /></ProtectedRoute>} />
-              <Route path="/analytics" element={<PredictiveAnalytics />} />
-              <Route path="/reports" element={<CustomReportBuilder />} />
-              <Route path="/customer-portal" element={<CustomerPortal />} />
-              <Route path="/inventory" element={<InventoryAudit />} />
-              <Route path="/quality" element={<InspectionChecklist />} />
-              <Route path="/integrations" element={<IntegrationSettings />} />
-              <Route path="/onboarding" element={<OnboardingWalkthrough />} />
-              <Route path="/esignature" element={<ESignatureWorkflow />} />
-              <Route path="/resource" element={<ProtectedRoute><ResourcePage /></ProtectedRoute>} />
-              <Route path="/scheduling" element={<GanttCalendar />} />
-              <Route path="/help" element={<TooltipHelp text='Help and onboarding' />} />
-              <Route path="/micro" element={<MicroInteractions />} />
-              <Route path="/map" element={<UnifiedMapInterface />} />
-              <Route path="/theme" element={<ThemeSelector />} />
-              <Route path="/achievements" element={<AchievementsPage />} />
-              <Route path="/badges" element={<BadgesPage />} />
-              <Route path="/rewards" element={<RewardsPage />} />
-              <Route path="/leaderboard" element={<LeaderboardPage />} />
-              <Route path="/feedback" element={<FeedbackPage />} />
-              <Route path="/forum" element={<ForumPage />} />
-              <Route path="/auth/callback" element={<AuthCallback />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <AppRoutes />
           )}
         </main>
       </div>
@@ -242,9 +200,20 @@ function AppContent() {
 function App() {
   return (
     <AuthProvider>
-      <SidebarProvider>
-        <AppContent />
-      </SidebarProvider>
+      <MapProvider>
+        <ChatProvider>
+          <ToastProvider>
+            <PermissionsProvider>
+              <AnalyticsProvider>
+                <LayersProvider>
+                  <AppContent />
+                  <ToastContainer />
+                </LayersProvider>
+              </AnalyticsProvider>
+            </PermissionsProvider>
+          </ToastProvider>
+        </ChatProvider>
+      </MapProvider>
     </AuthProvider>
   );
 }

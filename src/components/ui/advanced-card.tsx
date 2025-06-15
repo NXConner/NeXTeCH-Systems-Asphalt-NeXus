@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -23,16 +22,16 @@ const AdvancedCard = React.forwardRef<HTMLDivElement, AdvancedCardProps>(
     ...props 
   }, ref) => {
     const cardVariants = {
-      default: "bg-card text-card-foreground border-border/50",
-      glass: "bg-card/60 backdrop-blur-xl border-border/30 text-card-foreground shadow-2xl",
-      gradient: "bg-gradient-to-br from-card via-card/95 to-muted/30 text-card-foreground border-border/50",
-      elevated: "bg-card text-card-foreground shadow-2xl border-border/30",
-      bordered: "bg-card text-card-foreground border-2 border-primary/20 shadow-lg",
-      neon: "bg-card/80 text-card-foreground border-2 border-accent shadow-[0_0_20px_hsl(var(--accent)/0.3)]",
-      holographic: "bg-gradient-to-br from-cyan-400/10 via-purple-500/10 to-pink-500/10 backdrop-blur-xl border border-white/20 text-card-foreground shadow-2xl",
-      crystalline: "bg-white/5 backdrop-blur-2xl border border-white/10 text-card-foreground shadow-2xl",
-      metallic: "bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 text-card-foreground border border-slate-300 dark:border-slate-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]",
-      plasma: "bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-red-500/20 backdrop-blur-xl border border-purple-400/30 text-card-foreground shadow-2xl",
+      default: "bg-card text-card-foreground border border-border/10 shadow-md",
+      glass: "bg-card/60 backdrop-blur-xl border border-border/10 text-card-foreground shadow-lg",
+      gradient: "bg-gradient-to-br from-card via-card/95 to-muted/30 text-card-foreground border border-border/10 shadow-md",
+      elevated: "bg-card text-card-foreground shadow-lg border border-border/10",
+      bordered: "bg-card text-card-foreground border border-primary/10 shadow-md",
+      neon: "bg-card/80 text-card-foreground border border-accent/20 shadow-md",
+      holographic: "bg-gradient-to-br from-cyan-400/10 via-purple-500/10 to-pink-500/10 backdrop-blur-xl border border-white/10 text-card-foreground shadow-lg",
+      crystalline: "bg-white/5 backdrop-blur-2xl border border-white/10 text-card-foreground shadow-lg",
+      metallic: "bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 text-card-foreground border border-slate-300/20 dark:border-slate-700/20 shadow-md",
+      plasma: "bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-red-500/20 backdrop-blur-xl border border-purple-400/10 text-card-foreground shadow-md",
     };
 
     const patternClasses = {

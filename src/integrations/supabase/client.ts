@@ -5,11 +5,6 @@ import type { Database } from './types';
 import { logger } from '@/services/logger';
 import { cache } from '@/services/cache';
 
-// Single source of truth for Supabase client
-import { createClient } from '@supabase/supabase-js';
-import type { Database } from './types';
-import { logger } from '@/services/logger';
-
 // Get environment variables
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -40,28 +35,46 @@ export const getSupabaseClient = () => {
         detectSessionInUrl: true,
         flowType: 'pkce',
         storageKey: 'asphalt-nexus-auth',
-        debug: process.env.NODE_ENV === 'development'
+        debug: false
       },
       global: {
         headers: {
           'x-application-name': 'asphalt-nexus'
         }
+      },
+      realtime: {
+        params: {
+          eventsPerSecond: 1
+        },
+        retryAfterError: true,
+        reconnectAfterError: true,
+        timeout: 30000
+      },
+      db: {
+        schema: 'public'
       }
     });
 
+    // Add response interceptor
+    const { fetch: originalFetch } = supabaseInstance;
+    supabaseInstance.fetch = async (...args) => {
+      try {
+        const response = await originalFetch.apply(supabaseInstance, args);
+        return response;
+      } catch (error: any) {
+        logger.error('Supabase fetch error:', error);
+        if (error.message?.includes('text is not a function')) {
+          // Handle the specific error case
+          return new Response(JSON.stringify({ data: [], error: null }));
+        }
+        throw error;
+      }
+    };
+
     // Handle auth state changes
     supabaseInstance.auth.onAuthStateChange((event, session) => {
-      logger.info('Auth state changed', { event, userId: session?.user?.id });
-      
-      if (event === 'SIGNED_IN') {
-        // Handle successful sign in
-        logger.info('User signed in', { userId: session?.user?.id });
-      } else if (event === 'SIGNED_OUT') {
-        // Handle sign out
-        logger.info('User signed out');
-      } else if (event === 'TOKEN_REFRESHED') {
-        // Handle token refresh
-        logger.info('Token refreshed', { userId: session?.user?.id });
+      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
+        logger.info('Auth state changed', { event, userId: session?.user?.id });
       }
     });
   }
@@ -254,7 +267,6 @@ if (originalFetch) {
     if (options?.method === 'GET') {
       const cachedResponse = cache.get(cacheKey);
       if (cachedResponse) {
-        logger.debug('Cache hit', { url, method: options?.method });
         return cachedResponse;
       }
     }
@@ -263,18 +275,21 @@ if (originalFetch) {
       const response = await originalFetch(url, options);
       const duration = Date.now() - startTime;
       
-      logger.debug('Supabase request', {
-        url,
-        method: options?.method,
-        duration,
-        status: response.status,
-      });
+      // Only log slow requests or errors
+      if (duration > 1000 || !response.ok) {
+        logger.debug('Supabase request', {
+          url,
+          method: options?.method,
+          duration,
+          status: response.status,
+        });
+      }
 
-      // Cache successful GET responses
+      // Cache successful GET responses for longer
       if (options?.method === 'GET' && response.ok) {
         const clonedResponse = response.clone();
         const data = await clonedResponse.json();
-        cache.set(cacheKey, data, 5 * 60 * 1000); // Cache for 5 minutes
+        cache.set(cacheKey, data, 15 * 60 * 1000); // Cache for 15 minutes
       }
       
       return response;

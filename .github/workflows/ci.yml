@@ -9,6 +9,8 @@ jobs:
         with:
           node-version: 20
       - run: npm ci
+      - name: Set Supabase secrets from .env
+        run: npm run set-supabase-env
       - run: npm run lint
       - run: npm run test
       - run: npm run build 

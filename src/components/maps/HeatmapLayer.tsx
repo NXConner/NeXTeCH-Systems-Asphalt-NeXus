@@ -12,7 +12,7 @@ interface HeatmapLayerProps {
   gradient?: { [key: number]: string };
 }
 
-export function HeatmapLayer({
+const HeatmapLayer = ({
   points,
   radius = 25,
   blur = 15,
@@ -24,7 +24,7 @@ export function HeatmapLayer({
     0.8: 'yellow',
     1.0: 'red'
   }
-}: HeatmapLayerProps) {
+}: HeatmapLayerProps) => {
   const map = useMap();
   const heatLayerRef = useRef<L.HeatLayer | null>(null);
 
@@ -53,4 +53,6 @@ export function HeatmapLayer({
   }, [map, points, radius, blur, maxZoom, max, gradient]);
 
   return null;
-} 
+};
+
+export default HeatmapLayer; 

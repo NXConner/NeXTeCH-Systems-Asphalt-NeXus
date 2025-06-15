@@ -21,6 +21,8 @@ jobs:
           node-version: '20'
       - name: Install Supabase CLI
         run: npm install -g supabase
+      - name: Set Supabase secrets from .env
+        run: npm run set-supabase-env
       - name: Apply migrations
         run: supabase db push
         env:

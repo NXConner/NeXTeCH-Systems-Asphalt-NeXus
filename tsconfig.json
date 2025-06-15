@@ -38,13 +38,12 @@
     "noImplicitAny": true,
     "noImplicitThis": true,
     "noImplicitReturns": true,
-    "noImplicitUseStrict": true,
+    "noImplicitOverride": true,
     "noUncheckedIndexedAccess": true,
     "noPropertyAccessFromIndexSignature": true,
     "exactOptionalPropertyTypes": true,
     "noErrorTruncation": true,
     "allowUnreachableCode": false,
-    "allowUnusedLabels": false,
-    "noImplicitOverride": true
+    "allowUnusedLabels": false
   }
 }

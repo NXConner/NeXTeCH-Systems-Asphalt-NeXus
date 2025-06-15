@@ -1,52 +1,60 @@
-
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { z } from 'zod';
+import { useAnalytics } from './useAnalytics';
 
-export const useFormValidation = <T extends Record<string, any>>(
-  schema: z.ZodSchema<T>,
-  initialValues: T
-) => {
-  const [values, setValues] = useState<T>(initialValues);
-  const [errors, setErrors] = useState<Partial<Record<keyof T, string>>>({});
-  const [isValid, setIsValid] = useState(false);
+type ValidationError = {
+  field: string;
+  message: string;
+};
 
-  const validate = (data: T) => {
-    try {
-      schema.parse(data);
-      setErrors({});
-      setIsValid(true);
-      return true;
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        const fieldErrors: Partial<Record<keyof T, string>> = {};
-        error.errors.forEach((err) => {
-          const path = err.path[0] as keyof T;
-          fieldErrors[path] = err.message;
-        });
-        setErrors(fieldErrors);
-        setIsValid(false);
+export function useFormValidation<T extends z.ZodType>(schema: T) {
+  const [errors, setErrors] = useState<ValidationError[]>([]);
+  const { trackEvent } = useAnalytics();
+
+  const validate = useCallback(
+    (data: unknown) => {
+      try {
+        schema.parse(data);
+        setErrors([]);
+        return true;
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          const validationErrors = error.errors.map((err) => ({
+            field: err.path.join('.'),
+            message: err.message,
+          }));
+
+          setErrors(validationErrors);
+          trackEvent({
+            category: 'Form',
+            action: 'validation_error',
+            label: schema.description || 'unknown',
+            properties: {
+              errors: validationErrors,
+            },
+          });
+        }
+        return false;
       }
-      return false;
-    }
-  };
+    },
+    [schema, trackEvent]
+  );
 
-  const setValue = (field: keyof T, value: any) => {
-    const newValues = { ...values, [field]: value };
-    setValues(newValues);
-    validate(newValues);
-  };
+  const getFieldError = useCallback(
+    (field: string) => {
+      return errors.find((error) => error.field === field)?.message;
+    },
+    [errors]
+  );
 
-  const setAllValues = (newValues: T) => {
-    setValues(newValues);
-    validate(newValues);
-  };
+  const clearErrors = useCallback(() => {
+    setErrors([]);
+  }, []);
 
   return {
-    values,
+    validate,
+    getFieldError,
+    clearErrors,
     errors,
-    isValid,
-    setValue,
-    setAllValues,
-    validate: () => validate(values)
   };
-};
+}

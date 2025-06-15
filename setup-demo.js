@@ -7,19 +7,19 @@ import { logger } from './src/services/logger.js';
 dotenv.config();
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
-const SUPABASE_KEY = process.env.VITE_SUPABASE_KEY;
+const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY;
 const DEMO_EMAIL = 'admin@asphaltpro.com';
 const DEMO_PASSWORD = 'admin123'; // Updated password
 
-if (!SUPABASE_URL || !SUPABASE_KEY) {
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   logger.error('Missing required environment variables', { 
     SUPABASE_URL: !!SUPABASE_URL, 
-    SUPABASE_KEY: !!SUPABASE_KEY 
+    SUPABASE_ANON_KEY: !!SUPABASE_ANON_KEY 
   });
   process.exit(1);
 }
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 async function setupDemoUser() {
   try {

@@ -1,154 +1,86 @@
-# NeXTeCH Systems Asphalt Nexus
+# NeXTeCH Systems Asphalt NeXus
 
-## Overview
-
-Asphalt Nexus is a Progressive Web App (PWA) for fleet and asphalt management. Built with React, TypeScript, Vite, Tailwind CSS, shadcn UI, and Capacitor, it provides real-time GPS tracking, mapping overlays, AR tools, business management modules, offline support, and mobile installability for Android and iOS.
+A comprehensive asphalt management system built with React, TypeScript, and Supabase.
 
 ## Features
 
-- Real-time GPS tracking for vehicles and personnel
-- Interactive mapping overlays: heatmaps, geofencing, compliance zoning, drone imagery, AR annotations
-- Business modules: estimates, contracts, time tracking, invoicing, payroll, reporting, analytics
-- Gamification: achievements, progress badges, leaderboards
-- Fully PWA: offline support, caching strategies, installable on desktop and mobile
-- Mobile support via Capacitor: native access to camera, geolocation, etc.
-- Modern UI/UX: theme switching (light/dark), responsive design, accessibility focused
+- Real-time activity tracking
+- Employee management
+- Inventory tracking
+- Customer contract management
+- Financial management
+- Mapping and geofencing
+- Analytics and reporting
+- Mobile-responsive design
+- PWA support
 
-## Architecture
+## Tech Stack
 
-- Frontend: React, TypeScript, Vite
-- UI: Tailwind CSS, shadcn UI
-- State & Data: React Query (@tanstack/react-query), Zod for schema validation
-- Mapping: React Leaflet, Leaflet plugins (heatmaps, geocoder)
-- AR & Camera: Capacitor Camera, @capacitor/geolocation
-- Backend: Supabase (Realtime DB, Auth, Storage)
-- PWA: vite-plugin-pwa, Workbox
-
-## Prerequisites
-
-- Node.js (>=16.x)
-- npm
-- Android Studio / Xcode (for mobile builds)
-- Supabase project with your credentials
+- React 18
+- TypeScript
+- Vite
+- Supabase
+- TailwindCSS
+- Radix UI
+- Leaflet Maps
 
 ## Getting Started
 
-1. Clone the repo:
+1. Clone the repository:
 
-   ```sh
-   git clone <YOUR_REPO_URL>
-   cd "NeXTeCH Systems Asphalt Nexus"
+   ```bash
+   git clone https://github.com/yourusername/NeXTeCH-Systems-Asphalt-NeXus.git
+   cd NeXTeCH-Systems-Asphalt-NeXus
    ```
 
 2. Install dependencies:
 
-   ```sh
+   ```bash
    npm install
    ```
 
-3. Copy environment variables:
+3. Set up environment variables:
 
-   ```sh
+   ```bash
    cp .env.example .env
    ```
 
-4. Update `.env` with your Supabase keys:
+   Edit `.env` with your configuration values.
 
-   ```env
-   VITE_SUPABASE_URL=your-supabase-url
-   VITE_SUPABASE_KEY=your-supabase-anon-key
-   SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
-   ```
+4. Start the development server:
 
-5. (Optional) Seed a demo admin user:
-
-   ```sh
-   npm run seed:demo
-   ```
-
-6. Start development server:
-
-   ```sh
+   ```bash
    npm run dev
    ```
 
-   Visit [http://localhost:5173](http://localhost:5173)
+## Environment Variables
 
-## Scripts
+Required environment variables:
+- `VITE_SUPABASE_URL`: Your Supabase project URL
+- `VITE_SUPABASE_ANON_KEY`: Your Supabase anonymous key
+- `VITE_API_URL`: API endpoint URL
+- `VITE_GOOGLE_MAPS_API_KEY`: Google Maps API key (if using maps feature)
 
-- `npm run dev`           - Start development server (PWA + live reload)
-- `npm run build`         - Build production assets to `dist/`
-- `npm run build:dev`     - Build with development mode
-- `npm run preview`       - Preview production build locally
-- `npm run pwa`           - Build and preview with PWA enabled
-- `npm run mobile:sync`   - Sync Capacitor plugins
-- `npm run mobile:open`   - Open native IDE (Android Studio/Xcode)
-- `npm run mobile:build`  - Build web assets, sync plugins, and open IDE
-- `npm run lint`          - Run ESLint across the codebase
-- `npm run seed:demo`     - Seed a demo admin user
+## Development
 
-## Directory Structure
-
-```
-/public        Static assets, service worker, icons
-/src           Frontend source code
-  /components  Reusable UI components
-  /pages       Application pages and routes
-  /contexts    React context providers
-  /services    API and business logic
-  /hooks       Custom React hooks
-  /utils       Utility functions
-/android       Android (Capacitor) project
-/ios           iOS (Capacitor) project
-```
-
-## Mobile (Capacitor)
-
-This project uses Capacitor to wrap the web app as a native mobile app.
-
-- Configure Capacitor:
-
-  ```sh
-  npx cap sync
-  ```
-
-- Open Android Studio / Xcode:
-
-  ```sh
-  npm run mobile:open
-  ```
-
-- Build and run on device/emulator via IDE.
-
-## Testing
-
-- Unit & integration tests with Jest:
-
-  ```sh
-  npm run test
-  ```
-
-- Add tests under `src/__tests__`
-
-## Deployment
-
-1. Build production assets:
-
-   ```sh
-   npm run build
-   ```
-
-2. Deploy contents of `dist/` to your static hosting (Netlify, Vercel, S3, etc.)
-3. Ensure the server is configured to serve `index.html` for all routes.
+- `npm run dev`: Start development server
+- `npm run build`: Build for production
+- `npm run preview`: Preview production build
+- `npm run test`: Run tests
+- `npm run lint`: Run linter
 
 ## Contributing
 
-1. Fork the repo
-2. Create a new branch (`git checkout -b feature/XYZ`)
-3. Commit your changes
-4. Push to your fork and open a PR
-5. Follow code style: DRY, modular, well-documented
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## License
 
-MIT License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Support
+
+For support, email support@nextechsystems.com or open an issue in the repository.

@@ -1,0 +1,267 @@
+/* UnifiedMapInterface.module.css */
+
+.geofenceAlert {
+  background: rgba(255, 255, 0, 0.95);
+  color: #000;
+  border-radius: 8px;
+  padding: 8px 16px;
+  z-index: 1400;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 0, 0.2);
+  font-weight: 500;
+}
+
+.collaborators {
+  position: absolute;
+  top: 16px;
+  left: 220px;
+  z-index: 1500;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+}
+
+.collaborators:hover {
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+.auditTrail {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  z-index: 1500;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 12px;
+  max-height: 240px;
+  overflow-y: auto;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.auditTrail:hover {
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+.auditTrail::-webkit-scrollbar {
+  width: 6px;
+}
+
+.auditTrail::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.auditTrail::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.overlayLegend {
+  position: absolute;
+  z-index: 1100;
+  top: 70px;
+  left: 16px;
+  background: rgba(30, 30, 30, 0.95);
+  color: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 14px;
+  min-width: 140px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.overlayLegend:hover {
+  background: rgba(30, 30, 30, 0.98);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+}
+
+.myLocationBtn {
+  position: absolute;
+  z-index: 1000;
+  top: 16px;
+  right: 16px;
+  background: rgba(30, 30, 30, 0.95);
+  color: #fff;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.myLocationBtn:hover {
+  background: rgba(30, 30, 30, 0.98);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+}
+
+.measurement {
+  background: rgba(34, 34, 34, 0.95);
+  color: #fff;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.weatherOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1000;
+  background: linear-gradient(180deg, rgba(0, 0, 255, 0.05) 0%, rgba(0, 0, 255, 0) 100%);
+  mix-blend-mode: overlay;
+}
+
+.mapContainer {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.mapContainer:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.mapContainer :global(.leaflet-container) {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.floatingControls {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 1000;
+  display: flex;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.floatingControls:hover {
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+.resetButton {
+  position: absolute;
+  top: 16px;
+  right: 60px;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.resetButton:hover {
+  background: rgba(255, 255, 255, 0.98);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+.resetButton:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.darkMode {
+  filter: invert(100%) hue-rotate(180deg) brightness(0.85) contrast(1.2);
+}
+
+.darkMode :global(.leaflet-tile) {
+  filter: brightness(0.7) contrast(1.3) invert(100%) hue-rotate(180deg) saturate(0.8);
+}
+
+.highContrast {
+  filter: contrast(1.2) saturate(1.1);
+}
+
+:global(.leaflet-control-container .leaflet-control) {
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+:global(.leaflet-control-container .leaflet-control:hover) {
+  background-color: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* Ensure zoom controls don't overlap with sidebar */
+:global(.leaflet-control-container .leaflet-control-zoom) {
+  margin-left: 260px !important;
+  margin-top: 16px !important;
+}
+
+.droneMarker {
+  font-size: 20px;
+  text-align: center;
+  line-height: 20px;
+}
+
+/* Position layer control to not overlap with other controls */
+:global(.leaflet-control-container .leaflet-control-layers) {
+  margin-top: 60px !important;
+  margin-right: 16px !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Style the scale control */
+:global(.leaflet-control-scale) {
+  margin-bottom: 20px !important;
+  margin-left: 20px !important;
+} 

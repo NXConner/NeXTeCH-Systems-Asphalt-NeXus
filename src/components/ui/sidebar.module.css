@@ -1,0 +1,9 @@
+.menuItem {
+  transition: all 0.2s ease;
+}
+
+.menuItem:hover {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(80%);
+  -webkit-backdrop-filter: blur(80%);
+} 

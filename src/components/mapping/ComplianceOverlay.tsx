@@ -1,28 +1,94 @@
 import React from 'react';
+import { LayerGroup, Circle, Popup } from 'react-leaflet';
+import { useMap } from 'react-leaflet';
 
-// Example props: array of { lat, lng, type, warning }
-export default function ComplianceOverlay({ data }: { data: Array<{ lat: number; lng: number; type: string; warning?: string }> }) {
-  const getColor = (type: string) => {
-    if (type === 'ADA') return 'bg-blue-400';
-    if (type === 'VDOT') return 'bg-orange-400';
-    return 'bg-gray-400';
+interface ComplianceData {
+  lat: number;
+  lng: number;
+  status: 'compliant' | 'warning' | 'violation';
+  details: {
+    type: string;
+    description: string;
+    lastChecked: string;
+    nextCheck: string;
+    inspector?: string;
   };
+}
+
+const ComplianceOverlay: React.FC = () => {
+  const map = useMap();
+  const [data, setData] = React.useState<ComplianceData[]>([]);
+
+  React.useEffect(() => {
+    // Fetch compliance data based on current map bounds
+    const fetchData = async () => {
+      const bounds = map.getBounds();
+      try {
+        const response = await fetch(`/api/compliance?bounds=${JSON.stringify(bounds)}`);
+        const newData = await response.json();
+        setData(newData);
+      } catch (error) {
+        console.error('Error fetching compliance data:', error);
+      }
+    };
+
+    fetchData();
+    map.on('moveend', fetchData);
+
+    return () => {
+      map.off('moveend', fetchData);
+    };
+  }, [map]);
+
+  const getColor = (status: ComplianceData['status']) => {
+    switch (status) {
+      case 'compliant':
+        return '#00E676';
+      case 'warning':
+        return '#FFD600';
+      case 'violation':
+        return '#D50000';
+      default:
+        return '#757575';
+    }
+  };
+
   return (
-    <div className="absolute inset-0 pointer-events-none z-40" aria-label="Compliance overlay">
-      {data.map((point, i) => (
-        <div
-          key={i}
-          className={`absolute rounded-full opacity-50 ${getColor(point.type)}`}
-          style={{ left: `${point.lng}%`, top: `${point.lat}%`, width: 32, height: 32 }}
-          title={point.warning || point.type}
-          role="img"
-          aria-label={`${point.type} compliance${point.warning ? ', warning: ' + point.warning : ''}`}
+    <LayerGroup>
+      {data.map((point, index) => (
+        <Circle
+          key={index}
+          center={[point.lat, point.lng]}
+          radius={8}
+          pathOptions={{
+            color: getColor(point.status),
+            fillColor: getColor(point.status),
+            fillOpacity: 0.7,
+            weight: 2
+          }}
         >
-          {point.warning && (
-            <span className="absolute left-8 top-0 bg-red-600 text-white text-xs px-2 py-1 rounded shadow-lg z-50" aria-label={point.warning}>{point.warning}</span>
-          )}
-        </div>
+          <Popup>
+            <div className="p-2">
+              <h3 className="text-lg font-semibold mb-2">
+                Compliance Status: {point.status.charAt(0).toUpperCase() + point.status.slice(1)}
+              </h3>
+              <div className="space-y-1">
+                <p>Type: {point.details.type}</p>
+                <p>Description: {point.details.description}</p>
+                <p>Last Checked: {new Date(point.details.lastChecked).toLocaleDateString()}</p>
+                <p>Next Check: {new Date(point.details.nextCheck).toLocaleDateString()}</p>
+                {point.details.inspector && <p>Inspector: {point.details.inspector}</p>}
+              </div>
+              <div
+                className="w-full h-2 rounded mt-2"
+                style={{ backgroundColor: getColor(point.status) }}
+              />
+            </div>
+          </Popup>
+        </Circle>
       ))}
-    </div>
+    </LayerGroup>
   );
-} 
+};
+
+export default ComplianceOverlay; 

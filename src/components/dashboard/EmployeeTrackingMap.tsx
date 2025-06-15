@@ -19,6 +19,9 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { MapContainer, TileLayer, Marker, Popup, Tooltip, useMap } from 'react-leaflet';
 import L from 'leaflet';
+import HeatmapLayer from '../maps/HeatmapLayer';
+import DroneOverlay from '../mapping/DroneOverlay';
+import PCIHeatmapOverlay from '../mapping/PCIHeatmapOverlay';
 
 interface EmployeeLocation {
   id: string;
@@ -64,6 +67,9 @@ export function EmployeeTrackingMap() {
   const [mapSource, setMapSource] = useState("satellite");
   const [trackingEnabled, setTrackingEnabled] = useState(true);
   const mapRef = useRef<any>(null);
+  const [showHeatmap, setShowHeatmap] = useState(false);
+  const [showDrone, setShowDrone] = useState(false);
+  const [showPCI, setShowPCI] = useState(false);
 
   const mapSources: MapSource[] = [
     {
@@ -358,6 +364,11 @@ export function EmployeeTrackingMap() {
             </CardHeader>
             <CardContent>
               <div className="relative h-96 rounded-lg overflow-hidden">
+                <div style={{ position: 'absolute', zIndex: 1100, top: 10, left: 10, display: 'flex', gap: 8 }}>
+                  <Button size="sm" variant={showHeatmap ? 'default' : 'outline'} onClick={() => setShowHeatmap(v => !v)}>Heatmap</Button>
+                  <Button size="sm" variant={showDrone ? 'default' : 'outline'} onClick={() => setShowDrone(v => !v)}>Drone</Button>
+                  <Button size="sm" variant={showPCI ? 'default' : 'outline'} onClick={() => setShowPCI(v => !v)}>PCI</Button>
+                </div>
                 <Button style={{ position: 'absolute', zIndex: 1000, top: 10, right: 10 }} onClick={handleGPS}>
                   My Location
                 </Button>
@@ -416,6 +427,15 @@ export function EmployeeTrackingMap() {
                       </Popup>
                     </Marker>
                   ))}
+                  {showHeatmap && (
+                    <HeatmapLayer points={[]} />
+                  )}
+                  {showDrone && (
+                    <DroneOverlay data={[]} />
+                  )}
+                  {showPCI && (
+                    <PCIHeatmapOverlay pciData={[]} />
+                  )}
                 </MapContainer>
                 {/* Map Legend */}
                 <div className="absolute bottom-4 left-4 bg-white p-3 rounded-lg shadow-sm">

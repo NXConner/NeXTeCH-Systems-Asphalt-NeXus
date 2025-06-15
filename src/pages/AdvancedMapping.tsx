@@ -16,7 +16,9 @@ import {
   Zap,
   Droplets,
   Activity,
-  Users
+  Users,
+  Calculator,
+  FileSpreadsheet
 } from "lucide-react";
 import { AsphaltDetection } from "@/components/mapping/AsphaltDetection";
 import { Rnd } from 'react-rnd';
@@ -24,7 +26,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import ARProjection from '../components/ui/ARProjection';
 import { fetchMapData } from '@/services/mappingService';
-import UnifiedMapInterface from '@/components/UnifiedMapInterface';
+import { UnifiedMapInterface } from '@/components/Map';
 import ThemeSelector from '@/components/ui/theme-selector';
 import { ThemeShowcase } from '@/components/ui/theme-showcase';
 import { ThemeEffectsShowcase } from '@/components/ui/theme-effects-showcase';
@@ -105,6 +107,9 @@ const AdvancedMapping = () => {
   const [heatmapBlur, setHeatmapBlur] = useState(15);
   const [heatmapMax, setHeatmapMax] = useState(1.0);
   const [heatmapPoints, setHeatmapPoints] = useState([]);
+  const [showCalculator, setShowCalculator] = useState(false);
+  const [showSpreadsheet, setShowSpreadsheet] = useState(false);
+  const [showLayersMenu, setShowLayersMenu] = useState(false);
 
   // --- ADVANCED FEATURE 1: Dynamic Data Integration ---
   // Toggle for live data updates (WebSocket/polling)
@@ -473,287 +478,195 @@ const AdvancedMapping = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-8">
-      <div className="mb-8 p-4 bg-gray-50 rounded shadow">
-        <h2 className="font-bold mb-2">Advanced Features Checklist</h2>
-        <ul className="space-y-1">
-          {advancedFeatures.map((desc, idx) => (
-            <li key={idx} className="flex items-center">
-              <input type="checkbox" checked={featureChecklist[idx]} onChange={() => handleChecklistToggle(idx)} className="mr-2" aria-label={`Mark feature ${idx+1} as complete: ${desc}`} />
-              <span>{idx+1}. {desc}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* 1. Dynamic Data Integration */}
-      <section className="p-4 bg-white rounded shadow mb-4">
-        <h3 className="font-bold mb-2">1. Dynamic Data Integration</h3>
-        <Switch checked={liveDataEnabled} onCheckedChange={setLiveDataEnabled} />
-        <span className="ml-2">Live Data Updates {liveDataEnabled ? '(Enabled)' : '(Disabled)'}</span>
-        {/* Simulated live data update: */}
-        {/* useEffect(() => { if (liveDataEnabled) { setInterval(() => setHeatmapPoints(generateLiveData()), 2000); } }, [liveDataEnabled]); */}
-      </section>
-
-      {/* 2. Multiple Heatmap Layers */}
-      <section className="p-4 bg-white rounded shadow mb-4">
-        <h3 className="font-bold mb-2">2. Multiple Heatmap Layers</h3>
-        <Select value={selectedHeatmapLayer} onValueChange={setSelectedHeatmapLayer}>
-          <SelectTrigger className="w-64"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            {heatmapLayerOptions.map(opt => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}
-          </SelectContent>
-        </Select>
-        <span className="ml-2">Current Layer: {selectedHeatmapLayer}</span>
-      </section>
-
-      {/* 3. Customizable Heatmap Gradients */}
-      <section className="p-4 bg-white rounded shadow mb-4">
-        <h3 className="font-bold mb-2">3. Customizable Heatmap Gradients</h3>
-        <div className="flex gap-4 items-center">
-          <Button onClick={() => setHeatmapGradient({0.4:'blue',0.8:'orange',1.0:'red'})}>Preset 1</Button>
-          <Button onClick={() => setHeatmapGradient({0.4:'green',0.8:'yellow',1.0:'red'})}>Preset 2</Button>
-          {/* Color pickers for custom gradient could go here */}
-          <span className="ml-2">Current: {JSON.stringify(heatmapGradient)}</span>
-        </div>
-      </section>
-
-      {/* 4. Data Filtering & Segmentation */}
-      <section className="p-4 bg-white rounded shadow mb-4">
-        <h3 className="font-bold mb-2">4. Data Filtering & Segmentation</h3>
-        <Select value={filterType} onValueChange={setFilterType}>
-          <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All</SelectItem>
-            <SelectItem value="employee">Employee</SelectItem>
-            <SelectItem value="vehicle">Vehicle</SelectItem>
-          </SelectContent>
-        </Select>
-        <span className="ml-2">Type: {filterType}</span>
-        {/* Time range slider could go here */}
-      </section>
-
-      {/* 5. Clustering & Aggregation */}
-      <section className="p-4 bg-white rounded shadow mb-4">
-        <h3 className="font-bold mb-2">5. Clustering & Aggregation</h3>
-        <Switch checked={clusteringEnabled} onCheckedChange={setClusteringEnabled} />
-        <span className="ml-2">Clustering {clusteringEnabled ? 'On' : 'Off'}</span>
-        {/* Cluster rendering would be handled in the map */}
-      </section>
-
-      {/* 6. Geofencing & Alerts */}
-      <section className="p-4 bg-white rounded shadow mb-4">
-        <h3 className="font-bold mb-2">6. Geofencing & Alerts</h3>
-        <Button onClick={() => setGeofences([...geofences, {id:Date.now(),name:'New Geofence'}])}>Draw Geofence</Button>
-        <ul className="mt-2 text-sm">{geofences.map(g => <li key={g.id}>{g.name}</li>)}</ul>
-        <ul className="mt-2 text-xs text-red-600">{alerts.map((a,i) => <li key={i}>{a.message}</li>)}</ul>
-      </section>
-
-      {/* 7. Historical Playback/Timeline */}
-      <section className="p-4 bg-white rounded shadow mb-4">
-        <h3 className="font-bold mb-2">7. Historical Playback/Timeline</h3>
-        <Input type="range" min={0} max={24} value={playbackTime} onChange={e=>setPlaybackTime(Number(e.target.value))} className="w-64" />
-        <Button onClick={()=>setIsPlaying(!isPlaying)}>{isPlaying ? 'Pause' : 'Play'}</Button>
-        <span className="ml-2">Hour: {playbackTime}</span>
-      </section>
-
-      {/* 8. Export & Reporting */}
-      <section className="p-4 bg-white rounded shadow mb-4">
-        <h3 className="font-bold mb-2">8. Export & Reporting</h3>
-        <Button onClick={()=>handleExport('csv')}>Export CSV</Button>
-        <Button onClick={()=>handleExport('geojson')} className="ml-2">Export GeoJSON</Button>
-        <Button onClick={()=>handleExport('png')} className="ml-2">Export PNG</Button>
-      </section>
-
-      {/* 9. Advanced Drawing & Annotation */}
-      <section className="p-4 bg-white rounded shadow mb-4">
-        <h3 className="font-bold mb-2">9. Advanced Drawing & Annotation</h3>
-        <Select value={drawingMode} onValueChange={setDrawingMode}>
-          <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="none">None</SelectItem>
-            <SelectItem value="polygon">Polygon</SelectItem>
-            <SelectItem value="line">Line</SelectItem>
-            <SelectItem value="point">Point</SelectItem>
-          </SelectContent>
-        </Select>
-        <span className="ml-2">Mode: {drawingMode}</span>
-        <ul className="mt-2 text-sm">{annotations.map((a,i)=><li key={i}>{a.text||'Annotation'}</li>)}</ul>
-      </section>
-
-      {/* 10. Integration with External GIS Data */}
-      <section className="p-4 bg-white rounded shadow mb-4">
-        <h3 className="font-bold mb-2">10. Integration with External GIS Data</h3>
-        <Button onClick={()=>handleImportGIS(null)}>Import GeoJSON/KML</Button>
-        <ul className="mt-2 text-sm">{externalLayers.map((l,i)=><li key={i}>{l.name||'Layer'}</li>)}</ul>
-      </section>
-
-      {/* 11. Mobile & Offline Support */}
-      <section className="p-4 bg-white rounded shadow mb-4">
-        <h3 className="font-bold mb-2">11. Mobile & Offline Support</h3>
-        <Switch checked={offlineMode} onCheckedChange={setOfflineMode} />
-        <span className="ml-2">Offline Mode {offlineMode ? 'On' : 'Off'}</span>
-        {offlineMode && <div className="text-xs text-yellow-600 mt-2">Offline mode enabled. Some features may be unavailable.</div>}
-      </section>
-
-      {/* 12. User Access Control & Sharing */}
-      <section className="p-4 bg-white rounded shadow mb-4">
-        <h3 className="font-bold mb-2">12. User Access Control & Sharing</h3>
-        <Select value={userRole} onValueChange={setUserRole}>
-          <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="viewer">Viewer</SelectItem>
-            <SelectItem value="editor">Editor</SelectItem>
-            <SelectItem value="admin">Admin</SelectItem>
-          </SelectContent>
-        </Select>
-        <Button onClick={handleShare} className="ml-2">Share Map</Button>
-        <span className="ml-2">Role: {userRole}</span>
-      </section>
-
-      {/* 13. Advanced Analytics & Insights */}
-      <section className="p-4 bg-white rounded shadow mb-4">
-        <h3 className="font-bold mb-2">13. Advanced Analytics & Insights</h3>
-        <div className="text-sm">Hotspots, trends, and predictive analytics coming soon.</div>
-        {/* Analytics dashboard UI would go here */}
-      </section>
-
-      {/* 14. Custom Map Providers & Styles */}
-      <section className="p-4 bg-white rounded shadow mb-4">
-        <h3 className="font-bold mb-2">14. Custom Map Providers & Styles</h3>
-        <Select value={mapProvider} onValueChange={setMapProvider}>
-          <SelectTrigger className="w-64"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            {mapProviders.map(p => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
-          </SelectContent>
-        </Select>
-        <Input type="text" placeholder="Custom Tile URL" className="w-96 mt-2" />
-      </section>
-
-      {/* 15. Integration with Other App Modules */}
-      <section className="p-4 bg-white rounded shadow mb-4">
-        <h3 className="font-bold mb-2">15. Integration with Other App Modules</h3>
-        <div className="flex gap-4">
-          <Button>Go to CRM</Button>
-          <Button>Go to Scheduling</Button>
-          <Button>Go to Compliance</Button>
-        </div>
-      </section>
-
-      {/* 16. Accessibility & Usability */}
-      <section className="p-4 bg-white rounded shadow mb-4">
-        <h3 className="font-bold mb-2">16. Accessibility & Usability</h3>
-        <Switch /> <span className="ml-2">High Contrast Mode</span>
-        {/* Add ARIA labels, keyboard navigation, etc. */}
-      </section>
-
-      {/* 17. Real-Time Collaboration */}
-      <section className="p-4 bg-white rounded shadow mb-4">
-        <h3 className="font-bold mb-2">17. Real-Time Collaboration</h3>
-        <ul className="text-sm">{collaborators.map((c,i)=><li key={i}>{c.name||'User'}</li>)}</ul>
-        <div className="text-xs text-gray-500">Presence indicators and live editing coming soon.</div>
-      </section>
-
-      {/* 18. Map-Based Task Assignment */}
-      <section className="p-4 bg-white rounded shadow mb-4">
-        <h3 className="font-bold mb-2">18. Map-Based Task Assignment</h3>
-        <Button onClick={()=>setTasks([...tasks,{id:Date.now(),desc:'New Task'}])}>Assign Task</Button>
-        <ul className="mt-2 text-sm">{tasks.map(t=><li key={t.id}>{t.desc}</li>)}</ul>
-      </section>
-
-      {/* 19. API for Custom Integrations */}
-      <section className="p-4 bg-white rounded shadow mb-4">
-        <h3 className="font-bold mb-2">19. API for Custom Integrations</h3>
-        <Input type="text" value="https://api.yourapp.com/mapdata" readOnly className="w-96" />
-        <Button className="ml-2">Copy Endpoint</Button>
-      </section>
-
-      {/* 20. Audit Trail & Change History */}
-      <section className="p-4 bg-white rounded shadow mb-4">
-        <h3 className="font-bold mb-2">20. Audit Trail & Change History</h3>
-        <ul className="text-sm">{changeHistory.map((c,i)=><li key={i}>{c.desc||'Change'}</li>)}</ul>
-        <Button className="mt-2">Revert Last Change</Button>
-      </section>
-
-      {/* 21. Weather Data Integration */}
-      <section className="p-4 bg-white rounded shadow mb-4">
-        <h3 className="font-bold mb-2">21. Weather Data Integration</h3>
-        <Button onClick={()=>setWeatherData({temp:72,condition:'Sunny'})}>Fetch Weather</Button>
-        {weatherData && <div className="mt-2">Temp: {weatherData.temp}°F, {weatherData.condition}</div>}
-      </section>
-
-      {/* 22. Weather Overlays */}
-      <section className="p-4 bg-white rounded shadow mb-4">
-        <h3 className="font-bold mb-2">22. Weather Overlays</h3>
-        <Select value={weatherOverlay} onValueChange={setWeatherOverlay}>
-          <SelectTrigger className="w-64"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="none">None</SelectItem>
-            <SelectItem value="radar">Radar</SelectItem>
-            <SelectItem value="precip">Precipitation</SelectItem>
-            <SelectItem value="temp">Temperature</SelectItem>
-          </SelectContent>
-        </Select>
-        <span className="ml-2">Current Overlay: {weatherOverlay}</span>
-      </section>
-
-      {/* 23. Weather-based Alerts & Scheduling */}
-      <section className="p-4 bg-white rounded shadow mb-4">
-        <h3 className="font-bold mb-2">23. Weather-based Alerts & Scheduling</h3>
-        <ul className="text-sm">{weatherAlerts.map((a,i)=><li key={i}>{a}</li>)}</ul>
-        <div className="text-xs text-blue-600">Weather-based scheduling suggestions coming soon.</div>
-      </section>
-
-      {/* 24. Historical Weather Analytics */}
-      <section className="p-4 bg-white rounded shadow mb-4">
-        <h3 className="font-bold mb-2">24. Historical Weather Analytics</h3>
-        <Input type="date" className="w-40" />
-        <div className="text-xs text-gray-500">Historical weather chart coming soon.</div>
-      </section>
-
-      {/* 25. Weather Data in Reports & Exports */}
-      <section className="p-4 bg-white rounded shadow mb-4">
-        <h3 className="font-bold mb-2">25. Weather Data in Reports & Exports</h3>
-        <Button>Export Weather Data</Button>
-        <div className="text-xs text-gray-500">Weather data will be included in exported reports.</div>
-      </section>
-
-      <ThemeShowcase />
-      <ThemeEffectsShowcase />
-      <ThemeSelector />
-      <div className="mt-8">
-        <input
-          type="text"
-          value={searchValue}
-          onChange={e => setSearchValue(e.target.value)}
-          placeholder="Search address..."
-          className="mb-2 p-2 border rounded w-full"
-          aria-label="Address search"
+    <div className="flex flex-col h-screen">
+      {/* Map Section */}
+      <div className="w-full h-[50vh] relative">
+        <UnifiedMapInterface 
+          height="100%" 
+          width="100%"
+          heatmapPoints={heatmapPoints}
+          droneData={[]}
+          pciData={pciData}
+          provider={provider}
         />
-        <MapContainer
-          center={[PATRICK_COUNTY_CENTER.lat, PATRICK_COUNTY_CENTER.lng]}
-          zoom={12}
-          style={{ width: '100%', height: '100%' }}
-          scrollWheelZoom={true}
-          whenCreated={mapInstance => { mapRef.current = mapInstance; }}
-        >
-          <TileLayer
-            attribution="© Esri, Maxar, GeoEye"
-            url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-          />
-          {showHeatmap && (
-            <HeatmapLayer
-              points={heatmapPoints}
-              options={{ radius: heatmapRadius, blur: heatmapBlur, max: heatmapMax }}
-            />
-          )}
-        </MapContainer>
-        <Button style={{ position: 'absolute', zIndex: 1000, top: 10, right: 10 }} onClick={handleGPS}>
-          My Location
-        </Button>
+        
+        {/* Theme Selector */}
+        <div className="absolute top-4 right-4 z-[1000] flex gap-2">
+          <ThemeSelector />
+        </div>
+
+        {/* Search and Location Controls */}
+        <div className="absolute top-4 left-4 z-[1000] flex flex-col gap-2">
+          <div className="bg-background/80 backdrop-blur-sm p-2 rounded-lg shadow-lg">
+            <div className="relative">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input 
+                placeholder="Search address..."
+                className="pl-8 w-64"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleGeocodeSearch()}
+              />
+            </div>
+          </div>
+          <div className="bg-background/80 backdrop-blur-sm p-2 rounded-lg shadow-lg flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleGPS}
+              className="flex items-center gap-2"
+            >
+              <MapPin className="h-4 w-4" />
+              <span>Current Location</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowHeatmap(!showHeatmap)}
+              className="flex items-center gap-2"
+            >
+              <Layers className="h-4 w-4" />
+              <span>Layers</span>
+            </Button>
+          </div>
+        </div>
+
+        {/* Map Source Selector */}
+        <div className="absolute bottom-4 left-4 z-[1000]">
+          <div className="bg-background/80 backdrop-blur-sm p-2 rounded-lg shadow-lg">
+            <Select
+              value={provider}
+              onValueChange={setProvider}
+            >
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Select map source" />
+              </SelectTrigger>
+              <SelectContent>
+                {mapProviders.map((p) => (
+                  <SelectItem key={p.id} value={p.id}>
+                    {p.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        {/* Tools */}
+        <div className="absolute bottom-4 right-4 z-[1000] flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowCalculator(!showCalculator)}
+            className="flex items-center gap-2 bg-background/80 backdrop-blur-sm"
+          >
+            <Calculator className="h-4 w-4" />
+            <span>Calculator</span>
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowSpreadsheet(!showSpreadsheet)}
+            className="flex items-center gap-2 bg-background/80 backdrop-blur-sm"
+          >
+            <FileSpreadsheet className="h-4 w-4" />
+            <span>Spreadsheet</span>
+          </Button>
+        </div>
       </div>
-      <div className="mt-8">
-        <UnifiedMapInterface height={400} />
+
+      {/* Tools and Content Section */}
+      <div className="flex-1 overflow-auto p-4 bg-background">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* Map Tools */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Layers className="h-5 w-5" />
+                Map Tools
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Label>Heatmap</Label>
+                <Switch
+                  checked={showHeatmap}
+                  onCheckedChange={setShowHeatmap}
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label>Geofencing</Label>
+                <Switch
+                  checked={geofencingEnabled}
+                  onCheckedChange={setGeofencingEnabled}
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label>AR Mode</Label>
+                <Switch
+                  checked={arMode}
+                  onCheckedChange={setArMode}
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Measurements */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Ruler className="h-5 w-5" />
+                Measurements
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Area</span>
+                  <span className="font-medium">{measurements.area.toFixed(2)} m²</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Perimeter</span>
+                  <span className="font-medium">{measurements.perimeter.toFixed(2)} m</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Dirty Zones</span>
+                  <span className="font-medium">{measurements.dirtyZones}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Clean Zones</span>
+                  <span className="font-medium">{measurements.cleanZones}</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Weather & Conditions */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Droplets className="h-5 w-5" />
+                Weather & Conditions
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {weatherData ? (
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Temperature</span>
+                    <span className="font-medium">{weatherData.temp}°F</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Condition</span>
+                    <span className="font-medium">{weatherData.condition}</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-sm text-muted-foreground">Weather data not available</div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

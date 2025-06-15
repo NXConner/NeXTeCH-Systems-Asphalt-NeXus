@@ -43,7 +43,7 @@ import MicroInteractions from './components/ui/MicroInteractions';
 import Landing from './pages/Landing';
 import LoginForm from './components/LoginForm';
 import SignUp from './pages/SignUp';
-import UnifiedMapInterface from './components/UnifiedMapInterface';
+import { UnifiedMapInterface } from './components';
 import ThemeSelector from './components/ui/theme-selector';
 import AchievementsPage from './pages/Achievements';
 import BadgesPage from './pages/Badges';

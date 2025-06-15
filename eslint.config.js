@@ -19,9 +19,6 @@ export default tseslint.config(
         ...globals.browser,
         ...globals.es2020,
       },
-      parserOptions: {
-        project: true,
-      },
     },
     plugins: {
       "react-hooks": reactHooks,

@@ -1,112 +1,190 @@
-import React, { useRef, useEffect } from 'react';
-import { MapContainer, TileLayer, LayersControl } from 'react-leaflet';
+import React, { ReactNode, useState, useCallback } from 'react';
+import { MapContainer, TileLayer, useMap, LayersControl, ScaleControl, LayerGroup } from 'react-leaflet';
+import { Button } from '@/components/ui/button';
+import { RotateCcw, Ruler } from 'lucide-react';
+import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Button } from './ui/button';
-import L, { Map as LeafletMap } from 'leaflet';
+import 'leaflet.heat';
+import styles from './UnifiedMapInterface.module.css';
 
 interface UnifiedMapInterfaceProps {
-  width?: number | string;
-  height?: number | string;
+  width?: string;
+  height?: number;
+  heatmapPoints?: Array<[number, number, number]>;
+  droneData?: Array<{lat: number, lng: number, data: any}>;
+  pciData?: Array<{lat: number, lng: number, value: number}>;
+  children?: ReactNode;
 }
 
-const STUART_VA_CENTER = { lat: 36.6418, lng: -80.2717 };
-
-const UnifiedMapInterface: React.FC<UnifiedMapInterfaceProps> = ({ width = '100vw', height = 600 }) => {
-  const [viewState, setViewState] = React.useState({
-    latitude: STUART_VA_CENTER.lat,
-    longitude: STUART_VA_CENTER.lng,
-    zoom: 17,
-    bearing: 0,
-    pitch: 0,
-  });
-  const [mapInstance, setMapInstance] = React.useState<LeafletMap | null>(null);
-  const mapRef = useRef<any>(null);
-  const [themeModalOpen, setThemeModalOpen] = React.useState(false);
-
-  const handleGPS = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(pos => {
-        setViewState(v => ({ ...v, latitude: pos.coords.latitude, longitude: pos.coords.longitude, zoom: 10 }));
-        if (mapRef.current) {
-          mapRef.current.setView([pos.coords.latitude, pos.coords.longitude], 10);
-        }
-      });
-    }
-  };
-
-  useEffect(() => {
-    const handler = () => {
-      setViewState(v => ({ ...v, zoom: 10 }));
-      if (mapRef.current) {
-        mapRef.current.setZoom(10);
-      }
-    };
-    window.addEventListener('theme-changed', handler);
-    return () => window.removeEventListener('theme-changed', handler);
-  }, []);
-
-  useEffect(() => {
-    const openHandler = () => setThemeModalOpen(true);
-    const closeHandler = () => setThemeModalOpen(false);
-    window.addEventListener('theme-modal-open', openHandler);
-    window.addEventListener('theme-modal-close', closeHandler);
+// Heatmap Layer Component
+const HeatmapLayer = ({ points }: { points: Array<[number, number, number]> }) => {
+  const map = useMap();
+  
+  React.useEffect(() => {
+    if (!points.length) return;
+    
+    const heat = (L as any).heatLayer(points, {
+      radius: 25,
+      blur: 15,
+      maxZoom: 10,
+      gradient: { 0.4: 'blue', 0.65: 'lime', 1: 'red' }
+    }).addTo(map);
+    
     return () => {
-      window.removeEventListener('theme-modal-open', openHandler);
-      window.removeEventListener('theme-modal-close', closeHandler);
+      map.removeLayer(heat);
     };
-  }, []);
+  }, [map, points]);
+  
+  return null;
+};
 
-  useEffect(() => {
-    if (mapInstance) {
-      mapRef.current = mapInstance;
-    }
-  }, [mapInstance]);
+// PCI Data Layer Component
+const PCILayer = ({ data }: { data: Array<{lat: number, lng: number, value: number}> }) => {
+  const map = useMap();
+  
+  React.useEffect(() => {
+    if (!data.length) return;
+    
+    const markers = data.map(point => {
+      const color = point.value > 80 ? 'green' : point.value > 60 ? 'yellow' : 'red';
+      return L.circleMarker([point.lat, point.lng], {
+        radius: 8,
+        fillColor: color,
+        color: '#fff',
+        weight: 1,
+        opacity: 1,
+        fillOpacity: 0.8
+      }).bindPopup(`PCI Value: ${point.value}`);
+    });
+    
+    const layer = L.layerGroup(markers).addTo(map);
+    
+    return () => {
+      map.removeLayer(layer);
+    };
+  }, [map, data]);
+  
+  return null;
+};
 
-  const tileLayers = {
-    satellite: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    street: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-  };
-  const attributions = {
-    satellite: '&copy; Esri, Maxar, GeoEye',
-    street: '&copy; OpenStreetMap contributors',
-  };
+// Drone Data Layer Component
+const DroneLayer = ({ data }: { data: Array<{lat: number, lng: number, data: any}> }) => {
+  const map = useMap();
+  
+  React.useEffect(() => {
+    if (!data.length) return;
+    
+    const markers = data.map(point => 
+      L.marker([point.lat, point.lng], {
+        icon: L.divIcon({
+          className: styles.droneMarker,
+          html: '🚁',
+          iconSize: [20, 20]
+        })
+      }).bindPopup(`Drone Data: ${JSON.stringify(point.data, null, 2)}`)
+    );
+    
+    const layer = L.layerGroup(markers).addTo(map);
+    
+    return () => {
+      map.removeLayer(layer);
+    };
+  }, [map, data]);
+  
+  return null;
+};
+
+const ResetButton = () => {
+  const map = useMap();
+  
+  const handleReset = useCallback(() => {
+    map.setView([36.6418, -80.2717], 13);
+  }, [map]);
 
   return (
-    <div style={{
-      width: '100%',
-      height,
-      position: 'relative',
-      zIndex: themeModalOpen ? 10 : 'auto',
-      pointerEvents: themeModalOpen ? 'none' : 'auto',
-      overflow: 'hidden'
-    }}>
-      <Button style={{ position: 'absolute', zIndex: 1000, top: 10, right: 10 }} onClick={handleGPS}>
-        My Location
-      </Button>
+    <Button
+      variant="outline"
+      size="sm"
+      className={styles.resetButton}
+      onClick={handleReset}
+    >
+      <RotateCcw className="h-4 w-4 mr-2" />
+      Reset View
+    </Button>
+  );
+};
+
+export const UnifiedMapInterface: React.FC<UnifiedMapInterfaceProps> = ({
+  width = '100vw',
+  height = 600,
+  heatmapPoints = [],
+  droneData = [],
+  pciData = [],
+  children
+}) => {
+  const STUART_VA_CENTER = { lat: 36.6418, lng: -80.2717 };
+  
+  return (
+    <div 
+      className={styles.mapContainer}
+      style={{ width, height }}
+    >
       <MapContainer
-        center={[viewState.latitude, viewState.longitude] as [number, number]}
-        zoom={viewState.zoom}
+        center={[STUART_VA_CENTER.lat, STUART_VA_CENTER.lng]}
+        zoom={13}
         style={{ width: '100%', height: '100%' }}
-        scrollWheelZoom={true}
-        whenCreated={(instance: LeafletMap) => setMapInstance(instance)}
+        zoomControl={true}
       >
         <LayersControl position="topright">
+          {/* Base Layers */}
           <LayersControl.BaseLayer checked name="Satellite">
             <TileLayer
-              attribution={attributions.satellite}
-              url={tileLayers.satellite}
+              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+              attribution='&copy; <a href="https://www.esri.com/">Esri</a>'
             />
           </LayersControl.BaseLayer>
-          <LayersControl.BaseLayer name="Street (Road Names)">
+          
+          <LayersControl.BaseLayer name="OpenStreetMap">
             <TileLayer
-              attribution={attributions.street}
-              url={tileLayers.street}
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             />
           </LayersControl.BaseLayer>
+
+          {/* Overlay Layers */}
+          <LayersControl.Overlay checked name="Street Labels">
+            <TileLayer
+              url="https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"
+              attribution='&copy; <a href="https://www.esri.com/">Esri</a>'
+              opacity={0.7}
+            />
+          </LayersControl.Overlay>
+
+          <LayersControl.Overlay name="Heatmap">
+            <LayerGroup>
+              {heatmapPoints.length > 0 && <HeatmapLayer points={heatmapPoints} />}
+            </LayerGroup>
+          </LayersControl.Overlay>
+
+          <LayersControl.Overlay name="PCI Data">
+            <LayerGroup>
+              {pciData.length > 0 && <PCILayer data={pciData} />}
+            </LayerGroup>
+          </LayersControl.Overlay>
+
+          <LayersControl.Overlay name="Drone Data">
+            <LayerGroup>
+              {droneData.length > 0 && <DroneLayer data={droneData} />}
+            </LayerGroup>
+          </LayersControl.Overlay>
         </LayersControl>
+
+        <ScaleControl position="bottomleft" />
+        <ResetButton />
+        {children}
       </MapContainer>
     </div>
   );
 };
 
-export default UnifiedMapInterface; 
+export default UnifiedMapInterface;
